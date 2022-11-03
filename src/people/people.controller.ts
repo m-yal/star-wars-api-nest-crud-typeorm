@@ -12,7 +12,7 @@ export class PeopleController {
 
     @Get(":id")
     getByID(@Param('id') id: string): string {
-        return "person by " + id;
+        return "person id: " + id;
     }
 
     @Post("add")
