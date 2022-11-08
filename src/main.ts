@@ -11,25 +11,7 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("people", app, document);
-  await app.listen(3005);
-  console.log(JSON.stringify({
-    name: "me",
-    height: 12311,
-    mass: 12311,
-    hair_color: "asdasd",
-    skin_color: "strinsfsdfsdf",
-    eye_color: "adadwqd",
-    birth_year: "dfsdfsdfsd",
-    gender: "avxcvxcvx",
-    homeworld: "sdfsdfsf",
-    films: [],
-    species: [],
-    vehicles: [],
-    starships: [],
-    created: "",
-    edited: "",
-    url: "",
-}));
-  
+  await app.listen(process.env.PORT);
+  console.log("Server started on port: " + process.env.PORT);
 }
 bootstrap();

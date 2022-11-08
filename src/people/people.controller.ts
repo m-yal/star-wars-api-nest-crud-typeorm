@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PersonDto } from './dto/person.dto';
 import { UpToTenPersonsDto } from './dto/up-to-ten-persons.dto';
@@ -9,26 +9,16 @@ import { PeopleService } from './people.service';
 export class PeopleController {
     constructor(private peopleService: PeopleService) {}
 
-    @Get()
-    @ApiOperation({summary: "Get up to last ten persons added to storage"})
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description: "Up to ten persons sent to client",
-        type: UpToTenPersonsDto
-    })
-    getTen(@Query("startIndex") startIndex: number): UpToTenPersonsDto {
-        return this.peopleService.getTen(Number(startIndex));
-    }
-
-    @Get(":id")
-    @ApiOperation({summary: "Get up single person by id in params"})
-    @ApiResponse({
-        status: HttpStatus.OK,
-        type: PersonDto
-    })
-    getByID(@Param('id') id: string): PersonDto {
-        return this.peopleService.getAll()[id];
-    }
+    // @Get()
+    // @ApiOperation({summary: "Get up to last ten persons added to storage"})
+    // @ApiResponse({
+    //     status: HttpStatus.OK,
+    //     description: "Up to ten persons sent to client",
+    //     type: UpToTenPersonsDto
+    // })
+    // getTen(@Query("startIndex") startIndex: number): UpToTenPersonsDto {
+    //     return this.peopleService.getTen(Number(startIndex));
+    // }
 
     @Post("add")
     @ApiOperation({summary: "Add person to db"})
@@ -52,13 +42,13 @@ export class PeopleController {
         return;
     }
 
-    @Delete("delete/:id")
-    @ApiResponse({
-        status: HttpStatus.OK,
-    })
-    @ApiOperation({summary: "Remove single person under id in params"})
-    deletePerson(@Param("id") id: string) {
-        this.peopleService.delete(id);
-        return;
-    }
+    // @Delete("delete/:id")
+    // @ApiResponse({
+    //     status: HttpStatus.OK,
+    // })
+    // @ApiOperation({summary: "Remove single person under id in params"})
+    // deletePerson(@Param("id") id: string) {
+    //     this.peopleService.delete(id);
+    //     return;
+    // }
 }
