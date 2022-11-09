@@ -1,7 +1,10 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class People {
+    @PrimaryGeneratedColumn("increment")
+    id: number;
+
     @Column("varchar")
     name: string;
     
@@ -47,6 +50,6 @@ export class People {
     @Column("varchar")
     edited: string;
     
-    @PrimaryColumn("varchar")
+    @Column("varchar")
     url: string;
 }

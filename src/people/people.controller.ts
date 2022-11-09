@@ -9,16 +9,16 @@ import { PeopleService } from './people.service';
 export class PeopleController {
     constructor(private peopleService: PeopleService) {}
 
-    // @Get()
-    // @ApiOperation({summary: "Get up to last ten persons added to storage"})
-    // @ApiResponse({
-    //     status: HttpStatus.OK,
-    //     description: "Up to ten persons sent to client",
-    //     type: UpToTenPersonsDto
-    // })
-    // getTen(@Query("startIndex") startIndex: number): UpToTenPersonsDto {
-    //     return this.peopleService.getTen(Number(startIndex));
-    // }
+    @Get("lastTen")
+    @ApiOperation({summary: "Get up to last ten persons added to storage"})
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Up to ten persons sent to client",
+        type: UpToTenPersonsDto
+    })
+    getAll(@Query("page") page: number): any {
+        return this.peopleService.getAll(page);
+    }
 
     @Post("add")
     @ApiOperation({summary: "Add person to db"})
@@ -27,9 +27,7 @@ export class PeopleController {
         status: HttpStatus.CREATED,
     })
     addPerson(@Body() body: PersonDto) {
-        console.log(JSON.stringify(body));
-        this.peopleService.add(body);
-        return;
+        return this.peopleService.add(body);
     }
 
     @Put("update/:id")
@@ -38,17 +36,17 @@ export class PeopleController {
     })
     @ApiOperation({summary: "Update single person under id in params"})
     updatePerson(@Body() body: PersonDto, @Param("id") id: string) {
-        this.peopleService.update(body, id);
+        this.peopleService.update(body, +id);
         return;
     }
 
-    // @Delete("delete/:id")
-    // @ApiResponse({
-    //     status: HttpStatus.OK,
-    // })
-    // @ApiOperation({summary: "Remove single person under id in params"})
-    // deletePerson(@Param("id") id: string) {
-    //     this.peopleService.delete(id);
-    //     return;
-    // }
+    @Delete("delete/:id")
+    @ApiResponse({
+        status: HttpStatus.OK,
+    })
+    @ApiOperation({summary: "Remove single person under id in params"})
+    deletePerson(@Param("id") id: string) {
+        this.peopleService.delete(+id);
+        return;
+    }
 }

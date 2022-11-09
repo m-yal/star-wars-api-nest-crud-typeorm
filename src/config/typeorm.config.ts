@@ -3,13 +3,12 @@ import { People } from "src/people/entities/people.entity";
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
     type: 'mysql',
-    host: process.env.DB_HOST,
-    // port: 3005,
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    host: "localhost",
+    username: "root",
+    password: "123321",
+    database: "swapi",
     entities: [People],
-    migrationsTableName: "swapi",
+    migrationsTableName: "migrations",
     migrations: [],
     synchronize: true,
 }
