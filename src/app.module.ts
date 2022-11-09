@@ -4,18 +4,15 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { typeOrmConfig } from './config/typeorm.config';
-import { DatabaseModule } from './db/database.module';
-import { People } from './people/entities/people.entity';
+import { typeOrmAsyncConfig } from './config/typeorm.config';
 import { PeopleModule } from './people/people.module';
 
 @Module({
   imports: [
     PeopleModule,
-    ConfigModule.forRoot({isGlobal: true}),
-    TypeOrmModule.forRoot(typeOrmConfig),
+    ConfigModule.forRoot({isGlobal: true, envFilePath: ".env"}),
+    TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
     HttpModule,
-    // DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
