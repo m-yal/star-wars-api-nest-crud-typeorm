@@ -1,8 +1,7 @@
-import { Person } from "../interfaces/person.interface";
-import { UpToTenPersons } from "../interfaces/upToTenPersons.interface";
+import { People } from "../entities/people.entity"
 
-export class UpToTenPersonsDto implements UpToTenPersons {
-    hasPrevPage: boolean;
-    hasNextPage: boolean;
-    people: Person[];
+export class LastCreatedPeopleDto {
+    data: People[]
+    hasNext: boolean
+    hasPrev: boolean
 }

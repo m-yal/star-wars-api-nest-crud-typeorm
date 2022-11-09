@@ -1,23 +1,27 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AddPersonDto } from './dto/add.dto';
+import { DeletedDto } from './dto/deleted.dto';
 import { PersonDto } from './dto/person.dto';
-import { UpToTenPersonsDto } from './dto/up-to-ten-persons.dto';
+import { LastCreatedPeopleDto } from './dto/up-to-ten-persons.dto';
+import { UpdateDto } from './dto/update.dto';
 import { PeopleService } from './people.service';
 
 @ApiTags("People paths")
 @Controller('people')
 export class PeopleController {
+
     constructor(private peopleService: PeopleService) {}
 
-    @Get("lastTen")
-    @ApiOperation({summary: "Get up to last ten persons added to storage"})
+    @Get("lastCreated")
+    @ApiOperation({summary: "Get up to 10 persons lastly added to storage"})
     @ApiResponse({
         status: HttpStatus.OK,
         description: "Up to ten persons sent to client",
-        type: UpToTenPersonsDto
+        type: LastCreatedPeopleDto
     })
-    getAll(@Query("page") page: number): any {
-        return this.peopleService.getAll(page);
+    getAll(@Query("page") page: number): Promise<LastCreatedPeopleDto> {
+        return this.peopleService.getlastCreated(page);
     }
 
     @Post("add")
@@ -26,8 +30,9 @@ export class PeopleController {
     @ApiResponse({
         status: HttpStatus.CREATED,
     })
-    addPerson(@Body() body: PersonDto) {
-        return this.peopleService.add(body);
+    addPerson(@Body() body: PersonDto): AddPersonDto {
+        this.peopleService.add(body);
+        return {addingExecuted: true};
     }
 
     @Put("update/:id")
@@ -35,9 +40,9 @@ export class PeopleController {
         status: HttpStatus.OK,
     })
     @ApiOperation({summary: "Update single person under id in params"})
-    updatePerson(@Body() body: PersonDto, @Param("id") id: string) {
+    updatePerson(@Body() body: PersonDto, @Param("id") id: string): UpdateDto {
         this.peopleService.update(body, +id);
-        return;
+        return {updateExecuted: true};
     }
 
     @Delete("delete/:id")
@@ -45,8 +50,8 @@ export class PeopleController {
         status: HttpStatus.OK,
     })
     @ApiOperation({summary: "Remove single person under id in params"})
-    deletePerson(@Param("id") id: string) {
+    deletePerson(@Param("id") id: string): DeletedDto {
         this.peopleService.delete(+id);
-        return;
+        return {deletionExecuted: true};
     }
 }

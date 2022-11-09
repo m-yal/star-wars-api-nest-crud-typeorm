@@ -1,7 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PersonDto } from './dto/person.dto';
+import { LastCreatedPeopleDto } from './dto/up-to-ten-persons.dto';
 import { People } from './entities/people.entity';
 
 @Injectable()
@@ -24,7 +25,7 @@ export class PeopleService {
         return;
     }
 
-    async getAll(page: number): Promise<any> {
+    async getlastCreated(page: number): Promise<LastCreatedPeopleDto> {
         const UNITS_PER_PAGE = 10; //todo move to constants
         const pageIndex = page - 1;
         const units = await this.peopleRepository.find({
