@@ -15,7 +15,7 @@ export class PeopleService {
     }
 
     async delete(id: number): Promise<void> {
-        const people = await this.peopleRepository.findOneBy({id: id});
+        const people: People = await this.peopleRepository.findOneBy({id: id});
         await this.peopleRepository.remove(people);
         return;
     }
@@ -26,16 +26,16 @@ export class PeopleService {
     }
 
     async getlastCreated(page: number): Promise<LastCreatedPeopleDto> {
-        const UNITS_PER_PAGE = 10; //todo move to constants
-        const pageIndex = page - 1;
-        const units = await this.peopleRepository.find({
+        const UNITS_PER_PAGE: number = 10; //todo move to constants
+        const pageIndex: number = page - 1;
+        const units: People[] = await this.peopleRepository.find({
             order: {
                 created: "DESC"
             },
             take: UNITS_PER_PAGE,
             skip: pageIndex * UNITS_PER_PAGE
         });
-        const count = await this.peopleRepository.count();
+        const count: number = await this.peopleRepository.count();
         return {
             data: units,
             hasNext: page * UNITS_PER_PAGE < count ? true : false,
