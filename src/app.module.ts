@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { typeOrmAsyncConfig } from './config/typeorm.config';
 import { PeopleModule } from './people/people.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { PeopleModule } from './people/people.module';
     ConfigModule.forRoot({isGlobal: true, envFilePath: ".env"}),
     TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
     HttpModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
