@@ -4,11 +4,7 @@ import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { getApiBodySchema } from '../swagger/swagger-api-body.schema';
 
-export function ApiUploadFiles(
-    fieldName: string = 'files',
-    maxCount: number = 10,
-    multerOptions?: MulterOptions,
-  ) {
+export function ApiUploadFiles(fieldName: string = 'files', maxCount: number, multerOptions?: MulterOptions) {
   return applyDecorators(
     UseInterceptors(FilesInterceptor(fieldName, maxCount, multerOptions)),
     ApiConsumes('multipart/form-data'),

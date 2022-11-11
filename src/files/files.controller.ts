@@ -26,7 +26,7 @@ export class FilesController {
 
     //writted partially with a help of: https://notiz.dev/blog/type-safe-file-uploads
     @Post("people")
-    @ApiUploadFiles("files", 10, multerOptions)
+    @ApiUploadFiles("files", undefined, multerOptions)
     addPerson(@UploadedFiles(ParseFiles) files: Array<Express.Multer.File>, @Query("id") id: string): StatusDto {
         console.log(`images for id ${id}: ${files}`);        
         return {executed: true};
@@ -37,7 +37,7 @@ export class FilesController {
         status: HttpStatus.OK,
     })
     @ApiOperation({summary: "Remove single person`s image under image id"})
-    deletePerson(@Query("imgId") imgId: string): StatusDto {
-        return this.fileService.delete(imgId);
+    deletePerson(@Query("imgName") imgName: string): StatusDto {
+        return this.fileService.delete(imgName);
     }
 }
