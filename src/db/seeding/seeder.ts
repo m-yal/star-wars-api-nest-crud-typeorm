@@ -59,7 +59,7 @@ class Seeder {
 
     private insertIntoDB(results: any[], connection: mysql.Connection, entityName: EntityPointerLink): void {
         for (const obj of results) {
-            connection.query(`INSERT INTO ${entityName}(name, height, mass, hair_color, skin_color, eye_color, birth_year, gender, homeworld, films, species, vehicles, starships, created, edited, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, Object.values(obj));
+            connection.query(`INSERT INTO ${entityName}(name, height, mass, hair_color, skin_color, eye_color, birth_year, gender, homeworld, films, species, vehicles, starships, created, edited, url, images) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "")`, Object.values(obj));
         }
     }
 }

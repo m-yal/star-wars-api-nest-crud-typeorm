@@ -15,4 +15,5 @@ export class PersonDto {
     readonly created?: string;
     readonly edited?: string;
     readonly url?: string;
+    readonly images?: string;
 }

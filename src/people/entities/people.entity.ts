@@ -52,4 +52,7 @@ export class People {
     
     @Column("varchar")
     url: string;
+
+    @Column("text")
+    images: string;
 }
