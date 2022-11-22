@@ -4,7 +4,11 @@ import fetch from "node-fetch";
 
 enum EntityPointerLink {
     People = "people",
-    //...       
+    Films = "films",
+    Planets = "planets",
+    Species = "species",
+    Starships = "starships",
+    Vehicles = "vehicles"       
 }
 
 dotenv.config();
@@ -47,20 +51,33 @@ class Seeder {
         return results;
     }
 
-    private convertArraysToString(objectsWithArrayTypes: any[]): any[] {
-        for (const obj of objectsWithArrayTypes) {
-            obj.films = obj.films.toString();
-            obj.species = obj.species.toString();
-            obj.vehicles = obj.vehicles.toString();
-            obj.starships = obj.starships.toString();
+    private convertArraysToString(objects: any[]): any[] {
+        for (const obj of objects) {
+            for (let field in obj) {
+                if (Array.isArray(obj[field])) obj[field] = obj[field].toString();
+            }
         }
-        return objectsWithArrayTypes;
+        return objects;
     }
 
     private insertIntoDB(results: any[], connection: mysql.Connection, entityName: EntityPointerLink): void {
+        const objKeys: string = Object.keys(results[0]).toString(); //[0] because one instance is enough for defining schema
+        const objKeysAmount: number = Object.keys(results[0]).length;
+        const quesionMarks: string = "?, ".repeat(objKeysAmount).replace(/, $/, "");
+        console.log(`obj keys ${objKeys} \n obj keys amount ${objKeysAmount} \n questions marks ${quesionMarks}`);
         for (const obj of results) {
-            connection.query(`INSERT INTO ${entityName}(name, height, mass, hair_color, skin_color, eye_color, birth_year, gender, homeworld, films, species, vehicles, starships, created, edited, url, images) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "")`, Object.values(obj));
+            connection.query(`INSERT INTO ${entityName}(${objKeys}) VALUES (${quesionMarks})`, Object.values(obj));
         }
     }
 }
-new Seeder().run(EntityPointerLink.People);
+
+async function seedDB() {
+    const seeder = new Seeder();
+    await seeder.run(EntityPointerLink.People);
+    await seeder.run(EntityPointerLink.Films);
+    await seeder.run(EntityPointerLink.Planets);
+    await seeder.run(EntityPointerLink.Species);
+    await seeder.run(EntityPointerLink.Starships);
+    await seeder.run(EntityPointerLink.Vehicles);
+}
+seedDB();

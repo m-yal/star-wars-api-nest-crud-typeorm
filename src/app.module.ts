@@ -10,8 +10,6 @@ import { FilesModule } from './files/files.module';
 import { PlanetsModule } from './planets/planets.module';
 import { FilmsModule } from './films/films.module';
 import { SpeciesModule } from './species/species.module';
-import { FVehiclesModule } from './f-vehicles/f-vehicles.module';
-import { SStarshipsModule } from './s-starships/s-starships.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
 import { StarshipsModule } from './starships/starships.module';
 
@@ -25,8 +23,6 @@ import { StarshipsModule } from './starships/starships.module';
     PlanetsModule,
     FilmsModule,
     SpeciesModule,
-    FVehiclesModule,
-    SStarshipsModule,
     VehiclesModule,
     StarshipsModule,
   ],

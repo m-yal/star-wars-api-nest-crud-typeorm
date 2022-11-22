@@ -53,6 +53,6 @@ export class People {
     @Column("varchar")
     url: string;
 
-    @Column("text")
-    images: string;
+    @Column({type: "varchar", default: ""})
+    images: string = "";
 }
