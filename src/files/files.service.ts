@@ -6,6 +6,7 @@ import { StatusDto } from './dto/status.dto';
 import * as fs from 'fs';
 import { createReadStream } from 'fs';
 import { join } from 'path';
+import { PersonDto } from 'src/people/dto/person.dto';
 
 @Injectable()
 export class FilesService {
@@ -14,12 +15,12 @@ export class FilesService {
 
     private readonly FILENAMES_SEPARATOR: string = ";;;";
 
-    getBy(imgName: string): any {
+    getBy(imgName: string): fs.ReadStream {
         return createReadStream(join(process.cwd() + "/files", imgName));
     }
     
     async add(id: string, files: Express.Multer.File[]): Promise<StatusDto> {
-        const personToUpdate: any = await this.peopleRepository.findOneBy({id: +id});
+        const personToUpdate: PersonDto = await this.peopleRepository.findOneBy({id: +id});
         if (!personToUpdate) throw new NotFoundException(); 
         this.addImageLink(personToUpdate, files);
         await this.peopleRepository.save(personToUpdate);
@@ -31,19 +32,20 @@ export class FilesService {
         return this.removeImageFile(imgName);
     }
 
-    //Service methods for service methods below :)
+    
+    //Service methods for service methods :)
     extractFileLinks(personToUpdate: string): string[] {
         return personToUpdate.split(this.FILENAMES_SEPARATOR);
     }
 
     private async removeImageLinkFromDB(imgName: string, id: string): Promise<void> {
-        const personToUpdate: any = await this.peopleRepository.findOneBy({id: +id});
+        const personToUpdate: PersonDto = await this.peopleRepository.findOneBy({id: +id});
         personToUpdate.images = this.removeFromPerson(imgName, personToUpdate.images);
         await this.peopleRepository.save(personToUpdate);
     }
 
     private removeFromPerson(imgName: string, images: string): string {
-        const newImagesLinks = images.replace(imgName, "")
+        const newImagesLinks: string = images.replace(imgName, "")
             .replace(this.FILENAMES_SEPARATOR.repeat(2), "")
             .replace(`(^${this.FILENAMES_SEPARATOR})|(${this.FILENAMES_SEPARATOR}$)`, "");
         newImagesLinks.replace(this.FILENAMES_SEPARATOR.repeat(1), this.FILENAMES_SEPARATOR);
@@ -60,7 +62,7 @@ export class FilesService {
         }
     }
 
-    private addImageLink(personToUpdate: any, files: Express.Multer.File[]): void {
+    private addImageLink(personToUpdate: PersonDto, files: Express.Multer.File[]): void {
         if (personToUpdate.images === "") {
             personToUpdate.images = this.assembleFilenamesToOneStr(files);
         } else {
