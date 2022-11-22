@@ -1,58 +1,49 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class People {
+export class Planets {
     @PrimaryGeneratedColumn("increment")
     id: number;
 
     @Column("varchar")
     name: string;
-    
+
     @Column("varchar")
-    height: string;
-    
+    rotation_period: string;
+
     @Column("varchar")
-    mass: string;
-    
+    orbital_period: string;
+
     @Column("varchar")
-    hair_color: string;
-    
+    diameter: string;
+
     @Column("varchar")
-    skin_color: string;
-    
+    climate: string;
+
     @Column("varchar")
-    eye_color: string;
-    
+    gravity: string;
+
     @Column("varchar")
-    birth_year: string;
-    
+    terrain: string;
+
     @Column("varchar")
-    gender: string;
-    
+    surface_water: string;
+
     @Column("varchar")
-    homeworld: string;
-    
-    @Column("text")
-    films: string;
-    
-    @Column("text")
-    species: string;
-    
-    @Column("text")
-    vehicles: string;
-    
-    @Column("text")
-    starships: string;
-    
-    @Column("varchar")
-    created: string;
-    
-    @Column("varchar")
-    edited: string;
-    
-    @Column("varchar")
-    url: string;
+    population: string;
 
     @Column("text")
-    images: string;
+    residents: string;
+
+    @Column("text")
+    films: string;
+
+    @Column("varchar")
+    created: string;
+
+    @Column("varchar")
+    edited: string;
+
+    @Column("varchar")
+    url: string;
 }

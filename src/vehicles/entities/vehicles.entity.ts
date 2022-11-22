@@ -1,58 +1,55 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class People {
+export class Vehicles {
     @PrimaryGeneratedColumn("increment")
     id: number;
 
     @Column("varchar")
     name: string;
+
+    @Column("varchar")
+    model: string;
+
+    @Column("varchar")
+    manufacturer: string;
+
+    @Column("varchar")
+    cost_in_credits: string;
+
+    @Column("varchar")
+    length: string;
+
+    @Column("varchar")
+    max_atmosphering_speed: string;
+
+    @Column("varchar")
+    crew: string;
+
+    @Column("varchar")
+    passengers: string;
+
+    @Column("varchar")
+    cargo_capacity: string;
+
+    @Column("varchar")
+    consumables: string;
     
     @Column("varchar")
-    height: string;
-    
-    @Column("varchar")
-    mass: string;
-    
-    @Column("varchar")
-    hair_color: string;
-    
-    @Column("varchar")
-    skin_color: string;
-    
-    @Column("varchar")
-    eye_color: string;
-    
-    @Column("varchar")
-    birth_year: string;
-    
-    @Column("varchar")
-    gender: string;
-    
-    @Column("varchar")
-    homeworld: string;
-    
-    @Column("text")
-    films: string;
-    
-    @Column("text")
-    species: string;
-    
-    @Column("text")
-    vehicles: string;
-    
-    @Column("text")
-    starships: string;
-    
-    @Column("varchar")
-    created: string;
-    
-    @Column("varchar")
-    edited: string;
-    
-    @Column("varchar")
-    url: string;
+    vehicle_class: string;
 
     @Column("text")
-    images: string;
+    pilots: string;
+    
+    @Column("text")
+    films; string;
+
+    @Column("varchar")
+    created: string;
+
+    @Column("varchar")
+    edited: string;
+
+    @Column("varchar")
+    url: string
 }

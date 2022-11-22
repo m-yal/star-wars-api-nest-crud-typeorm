@@ -7,6 +7,13 @@ import { AppService } from './app.service';
 import { typeOrmAsyncConfig } from './config/typeorm.config';
 import { PeopleModule } from './people/people.module';
 import { FilesModule } from './files/files.module';
+import { PlanetsModule } from './planets/planets.module';
+import { FilmsModule } from './films/films.module';
+import { SpeciesModule } from './species/species.module';
+import { FVehiclesModule } from './f-vehicles/f-vehicles.module';
+import { SStarshipsModule } from './s-starships/s-starships.module';
+import { VehiclesModule } from './vehicles/vehicles.module';
+import { StarshipsModule } from './starships/starships.module';
 
 @Module({
   imports: [
@@ -15,6 +22,13 @@ import { FilesModule } from './files/files.module';
     TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
     HttpModule,
     FilesModule,
+    PlanetsModule,
+    FilmsModule,
+    SpeciesModule,
+    FVehiclesModule,
+    SStarshipsModule,
+    VehiclesModule,
+    StarshipsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
