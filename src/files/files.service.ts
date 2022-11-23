@@ -1,12 +1,11 @@
 import { Injectable, NotFoundException, Res } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { People } from 'src/people/entities/people.entity';
+import { People } from 'src/crud/entities/people.entity';
 import { Repository } from 'typeorm';
 import { StatusDto } from './dto/status.dto';
 import * as fs from 'fs';
 import { createReadStream } from 'fs';
 import { join } from 'path';
-import { PersonDto } from 'src/people/dto/person.dto';
 
 @Injectable()
 export class FilesService {
@@ -20,7 +19,7 @@ export class FilesService {
     }
     
     async add(id: string, files: Express.Multer.File[]): Promise<StatusDto> {
-        const personToUpdate: PersonDto = await this.peopleRepository.findOneBy({id: +id});
+        const personToUpdate: any = await this.peopleRepository.findOneBy({id: +id});
         if (!personToUpdate) throw new NotFoundException(); 
         this.addImageLink(personToUpdate, files);
         await this.peopleRepository.save(personToUpdate);
@@ -39,7 +38,7 @@ export class FilesService {
     }
 
     private async removeImageLinkFromDB(imgName: string, id: string): Promise<void> {
-        const personToUpdate: PersonDto = await this.peopleRepository.findOneBy({id: +id});
+        const personToUpdate: any = await this.peopleRepository.findOneBy({id: +id});
         personToUpdate.images = this.removeFromPerson(imgName, personToUpdate.images);
         await this.peopleRepository.save(personToUpdate);
     }
@@ -62,7 +61,7 @@ export class FilesService {
         }
     }
 
-    private addImageLink(personToUpdate: PersonDto, files: Express.Multer.File[]): void {
+    private addImageLink(personToUpdate: any, files: Express.Multer.File[]): void {
         if (personToUpdate.images === "") {
             personToUpdate.images = this.assembleFilenamesToOneStr(files);
         } else {

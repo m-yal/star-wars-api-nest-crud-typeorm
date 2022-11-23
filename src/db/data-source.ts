@@ -1,5 +1,6 @@
 import { DataSource, DataSourceOptions } from "typeorm";
 
+//Uses during typeorm work for migrations
 export const dataSourceOptions: DataSourceOptions = {
     type: "mysql",
     database: "swapi",

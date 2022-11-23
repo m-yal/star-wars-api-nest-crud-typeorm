@@ -14,6 +14,9 @@ enum EntityPointerLink {
 dotenv.config();
 const {DB_HOST, DB_NAME, DB_USERNAME, DB_PASSWORD} = process.env;
 
+/* Class for seeding db from https://swapi.dev/api/ .
+Main method receives entity name, which === appropriate name of column in db === appropriate name of 
+json object key received from swapi*/
 class Seeder {
     private readonly swapiLink: RequestInfo = "https://swapi.dev/api/";
     
