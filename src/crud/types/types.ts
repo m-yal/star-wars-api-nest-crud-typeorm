@@ -7,10 +7,15 @@ import { Starships } from "../entities/starships.entity";
 import { Vehicles } from "../entities/vehicles.entity";
 
 export enum UnitTypeEnum {
-    "people", "films", "planets", "starships", "species", "vehicles"
+    People = "people",
+    Films = "films",
+    Planets = "planets",
+    Starhips = "starhips",
+    Species = "species",
+    Vehicles = "vehicles"
 }
 export type Unit = People | Films | Planets | Starships | Species | Vehicles;
-export type UnitTypes = UnitTypeEnum.people | UnitTypeEnum.films 
-    | UnitTypeEnum.planets | UnitTypeEnum.starships 
-    | UnitTypeEnum.species | UnitTypeEnum.vehicles;
+export type UnitTypes = UnitTypeEnum.People | UnitTypeEnum.Films 
+    | UnitTypeEnum.Planets | UnitTypeEnum.Starhips 
+    | UnitTypeEnum.Species | UnitTypeEnum.Vehicles;
 export type CrudRepositories = Repository<Unit>;

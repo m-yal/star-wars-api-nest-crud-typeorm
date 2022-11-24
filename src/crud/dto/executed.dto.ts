@@ -1,3 +1,3 @@
 export class ExecutedDto {
-    executed: true
+    executed: boolean
 }

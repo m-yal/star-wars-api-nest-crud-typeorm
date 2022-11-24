@@ -51,5 +51,8 @@ export class Vehicles {
     edited: string;
 
     @Column("varchar")
-    url: string
+    url: string;
+    
+    @Column({type: "varchar", default: ""})
+    images: string = "";
 }

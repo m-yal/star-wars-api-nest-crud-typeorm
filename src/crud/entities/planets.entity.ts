@@ -46,4 +46,7 @@ export class Planets {
 
     @Column("varchar")
     url: string;
+    
+    @Column({type: "varchar", default: ""})
+    images: string = "";
 }

@@ -38,9 +38,9 @@ export class CrudService {
         const count: number = await currentRepository.count();
         return {
             data: {
-            units: units,
-            hasNext: page * this.UNITS_PER_PAGE < count ? true : false,
-            hasPrev: pageIndex === 0 ? false : true
+                units: units,
+                hasNext: page * this.UNITS_PER_PAGE < count ? true : false,
+                hasPrev: pageIndex === 0 ? false : true
             }
         };
     }
@@ -64,15 +64,14 @@ export class CrudService {
         return {executed: true};
     }
 
-    // Move to enum
     private getRepoBy(unitType: UnitTypes): CrudRepositories {
         switch (unitType) {
-            case UnitTypeEnum.people: return this.peopleRepository;
-            case UnitTypeEnum.films: return this.filmsRepository;
-            case UnitTypeEnum.planets: return this.planetsRepository;
-            case UnitTypeEnum.species: return this.speciesRepository;
-            case UnitTypeEnum.starships: return this.starshipsRepository;
-            case UnitTypeEnum.vehicles: return this.vehiclesRepository;   
+            case UnitTypeEnum.People: return this.peopleRepository;
+            case UnitTypeEnum.Films: return this.filmsRepository;
+            case UnitTypeEnum.Planets: return this.planetsRepository;
+            case UnitTypeEnum.Species: return this.speciesRepository;
+            case UnitTypeEnum.Starhips: return this.starshipsRepository;
+            case UnitTypeEnum.Vehicles: return this.vehiclesRepository;   
             default: throw new Error("No such repository found!");
         }
     }

@@ -58,4 +58,7 @@ export class Starships {
 
     @Column("varchar")
     url: string;
+    
+    @Column({type: "varchar", default: ""})
+    images: string = "";
 }

@@ -49,4 +49,7 @@ export class Species {
 
     @Column("varchar")
     url: string;
+    
+    @Column({type: "varchar", default: ""})
+    images: string = "";
 }

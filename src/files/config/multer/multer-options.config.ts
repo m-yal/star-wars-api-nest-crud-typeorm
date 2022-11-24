@@ -9,7 +9,6 @@ const diskStorageOptions = {
       const uniqueSuffix = `${Date.now()}-${Math.random() * 1e9}`;
       const ext = extname(file.originalname);
       const filename = `${uniqueSuffix}${ext}`;
-      console.log("new filename " + filename);
       callback(null, filename);
     }
 }
@@ -28,5 +27,5 @@ export const multerOptions: MulterOptions = {
     dest: "files",
     storage: diskStorage(diskStorageOptions),
     fileFilter: getFileMimetypeFilter('image'),
-    limits: {fileSize: 1024 * 1024 * 5}//bytes * kb * mb
+    limits: {fileSize: 1024 * 1024 * 5} //bytes * kb * mb
 }
