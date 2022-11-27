@@ -51,15 +51,15 @@ export class CrudService {
         return {executed: true};
     }
 
-    async update(body: Unit, id: number, unitType: UnitTypes): Promise<ExecutedDto> {
+    async update(body: Unit, id: string, unitType: UnitTypes): Promise<ExecutedDto> {
         const currentRepository: CrudRepositories = this.getRepoBy(unitType);
-        await currentRepository.update({id: id}, body);
+        await currentRepository.update({url: id}, body);
         return {executed: true};
     }
 
-    async delete(id: number, unitType: UnitTypes): Promise<ExecutedDto> {
+    async delete(id: string, unitType: UnitTypes): Promise<ExecutedDto> {
         const currentRepository: CrudRepositories = this.getRepoBy(unitType);
-        const unit: Unit = await currentRepository.findOneBy({id: id});
+        const unit: Unit = await currentRepository.findOneBy({url: id});
         currentRepository.remove(unit);
         return {executed: true};
     }

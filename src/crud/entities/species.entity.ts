@@ -1,10 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, ManyToOne, PrimaryColumn } from "typeorm";
+import { Films } from "./films.entity";
+import { People } from "./people.entity";
+import { Planets } from "./planets.entity";
 
 @Entity()
 export class Species {
-    @PrimaryGeneratedColumn("increment")
-    id: number;
-
     @Column("varchar")
     name: string;
 
@@ -29,17 +29,17 @@ export class Species {
     @Column("varchar")
     average_lifespan: string;
 
-    @Column({type: "varchar", nullable: true})
-    homeworld: string;
+    @ManyToOne(() => Planets)
+    homeworld: Planets[] | null;
 
     @Column("varchar")
     language: string;
 
-    @Column("text")
-    people: string;
+    @ManyToMany(() => People, people => people.species)
+    people: People[];
 
-    @Column("text")
-    films: string;
+    @ManyToMany(() => Films, films => films.species)
+    films: Films[];
 
     @Column("varchar")
     created: string;
@@ -47,7 +47,7 @@ export class Species {
     @Column("varchar")
     edited: string;
 
-    @Column("varchar")
+    @PrimaryColumn({type: "varchar"})
     url: string;
     
     @Column({type: "varchar", default: ""})

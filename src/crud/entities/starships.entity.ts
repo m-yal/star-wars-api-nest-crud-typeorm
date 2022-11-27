@@ -1,10 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, PrimaryColumn } from "typeorm";
+import { Films } from "./films.entity";
+import { People } from "./people.entity";
 
 @Entity()
 export class Starships {
-    @PrimaryGeneratedColumn("increment")
-    id: number;
-
     @Column("varchar")
     name: string;
 
@@ -44,11 +43,11 @@ export class Starships {
     @Column("varchar")
     starship_class: string;
 
-    @Column("text")
-    pilots: string;
+    @ManyToMany(() => People, people => people.starships)
+    pilots: People[];
 
-    @Column("text")
-    films: string;
+    @ManyToMany(() => Films, films => films.starships)
+    films: Films[];
 
     @Column("varchar")
     created: string;
@@ -56,7 +55,7 @@ export class Starships {
     @Column("varchar")
     edited: string;
 
-    @Column("varchar")
+    @PrimaryColumn({type: "varchar"})
     url: string;
     
     @Column({type: "varchar", default: ""})

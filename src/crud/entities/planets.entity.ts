@@ -1,10 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany, PrimaryColumn } from "typeorm";
+import { Films } from "./films.entity";
+import { People } from "./people.entity";
 
 @Entity()
 export class Planets {
-    @PrimaryGeneratedColumn("increment")
-    id: number;
-
     @Column("varchar")
     name: string;
 
@@ -32,11 +31,11 @@ export class Planets {
     @Column("varchar")
     population: string;
 
-    @Column("text")
-    residents: string;
+    @OneToMany(() => People, (people) => people.homeworld)
+    residents: People[];
 
-    @Column("text")
-    films: string;
+    @ManyToMany(() => Films, (films) => films.planets)
+    films: Films[];
 
     @Column("varchar")
     created: string;
@@ -44,7 +43,7 @@ export class Planets {
     @Column("varchar")
     edited: string;
 
-    @Column("varchar")
+    @PrimaryColumn({type: "varchar"})
     url: string;
     
     @Column({type: "varchar", default: ""})

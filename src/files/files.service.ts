@@ -34,7 +34,7 @@ export class FilesService {
     
     async add(id: string, files: Express.Multer.File[], unitType: UnitTypes): Promise<ExecutedDto> {
         const currentRepository: CrudRepositories = this.getRepoBy(unitType);
-        const unitToUpdate: Unit = await currentRepository.findOneBy({id: +id});
+        const unitToUpdate: Unit = await currentRepository.findOneBy({url: id});
         if (!unitToUpdate) throw new NotFoundException();
         unitToUpdate.images =  this.addImageLink(unitToUpdate.images, files);
         await currentRepository.save(unitToUpdate);
@@ -56,7 +56,7 @@ export class FilesService {
 
     private async removeImageLinkFromDB(imgName: string, id: string, unitType: UnitTypes): Promise<void> {
         const currentRepository: CrudRepositories = this.getRepoBy(unitType);
-        const unitToUpdate: any = await currentRepository.findOneBy({id: +id});
+        const unitToUpdate: any = await currentRepository.findOneBy({url: id});
         unitToUpdate.images = this.transformImagesLinks(imgName, unitToUpdate.images);
         await currentRepository.save(unitToUpdate);
     }

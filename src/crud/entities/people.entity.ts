@@ -1,10 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, ManyToOne, PrimaryColumn } from "typeorm";
+import { Films } from "./films.entity";
+import { Planets } from "./planets.entity";
+import { Species } from "./species.entity";
+import { Starships } from "./starships.entity";
+import { Vehicles } from "./vehicles.entity";
 
 @Entity()
 export class People {
-    @PrimaryGeneratedColumn("increment")
-    id: number;
-
     @Column("varchar")
     name: string;
     
@@ -29,20 +31,20 @@ export class People {
     @Column("varchar")
     gender: string;
     
-    @Column("varchar")
-    homeworld: string;
+    @ManyToOne(() => Planets, (planets) => planets.residents)
+    homeworld: Planets;
     
-    @Column("text")
-    films: string;
+    @ManyToMany(() => Films, (films) => films.characters)
+    films: Films[];
     
-    @Column("text")
-    species: string;
+    @ManyToMany(() => Species, species => species.people)
+    species: Species[];
     
-    @Column("text")
-    vehicles: string;
+    @ManyToMany(() => Vehicles, vehicles => vehicles.pilots)
+    vehicles: Vehicles[];
     
-    @Column("text")
-    starships: string;
+    @ManyToMany(() => Starships, starships => starships.pilots)
+    starships: Starships[];
     
     @Column("varchar")
     created: string;
@@ -50,7 +52,7 @@ export class People {
     @Column("varchar")
     edited: string;
     
-    @Column("varchar")
+    @PrimaryColumn({type: "varchar"})
     url: string;
 
     @Column({type: "varchar", default: ""})

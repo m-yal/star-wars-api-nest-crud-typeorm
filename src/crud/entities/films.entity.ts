@@ -1,10 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, PrimaryColumn } from "typeorm";
+import { People } from "./people.entity";
+import { Planets } from "./planets.entity";
+import { Species } from "./species.entity";
+import { Starships } from "./starships.entity";
+import { Vehicles } from "./vehicles.entity";
 
 @Entity()
 export class Films {
-    @PrimaryGeneratedColumn("increment")
-    id: number;
-
     @Column("varchar")
     title: string;
 
@@ -23,20 +25,25 @@ export class Films {
     @Column("varchar")
     release_date: string;
 
-    @Column("text")
-    characters: string;
+    @ManyToMany(() => People, (people) => people.films)
+    @JoinTable()
+    characters: People[];
 
-    @Column("text")
-    planets: string;
+    @ManyToMany(() => Planets, (planets) => planets.films)
+    @JoinTable()
+    planets: Planets[];
 
-    @Column("text")
-    starships: string;
+    @ManyToMany(() => Starships, (starhips) => starhips.films)
+    @JoinTable()
+    starships: Starships[];
 
-    @Column("text")
-    vehicles: string;
+    @ManyToMany(() => Vehicles, (vehicles) => vehicles.films)
+    @JoinTable()
+    vehicles: Vehicles[];
 
-    @Column("text")
-    species: string;
+    @ManyToMany(() => Species, (species) => species.films)
+    @JoinTable()
+    species: Species[];
 
     @Column("varchar")
     created: string;
@@ -44,7 +51,7 @@ export class Films {
     @Column("varchar")
     edited: string;
 
-    @Column("varchar")
+    @PrimaryColumn({type: "varchar"})
     url: string;
     
     @Column({type: "varchar", default: ""})

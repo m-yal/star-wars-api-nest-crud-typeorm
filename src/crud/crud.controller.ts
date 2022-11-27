@@ -29,13 +29,13 @@ export class CrudController {
 
     @Put("")
     @ApiUpdateUnit()
-    async update(@Body() body: Unit, @Query("id") id: number, @Query("unitType") unitType: UnitTypes): Promise<ExecutedDto> {
-        return this.crudService.update(body, +id, unitType);
+    async update(@Body() body: Unit, @Query("id") id: string, @Query("unitType") unitType: UnitTypes): Promise<ExecutedDto> {
+        return this.crudService.update(body, id, unitType);
     }
 
     @Delete("")
     @ApiDeleteUnit()
-    async delete(@Query("id") id: number, @Query("unitType") unitType: UnitTypes): Promise<ExecutedDto> {
-        return this.crudService.delete(+id, unitType);
+    async delete(@Query("id") id: string, @Query("unitType") unitType: UnitTypes): Promise<ExecutedDto> {
+        return this.crudService.delete(id, unitType);
     }
 }
