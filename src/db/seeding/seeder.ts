@@ -1,8 +1,15 @@
-import * as mysql from "mysql2";
-import * as dotenv from "dotenv";
 import fetch from "node-fetch";
+import { Films } from "src/crud/entities/films.entity";
+import { People } from "src/crud/entities/people.entity";
+import { Planets } from "src/crud/entities/planets.entity";
+import { Species } from "src/crud/entities/species.entity";
+import { Starships } from "src/crud/entities/starships.entity";
+import { Vehicles } from "src/crud/entities/vehicles.entity";
+import { Unit } from "src/crud/types/types";
+import { DataSource, In } from "typeorm";
+import dataSource from "../data-source-for-seeding-and-migrations";
 
-enum EntityPointerLink {
+enum EntityNames {
     People = "people",
     Films = "films",
     Planets = "planets",
@@ -11,22 +18,14 @@ enum EntityPointerLink {
     Vehicles = "vehicles"       
 }
 
-dotenv.config();
-const {DB_HOST, DB_NAME, DB_USERNAME, DB_PASSWORD} = process.env;
+/* DEPRECATED */
+class SwapiSeeder {
 
-/* Class for seeding db from https://swapi.dev/api/ .
-Main method receives entity name, which === appropriate name of column in db === appropriate name of 
-json object key received from swapi*/
-class Seeder {
     private readonly swapiLink: RequestInfo = "https://swapi.dev/api/";
     
-    private readonly connectionConfig: mysql.ConnectionOptions = {
-        host: DB_HOST,
-        user: DB_USERNAME,
-        password: DB_PASSWORD,
-        database: DB_NAME,
-    }
-
+    private readonly connection = dataSource;
+    private readonly dataSourceManager = this.connection.manager;
+    
     private readonly fetchInfo: any = {
         method: "GET",
         headers: {
@@ -35,17 +34,134 @@ class Seeder {
         body: null
     }
 
-    public async run(entityName: EntityPointerLink): Promise<void> {
-        const connection = mysql.createConnection(this.connectionConfig);
-        const results = await this.fetchFromSwapiDev(entityName);
-        this.insertIntoDB(results, connection, entityName);
-        connection.end();
+    private readonly entitiesNamesToSeed: any[] = [
+        EntityNames.People, EntityNames.Films,
+        EntityNames.Planets, EntityNames.Species,
+        EntityNames.Starships, EntityNames.Vehicles
+    ];
+    private readonly URL_SPLITTERATOR = ",";
+
+
+    public async run(): Promise<void> {
+        // await this.downloadRawDataFromApi();
+        await this.setupRelationsInDB();
     }
 
-    private async fetchFromSwapiDev(entityName: EntityPointerLink): Promise<any[]> {
+    private async downloadRawDataFromApi() {
+        for await (const entityName of this.entitiesNamesToSeed) {
+            let data = await this.fetch(entityName);
+            await this.insertIntoDB(data, entityName);
+        }
+    }
+
+    private async setupRelationsInDB() {
+        for await (const entityName of this.entitiesNamesToSeed) {
+            await this.setupRelationsFor(entityName);
+        }
+    }
+
+    private async setupRelationsFor(entityName: EntityNames) {
+        if (entityName === EntityNames.People) {
+            console.log("match for: " + entityName);
+            await this.setRelationsForPeopleRecords();
+        } else if (entityName === EntityNames.Films) {
+            await this.setRelationsForFilmsRecords();
+        } else if (entityName === EntityNames.Planets) {
+            await this.setRelationsForPlanetsRecords();
+        } else if (entityName === EntityNames.Species) {
+            await this.setRelationsForSpeciesRecords();
+        } else if (entityName === EntityNames.Starships) {
+            await this.setRelationsForStarshipsRecords();
+        } else if (entityName === EntityNames.Vehicles) {
+            await this.setRelationsForVehiclesRecords();
+        }
+        console.log("no matches");
+    }
+
+    private async setRelationsForVehiclesRecords() {
+        const allVehicles = await this.dataSourceManager.find(Vehicles);
+        for await (const vehicle of allVehicles) {
+            const pilotsUrl = vehicle.pilots.split(this.URL_SPLITTERATOR);
+            vehicle.pilotsRel = await this.dataSourceManager.findBy(People, {url: In(pilotsUrl)})
+            const filmsUrl = vehicle.films.split(this.URL_SPLITTERATOR);
+            vehicle.filmsRel = await this.dataSourceManager.findBy(Films, {url: In(filmsUrl)});
+        }
+        this.dataSourceManager.save(allVehicles);
+    }
+
+    private async setRelationsForStarshipsRecords() {
+        const allStarships = await this.dataSourceManager.find(Starships);
+        for await (const starship of allStarships) {
+            const pilotsUrl = starship.pilots.split(this.URL_SPLITTERATOR);
+            starship.pilotsRel = await this.dataSourceManager.findBy(People, {url: In(pilotsUrl)});
+            const filmsUrl = starship.films.split(this.URL_SPLITTERATOR);
+            starship.filmsRel = await this.dataSourceManager.findBy(Films, {url: In(filmsUrl)});
+        }
+        this.dataSourceManager.save(allStarships);
+    }
+
+    private async setRelationsForSpeciesRecords() {
+        const allSpecies = await this.dataSourceManager.find(Species);
+        for await (const species of allSpecies) {
+            const homeworldUrl = species.homeworld;
+            species.homeworldRel = await this.dataSourceManager.findBy(Planets, {url: homeworldUrl});
+            const peopleUrl = species.people.split(this.URL_SPLITTERATOR);
+            species.peopleRel = await this.dataSourceManager.findBy(People, {url: In(peopleUrl)});
+            const filmsUrl = species.films.split(this.URL_SPLITTERATOR);
+            species.filmsRel = await this.dataSourceManager.findBy(Films, {url: In(filmsUrl)});
+        }
+        this.dataSourceManager.save(allSpecies);
+    }
+
+    private async setRelationsForPlanetsRecords() {
+        const allPlanets = await this.dataSourceManager.find(Planets);
+        for await (const planet of allPlanets) {
+            const residentsUrl = planet.residents.split(this.URL_SPLITTERATOR);
+            planet.residentsRel = await this.dataSourceManager.findBy(People, {url: In(residentsUrl)});
+            const filmsUrl = planet.films.split(this.URL_SPLITTERATOR);
+            planet.filmsRel = await this.dataSourceManager.findBy(Films, {url: In(filmsUrl)});
+        }
+        this.dataSourceManager.save(allPlanets);
+    }
+
+    private async setRelationsForFilmsRecords() {
+        const allFilms = await this.dataSourceManager.find(Films);
+        for await (const film of allFilms) {
+            const charactersUrl = film.characters.split(this.URL_SPLITTERATOR);
+            film.charactersRel = await this.dataSourceManager.findBy(People, {url: In(charactersUrl)});
+            const planetsUrl = film.planets.split(this.URL_SPLITTERATOR);
+            film.planetsRel = await this.dataSourceManager.findBy(Planets, {url: In(planetsUrl)});
+            const starshipsUrl = film.starships.split(this.URL_SPLITTERATOR);
+            film.starshipsRel = await this.dataSourceManager.findBy(Starships, {url: In(starshipsUrl)});
+            const vehiclesUrl = film.vehicles.split(this.URL_SPLITTERATOR);
+            film.vehiclesRel = await this.dataSourceManager.findBy(Vehicles, {url: In(vehiclesUrl)});
+            const speciesUrl = film.species.split(this.URL_SPLITTERATOR);
+            film.speciesRel = await this.dataSourceManager.findBy(Species, {url: In(speciesUrl)});
+        }
+        this.dataSourceManager.save(allFilms);
+    }
+
+    private async setRelationsForPeopleRecords() {
+        const allPeopleRecords = await this.dataSourceManager.find(People);
+        console.log("Gathered all people records");
+        for await (const person of allPeopleRecords) {
+            person.homeworldRel = await this.dataSourceManager.findOneBy(Planets, {url: person.homeworld});
+            const filmsUrl = person.films.split(this.URL_SPLITTERATOR);
+            person.filmsRel = await this.dataSourceManager.findBy(Films, {url: In(filmsUrl)});
+            const speciesUrl = person.species.split(this.URL_SPLITTERATOR);
+            person.speciesRel = await this.dataSourceManager.findBy(Species, {url: In(speciesUrl)});
+            const vehiclesUrl = person.vehicles.split(this.URL_SPLITTERATOR);
+            person.vehiclesRel = await this.dataSourceManager.findBy(Vehicles, {url: In(vehiclesUrl)});
+            const starshipsUrl = person.starships.split(this.URL_SPLITTERATOR);
+            person.starshipsRel = await this.dataSourceManager.findBy(Starships, {url: In(starshipsUrl)});
+        }
+        this.dataSourceManager.save(allPeopleRecords);
+    }
+
+    private async fetch(entityName: EntityNames): Promise<any[]> {
         let link: string = this.swapiLink + entityName;
         let apiRes: {next: string, results: any[]};
-        let results: string[] = [];
+        let results: Unit[] = []; 
         do {
             apiRes = await (await fetch(link, this.fetchInfo)).json();
             link = apiRes.next;
@@ -63,24 +179,15 @@ class Seeder {
         return objects;
     }
 
-    private insertIntoDB(results: any[], connection: mysql.Connection, entityName: EntityPointerLink): void {
+    private async insertIntoDB(results: any[], entityName: EntityNames): Promise<void> {
         const objKeys: string = Object.keys(results[0]).toString(); //[0] because one instance is enough for defining schema
         const objKeysAmount: number = Object.keys(results[0]).length;
         const quesionMarks: string = "?, ".repeat(objKeysAmount).replace(/, $/, "");
         console.log(`obj keys ${objKeys} \n obj keys amount ${objKeysAmount} \n questions marks ${quesionMarks}`);
-        for (const obj of results) {
-            connection.query(`INSERT INTO ${entityName}(${objKeys}) VALUES (${quesionMarks})`, Object.values(obj));
+        for await (const obj of results) {
+            await this.connection.query(`INSERT INTO ${entityName}(${objKeys}) VALUES (${quesionMarks})`, Object.values(obj));
         }
     }
 }
 
-async function seedDB() {
-    const seeder = new Seeder();
-    await seeder.run(EntityPointerLink.People);
-    await seeder.run(EntityPointerLink.Films);
-    await seeder.run(EntityPointerLink.Planets);
-    await seeder.run(EntityPointerLink.Species);
-    await seeder.run(EntityPointerLink.Starships);
-    await seeder.run(EntityPointerLink.Vehicles);
-}
-seedDB();
+new SwapiSeeder().run();

@@ -1,9 +1,10 @@
-import { Column, Entity, ManyToMany, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany } from "typeorm";
 import { Films } from "./films.entity";
 import { People } from "./people.entity";
+import { BaseEntity } from "./base.entity";
 
 @Entity()
-export class Planets {
+export class Planets extends BaseEntity {
     @Column("varchar")
     name: string;
 
@@ -32,20 +33,14 @@ export class Planets {
     population: string;
 
     @OneToMany(() => People, (people) => people.homeworld)
-    residents: People[];
+    residentsRel?: People[];
+
+    @Column("text")
+    residents?: string;
 
     @ManyToMany(() => Films, (films) => films.planets)
-    films: Films[];
+    filmsRel?: Films[];
 
-    @Column("varchar")
-    created: string;
-
-    @Column("varchar")
-    edited: string;
-
-    @PrimaryColumn({type: "varchar"})
-    url: string;
-    
-    @Column({type: "varchar", default: ""})
-    images: string = "";
+    @Column("text")
+    films?: string;
 }

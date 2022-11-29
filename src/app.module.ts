@@ -7,12 +7,12 @@ import { AppService } from './app.service';
 import { typeOrmAsyncConfig } from './config/typeorm.config';
 import { FilesModule } from './files/files.module';
 import { CrudModule } from './crud/crud.module';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({isGlobal: true, envFilePath: ".env"}),
     TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
-    HttpModule,
     FilesModule,
     CrudModule,
   ],

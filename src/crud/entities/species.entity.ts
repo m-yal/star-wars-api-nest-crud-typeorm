@@ -1,10 +1,11 @@
-import { Column, Entity, ManyToMany, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToMany, ManyToOne, OneToOne } from "typeorm";
 import { Films } from "./films.entity";
 import { People } from "./people.entity";
 import { Planets } from "./planets.entity";
+import { BaseEntity } from "./base.entity";
 
 @Entity()
-export class Species {
+export class Species extends BaseEntity {
     @Column("varchar")
     name: string;
 
@@ -29,27 +30,24 @@ export class Species {
     @Column("varchar")
     average_lifespan: string;
 
-    @ManyToOne(() => Planets)
-    homeworld: Planets[] | null;
+    @Column("varchar", {nullable: true})
+    homeworld: string | null; 
+
+    @OneToOne(() => Planets)
+    homeworldRel: Planets[];
 
     @Column("varchar")
     language: string;
 
     @ManyToMany(() => People, people => people.species)
-    people: People[];
+    peopleRel?: People[];
+
+    @Column("text")
+    people?: string;
 
     @ManyToMany(() => Films, films => films.species)
-    films: Films[];
+    filmsRel?: Films[];
 
-    @Column("varchar")
-    created: string;
-
-    @Column("varchar")
-    edited: string;
-
-    @PrimaryColumn({type: "varchar"})
-    url: string;
-    
-    @Column({type: "varchar", default: ""})
-    images: string = "";
+    @Column("text")
+    films?: string;
 }

@@ -1,12 +1,13 @@
-import { Column, Entity, ManyToMany, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToMany, ManyToOne } from "typeorm";
 import { Films } from "./films.entity";
 import { Planets } from "./planets.entity";
 import { Species } from "./species.entity";
 import { Starships } from "./starships.entity";
 import { Vehicles } from "./vehicles.entity";
+import { BaseEntity } from "./base.entity";
 
 @Entity()
-export class People {
+export class People extends BaseEntity {
     @Column("varchar")
     name: string;
     
@@ -32,29 +33,32 @@ export class People {
     gender: string;
     
     @ManyToOne(() => Planets, (planets) => planets.residents)
-    homeworld: Planets;
+    homeworldRel?: Planets;
+
+    @Column("text")
+    homeworld?: string;
     
     @ManyToMany(() => Films, (films) => films.characters)
-    films: Films[];
+    filmsRel?: Films[];
     
-    @ManyToMany(() => Species, species => species.people)
-    species: Species[];
-    
-    @ManyToMany(() => Vehicles, vehicles => vehicles.pilots)
-    vehicles: Vehicles[];
-    
-    @ManyToMany(() => Starships, starships => starships.pilots)
-    starships: Starships[];
-    
-    @Column("varchar")
-    created: string;
-    
-    @Column("varchar")
-    edited: string;
-    
-    @PrimaryColumn({type: "varchar"})
-    url: string;
+    @Column("text")
+    films?: string;
 
-    @Column({type: "varchar", default: ""})
-    images: string = "";
+    @ManyToMany(() => Species, species => species.people)
+    speciesRel?: Species[];
+    
+    @Column("text")
+    species?: string;
+
+    @ManyToMany(() => Vehicles, vehicles => vehicles.pilots)
+    vehiclesRel?: Vehicles[];
+    
+    @Column("text")
+    vehicles?: string;
+
+    @ManyToMany(() => Starships, starships => starships.pilots)
+    starshipsRel?: Starships[];
+    
+    @Column("text")
+    starships?: string;
 }

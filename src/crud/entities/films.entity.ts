@@ -1,4 +1,5 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany } from "typeorm";
+import { BaseEntity } from "./base.entity";
 import { People } from "./people.entity";
 import { Planets } from "./planets.entity";
 import { Species } from "./species.entity";
@@ -6,7 +7,7 @@ import { Starships } from "./starships.entity";
 import { Vehicles } from "./vehicles.entity";
 
 @Entity()
-export class Films {
+export class Films extends BaseEntity {
     @Column("varchar")
     title: string;
 
@@ -27,33 +28,36 @@ export class Films {
 
     @ManyToMany(() => People, (people) => people.films)
     @JoinTable()
-    characters: People[];
+    charactersRel?: People[];
+    
+    @Column("text")
+    characters?: string;
 
     @ManyToMany(() => Planets, (planets) => planets.films)
     @JoinTable()
-    planets: Planets[];
+    planetsRel?: Planets[];
+
+    @Column("text")
+    planets?: string;
 
     @ManyToMany(() => Starships, (starhips) => starhips.films)
     @JoinTable()
-    starships: Starships[];
+    starshipsRel?: Starships[];
+
+    @Column("text")
+    starships?: string;
 
     @ManyToMany(() => Vehicles, (vehicles) => vehicles.films)
     @JoinTable()
-    vehicles: Vehicles[];
+    vehiclesRel?: Vehicles[];
+
+    @Column("text")
+    vehicles?: string;
 
     @ManyToMany(() => Species, (species) => species.films)
     @JoinTable()
-    species: Species[];
+    speciesRel?: Species[];
 
-    @Column("varchar")
-    created: string;
-
-    @Column("varchar")
-    edited: string;
-
-    @PrimaryColumn({type: "varchar"})
-    url: string;
-    
-    @Column({type: "varchar", default: ""})
-    images: string = "";
+    @Column("text")
+    species?: string;
 }

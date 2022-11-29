@@ -1,9 +1,10 @@
-import { Column, Entity, ManyToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToMany } from "typeorm";
+import { BaseEntity } from "./base.entity";
 import { Films } from "./films.entity";
 import { People } from "./people.entity";
 
 @Entity()
-export class Vehicles {
+export class Vehicles extends BaseEntity {
     @Column("varchar")
     name: string;
 
@@ -38,20 +39,14 @@ export class Vehicles {
     vehicle_class: string;
 
     @ManyToMany(() => People, people => people.vehicles)
-    pilots: People[];
+    pilotsRel?: People[];
+
+    @Column("text")
+    pilots?: string;
     
     @ManyToMany(() => Films, films => films.vehicles)
-    films: Films[];
+    filmsRel?: Films[];
 
-    @Column("varchar")
-    created: string;
-
-    @Column("varchar")
-    edited: string;
-
-    @PrimaryColumn({type: "varchar"})
-    url: string;
-    
-    @Column({type: "varchar", default: ""})
-    images: string = "";
+    @Column("text")
+    films: string;
 }
