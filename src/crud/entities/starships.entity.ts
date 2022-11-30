@@ -45,13 +45,13 @@ export class Starships extends BaseEntity {
     starship_class: string;
 
     @ManyToMany(() => People, people => people.starships)
-    pilotsRel: People[];
+    pilotsRel?: People[];
 
     @Column("text")
     pilots?: string;
 
     @ManyToMany(() => Films, films => films.starships)
-    filmsRel: Films[];
+    filmsRel?: Films[];
 
     @Column("text")
     films?: string;

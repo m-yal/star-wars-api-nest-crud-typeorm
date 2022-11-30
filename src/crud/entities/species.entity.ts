@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToMany, ManyToOne, OneToOne } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToOne } from "typeorm";
 import { Films } from "./films.entity";
 import { People } from "./people.entity";
 import { Planets } from "./planets.entity";
@@ -31,22 +31,23 @@ export class Species extends BaseEntity {
     average_lifespan: string;
 
     @Column("varchar", {nullable: true})
-    homeworld: string | null; 
+    homeworld?: string | null; 
 
     @OneToOne(() => Planets)
-    homeworldRel: Planets[];
+    @JoinTable()
+    homeworldRel?: Planets[];
 
     @Column("varchar")
     language: string;
 
     @ManyToMany(() => People, people => people.species)
-    peopleRel: People[];
+    peopleRel?: People[];
 
     @Column("text")
     people?: string;
 
     @ManyToMany(() => Films, films => films.species)
-    filmsRel: Films[];
+    filmsRel?: Films[];
 
     @Column("text")
     films?: string;

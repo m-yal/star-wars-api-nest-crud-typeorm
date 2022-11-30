@@ -39,13 +39,13 @@ export class Vehicles extends BaseEntity {
     vehicle_class: string;
 
     @ManyToMany(() => People, people => people.vehicles)
-    pilotsRel: People[];
+    pilotsRel?: People[];
 
     @Column("text")
     pilots?: string;
     
     @ManyToMany(() => Films, films => films.vehicles)
-    filmsRel: Films[];
+    filmsRel?: Films[];
 
     @Column("text")
     films: string;

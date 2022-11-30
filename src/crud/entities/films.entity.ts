@@ -28,35 +28,35 @@ export class Films extends BaseEntity {
 
     @ManyToMany(() => People, (people) => people.films)
     @JoinTable()
-    charactersRel: People[];
+    charactersRel?: People[];
     
     @Column("text")
     characters?: string;
 
     @ManyToMany(() => Planets, (planets) => planets.films)
     @JoinTable()
-    planetsRel: Planets[];
+    planetsRel?: Planets[];
 
     @Column("text")
     planets?: string;
 
     @ManyToMany(() => Starships, (starhips) => starhips.films)
     @JoinTable()
-    starshipsRel: Starships[];
+    starshipsRel?: Starships[];
 
     @Column("text")
     starships?: string;
 
     @ManyToMany(() => Vehicles, (vehicles) => vehicles.films)
     @JoinTable()
-    vehiclesRel: Vehicles[];
+    vehiclesRel?: Vehicles[];
 
     @Column("text")
     vehicles?: string;
 
     @ManyToMany(() => Species, (species) => species.films)
     @JoinTable()
-    speciesRel: Species[];
+    speciesRel?: Species[];
 
     @Column("text")
     species?: string;

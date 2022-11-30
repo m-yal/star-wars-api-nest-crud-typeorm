@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToMany, OneToMany } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
 import { Films } from "./films.entity";
 import { People } from "./people.entity";
 import { BaseEntity } from "./base-entity";
@@ -33,13 +33,14 @@ export class Planets extends BaseEntity {
     population: string;
 
     @OneToMany(() => People, (people) => people.homeworld)
-    residentsRel: People[];
+    @JoinTable()
+    residentsRel?: People[];
 
     @Column("text")
     residents?: string;
 
     @ManyToMany(() => Films, (films) => films.planets)
-    filmsRel: Films[];
+    filmsRel?: Films[];
 
     @Column("text")
     films?: string;
