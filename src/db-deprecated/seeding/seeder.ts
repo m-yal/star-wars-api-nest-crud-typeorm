@@ -7,7 +7,7 @@ import { Starships } from "src/crud/entities/starships.entity";
 import { Vehicles } from "src/crud/entities/vehicles.entity";
 import { Unit } from "src/crud/types/types";
 import { DataSource, In } from "typeorm";
-import dataSource from "../data-source-for-seeding-and-migrations";
+import dataSource from "../../database/data-sources/data-source-for-migrations";
 
 enum EntityNames {
     People = "people",

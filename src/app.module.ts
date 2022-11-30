@@ -1,4 +1,3 @@
-import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -7,7 +6,6 @@ import { AppService } from './app.service';
 import { typeOrmAsyncConfig } from './config/typeorm.config';
 import { FilesModule } from './files/files.module';
 import { CrudModule } from './crud/crud.module';
-import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [

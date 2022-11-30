@@ -2,7 +2,7 @@ import { Column, Entity, ManyToMany, ManyToOne, OneToOne } from "typeorm";
 import { Films } from "./films.entity";
 import { People } from "./people.entity";
 import { Planets } from "./planets.entity";
-import { BaseEntity } from "./base.entity";
+import { BaseEntity } from "./base-entity";
 
 @Entity()
 export class Species extends BaseEntity {
@@ -40,13 +40,13 @@ export class Species extends BaseEntity {
     language: string;
 
     @ManyToMany(() => People, people => people.species)
-    peopleRel?: People[];
+    peopleRel: People[];
 
     @Column("text")
     people?: string;
 
     @ManyToMany(() => Films, films => films.species)
-    filmsRel?: Films[];
+    filmsRel: Films[];
 
     @Column("text")
     films?: string;

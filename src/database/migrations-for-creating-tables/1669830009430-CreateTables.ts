@@ -1,10 +1,9 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Migration1669673064973 implements MigrationInterface {
-    name = 'Migration1669673064973'
+export class CreateTables1669830009430 implements MigrationInterface {
+    name = 'CreateTables1669830009430'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE \`base_entity\` (\`created\` varchar(255) NOT NULL, \`edited\` varchar(255) NOT NULL, \`url\` varchar(255) NOT NULL, \`images\` varchar(255) NOT NULL DEFAULT '', PRIMARY KEY (\`url\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`planets\` (\`created\` varchar(255) NOT NULL, \`edited\` varchar(255) NOT NULL, \`url\` varchar(255) NOT NULL, \`images\` varchar(255) NOT NULL DEFAULT '', \`name\` varchar(255) NOT NULL, \`rotation_period\` varchar(255) NOT NULL, \`orbital_period\` varchar(255) NOT NULL, \`diameter\` varchar(255) NOT NULL, \`climate\` varchar(255) NOT NULL, \`gravity\` varchar(255) NOT NULL, \`terrain\` varchar(255) NOT NULL, \`surface_water\` varchar(255) NOT NULL, \`population\` varchar(255) NOT NULL, \`residents\` text NOT NULL, \`films\` text NOT NULL, PRIMARY KEY (\`url\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`species\` (\`created\` varchar(255) NOT NULL, \`edited\` varchar(255) NOT NULL, \`url\` varchar(255) NOT NULL, \`images\` varchar(255) NOT NULL DEFAULT '', \`name\` varchar(255) NOT NULL, \`classification\` varchar(255) NOT NULL, \`designation\` varchar(255) NOT NULL, \`average_height\` varchar(255) NOT NULL, \`skin_colors\` varchar(255) NOT NULL, \`hair_colors\` varchar(255) NOT NULL, \`eye_colors\` varchar(255) NOT NULL, \`average_lifespan\` varchar(255) NOT NULL, \`homeworld\` varchar(255) NULL, \`language\` varchar(255) NOT NULL, \`people\` text NOT NULL, \`films\` text NOT NULL, PRIMARY KEY (\`url\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`starships\` (\`created\` varchar(255) NOT NULL, \`edited\` varchar(255) NOT NULL, \`url\` varchar(255) NOT NULL, \`images\` varchar(255) NOT NULL DEFAULT '', \`name\` varchar(255) NOT NULL, \`model\` varchar(255) NOT NULL, \`manufacturer\` varchar(255) NOT NULL, \`cost_in_credits\` varchar(255) NOT NULL, \`length\` varchar(255) NOT NULL, \`max_atmosphering_speed\` varchar(255) NOT NULL, \`crew\` varchar(255) NOT NULL, \`passengers\` varchar(255) NOT NULL, \`cargo_capacity\` varchar(255) NOT NULL, \`consumables\` varchar(255) NOT NULL, \`hyperdrive_rating\` varchar(255) NOT NULL, \`MGLT\` varchar(255) NOT NULL, \`starship_class\` varchar(255) NOT NULL, \`pilots\` text NOT NULL, \`films\` text NOT NULL, PRIMARY KEY (\`url\`)) ENGINE=InnoDB`);
@@ -62,7 +61,6 @@ export class Migration1669673064973 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE \`starships\``);
         await queryRunner.query(`DROP TABLE \`species\``);
         await queryRunner.query(`DROP TABLE \`planets\``);
-        await queryRunner.query(`DROP TABLE \`base_entity\``);
     }
 
 }

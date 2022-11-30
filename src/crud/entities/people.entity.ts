@@ -4,7 +4,7 @@ import { Planets } from "./planets.entity";
 import { Species } from "./species.entity";
 import { Starships } from "./starships.entity";
 import { Vehicles } from "./vehicles.entity";
-import { BaseEntity } from "./base.entity";
+import { BaseEntity } from "./base-entity";
 
 @Entity()
 export class People extends BaseEntity {
@@ -33,31 +33,31 @@ export class People extends BaseEntity {
     gender: string;
     
     @ManyToOne(() => Planets, (planets) => planets.residents)
-    homeworldRel?: Planets;
+    homeworldRel: Planets;
 
     @Column("text")
     homeworld?: string;
     
     @ManyToMany(() => Films, (films) => films.characters)
-    filmsRel?: Films[];
+    filmsRel: Films[];
     
     @Column("text")
     films?: string;
 
     @ManyToMany(() => Species, species => species.people)
-    speciesRel?: Species[];
+    speciesRel: Species[];
     
     @Column("text")
     species?: string;
 
     @ManyToMany(() => Vehicles, vehicles => vehicles.pilots)
-    vehiclesRel?: Vehicles[];
+    vehiclesRel: Vehicles[];
     
     @Column("text")
     vehicles?: string;
 
     @ManyToMany(() => Starships, starships => starships.pilots)
-    starshipsRel?: Starships[];
+    starshipsRel: Starships[];
     
     @Column("text")
     starships?: string;

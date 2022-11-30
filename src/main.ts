@@ -1,8 +1,6 @@
-import { HttpService } from '@nestjs/axios';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { SeedingService } from './database/seeding.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

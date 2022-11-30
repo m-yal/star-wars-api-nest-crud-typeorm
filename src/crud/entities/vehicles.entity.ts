@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToMany } from "typeorm";
-import { BaseEntity } from "./base.entity";
+import { BaseEntity } from "./base-entity";
 import { Films } from "./films.entity";
 import { People } from "./people.entity";
 
@@ -39,13 +39,13 @@ export class Vehicles extends BaseEntity {
     vehicle_class: string;
 
     @ManyToMany(() => People, people => people.vehicles)
-    pilotsRel?: People[];
+    pilotsRel: People[];
 
     @Column("text")
     pilots?: string;
     
     @ManyToMany(() => Films, films => films.vehicles)
-    filmsRel?: Films[];
+    filmsRel: Films[];
 
     @Column("text")
     films: string;

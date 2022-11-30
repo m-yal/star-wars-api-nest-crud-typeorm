@@ -19,11 +19,15 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm": "npm run build && npx typeorm -d dist/db/data-source-for-seeding-and-migrations.js",
-    "migration:generate": "rm -r ./src/db/migrations && mkdir ./src/db/migrations && npm run typeorm -- migration:generate ./src/db/migrations/Migration",
-    "migration:run": "npm run typeorm -- migration:run",
-    "migration:revert": "npm run typeorm -- migration:revert",
-    "seed:run": "npm run build && node ./dist/seed.js"
+    "typeorm:createTable": "npm run build && npx typeorm -d dist/database/data-sources/data-source-for-migrations.js",
+    "migration:generate": "rm -r ./src/database/migrations-for-creating-tables && mkdir ./src/database/migrations-for-creating-tables && npm run typeorm:createTable -- migration:generate ./src/database/migrations-for-creating-tables/CreateTables",
+    "migration:run": "npm run typeorm:createTable -- migration:run",
+    "migration:revert": "npm run typeorm:createTable -- migration:revert",
+    "typeorm:seed": "npm run build && npx typeorm -d dist/database/data-sources/data-source-for-seeding.js",
+    "seed:run": "npm run seed:up; npm run seed:down",
+    "seed:up": "npm run typeorm:seed -- migration:run",
+    "seed:down": "npm run typeorm:seed -- migration:revert"
+
   },
   "dependencies": {
     "@nestjs/axios": "^1.0.0",

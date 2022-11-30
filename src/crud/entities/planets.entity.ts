@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToMany, OneToMany } from "typeorm";
 import { Films } from "./films.entity";
 import { People } from "./people.entity";
-import { BaseEntity } from "./base.entity";
+import { BaseEntity } from "./base-entity";
 
 @Entity()
 export class Planets extends BaseEntity {
@@ -33,13 +33,13 @@ export class Planets extends BaseEntity {
     population: string;
 
     @OneToMany(() => People, (people) => people.homeworld)
-    residentsRel?: People[];
+    residentsRel: People[];
 
     @Column("text")
     residents?: string;
 
     @ManyToMany(() => Films, (films) => films.planets)
-    filmsRel?: Films[];
+    filmsRel: Films[];
 
     @Column("text")
     films?: string;
