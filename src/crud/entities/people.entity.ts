@@ -32,8 +32,8 @@ export class People extends BaseEntity {
     @Column("varchar")
     gender: string;
     
-    @ManyToOne(() => Planets, (planets) => planets.residents)
-    homeworldRel?: Planets;
+    @ManyToMany(() => Planets, (planets) => planets.residents)
+    homeworldRel?: Planets[];
 
     @Column("text")
     homeworld?: string;
@@ -45,21 +45,21 @@ export class People extends BaseEntity {
     films?: string;
 
     @ManyToMany(() => Species, species => species.people)
-    @JoinTable()
+    @JoinTable({name: "people_species_rel"})
     speciesRel?: Species[];
     
     @Column("text")
     species?: string;
 
     @ManyToMany(() => Vehicles, vehicles => vehicles.pilots)
-    @JoinTable()
+    @JoinTable({name: "people_vehicles_rel"})
     vehiclesRel?: Vehicles[];
     
     @Column("text")
     vehicles?: string;
 
     @ManyToMany(() => Starships, starships => starships.pilots)
-    @JoinTable()
+    @JoinTable({name: "people_starships_rel"})
     starshipsRel?: Starships[];
     
     @Column("text")

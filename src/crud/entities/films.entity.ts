@@ -27,35 +27,35 @@ export class Films extends BaseEntity {
     release_date: string;
 
     @ManyToMany(() => People, (people) => people.films)
-    @JoinTable()
+    @JoinTable({name: "films_people_rel"})
     charactersRel?: People[];
     
     @Column("text")
     characters?: string;
 
     @ManyToMany(() => Planets, (planets) => planets.films)
-    @JoinTable()
+    @JoinTable({name: "films_palnets_rel"})
     planetsRel?: Planets[];
 
     @Column("text")
     planets?: string;
 
     @ManyToMany(() => Starships, (starhips) => starhips.films)
-    @JoinTable()
+    @JoinTable({name: "films_starships_rel"})
     starshipsRel?: Starships[];
 
     @Column("text")
     starships?: string;
 
     @ManyToMany(() => Vehicles, (vehicles) => vehicles.films)
-    @JoinTable()
+    @JoinTable({name: "films_vehicles_rel"})
     vehiclesRel?: Vehicles[];
 
     @Column("text")
     vehicles?: string;
 
     @ManyToMany(() => Species, (species) => species.films)
-    @JoinTable()
+    @JoinTable({name: "films_species_rel"})
     speciesRel?: Species[];
 
     @Column("text")
