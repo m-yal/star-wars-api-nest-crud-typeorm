@@ -6,7 +6,7 @@ import { Planets } from './entities/planets.entity';
 import { Species } from './entities/species.entity';
 import { Starships } from './entities/starships.entity';
 import { Vehicles } from './entities/vehicles.entity';
-import { Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 import { GetUnitsDto } from './dto/get-units.dto';
 import { ExecutedDto } from './dto/executed.dto';
 import { CrudRepositories, Unit, UnitTypes, UnitTypeEnum } from './types/types';
@@ -28,21 +28,9 @@ export class CrudService {
     async get(page: number, unitType: UnitTypes): Promise<GetUnitsDto> {
         const pageIndex: number = page - 1;
         const currentRepository: CrudRepositories = this.getRepoBy(unitType);
-        const units: Unit[] = await currentRepository.find({
-            order: {
-                created: "DESC"
-            },
-            take: this.UNITS_PER_PAGE,
-            skip: pageIndex * this.UNITS_PER_PAGE
-        });
-        const count: number = await currentRepository.count();
-        return {
-            data: {
-                units: units,
-                hasNext: page * this.UNITS_PER_PAGE < count ? true : false,
-                hasPrev: pageIndex === 0 ? false : true
-            }
-        };
+        const units: Unit[] = await currentRepository.find(this.generateFindUpToTenUnitsOptions(pageIndex, unitType));
+        const allUnitsInRepoAmount: number = await currentRepository.count();
+        return await this.assembleReturnObject(units, pageIndex, page, allUnitsInRepoAmount);
     }
     
     async add(body: Unit, unitType: UnitTypes): Promise<ExecutedDto> {
@@ -73,6 +61,43 @@ export class CrudService {
             case UnitTypeEnum.Starhips: return this.starshipsRepository;
             case UnitTypeEnum.Vehicles: return this.vehiclesRepository;   
             default: throw new Error("No such repository found!");
+        }
+    }
+
+    /* RelationLoadStrategy is "query", beacuse on my device 
+    occurs "FATAL ERROR: Reached heap limit Allocation failed 
+    - JavaScript heap out of memory" during fetching up to ten films */
+    private generateFindUpToTenUnitsOptions(pageIndex:  number, unitType: UnitTypes): FindManyOptions {
+        return {
+            order: {
+                created: "DESC"
+            },
+            take: this.UNITS_PER_PAGE,
+            skip: pageIndex * this.UNITS_PER_PAGE,
+            relations: this.defineRelationsFor(unitType),
+            relationLoadStrategy: "query", 
+        }
+    }
+
+    private defineRelationsFor(unitType: UnitTypes): string[] {
+        switch(unitType) {
+            case UnitTypeEnum.People: return ["homeworldRel", "filmsRel", "speciesRel", "vehiclesRel", "starshipsRel"];
+            case UnitTypeEnum.Films: return ["charactersRel", "planetsRel", "starshipsRel", "vehiclesRel", "speciesRel"];
+            case UnitTypeEnum.Planets: return ["residentsRel", "filmsRel"];
+            case UnitTypeEnum.Species: return ["homeworldRel", "peopleRel", "filmsRel"];
+            case UnitTypeEnum.Starhips: return ["pilotsRel", "filmsRel"];
+            case UnitTypeEnum.Vehicles: return ["pilotsRel", "filmsRel"];
+            default: throw new Error("No realtions found for this unit type during getting up to 10 units")
+        }
+    }
+
+    private async assembleReturnObject(units: Unit[], pageIndex: number, page: number, allUnitsInRepoAmount: number): Promise<GetUnitsDto> {
+        return {
+            data: {
+                units: units,
+                hasNext: page * this.UNITS_PER_PAGE < allUnitsInRepoAmount ? true : false,
+                hasPrev: pageIndex === 0 ? false : true
+            }
         }
     }
 }

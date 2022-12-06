@@ -10,7 +10,7 @@ export enum UnitTypeEnum {
     People = "people",
     Films = "films",
     Planets = "planets",
-    Starhips = "starhips",
+    Starhips = "starships",
     Species = "species",
     Vehicles = "vehicles"
 }

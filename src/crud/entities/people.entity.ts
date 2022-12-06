@@ -32,13 +32,13 @@ export class People extends BaseEntity {
     @Column("varchar")
     gender: string;
     
-    @ManyToOne(() => Planets, (planets) => planets.residents)
+    @ManyToOne(() => Planets, (planets) => planets.residentsRel)
     homeworldRel?: Planets[];
 
     @Column("varchar")
     homeworld?: string;
     
-    @ManyToMany(() => Films, (films) => films.characters)
+    @ManyToMany(() => Films, (films) => films.charactersRel)
     filmsRel?: Films[];
     
     @Column("text")
