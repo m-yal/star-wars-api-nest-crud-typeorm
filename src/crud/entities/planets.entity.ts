@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
 import { Films } from "./films.entity";
 import { People } from "./people.entity";
 import { BaseEntity } from "./base-entity";
@@ -32,14 +32,14 @@ export class Planets extends BaseEntity {
     @Column("varchar")
     population: string;
 
-    @ManyToMany(() => People, (people) => people.homeworld)
-    @JoinTable({name: "planets_people_rel"})
+    @OneToMany(() => People, (people) => people.homeworldRel)
+    @JoinTable({name: "planet_peoples_rel"})
     residentsRel?: People[];
 
     @Column("text")
     residents?: string;
 
-    @ManyToMany(() => Films, (films) => films.planets)
+    @ManyToMany(() => Films, (films) => films.planetsRel)
     filmsRel?: Films[];
 
     @Column("text")

@@ -38,15 +38,15 @@ export class Vehicles extends BaseEntity {
     @Column("varchar")
     vehicle_class: string;
 
-    @ManyToMany(() => People, people => people.vehicles)
+    @ManyToMany(() => People, people => people.vehiclesRel)
     pilotsRel?: People[];
 
     @Column("text")
     pilots?: string;
     
-    @ManyToMany(() => Films, films => films.vehicles)
+    @ManyToMany(() => Films, films => films.vehiclesRel)
     filmsRel?: Films[];
 
     @Column("text")
-    films: string;
+    films?: string;
 }

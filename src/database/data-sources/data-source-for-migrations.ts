@@ -1,14 +1,17 @@
 import { DataSource, DataSourceOptions } from "typeorm";
+import { config } from 'dotenv';
+
+config();
 
 class DataSourceForCreatingTables {
 
     private readonly dataSourceOptions: DataSourceOptions = {
         type: "mysql",
-        database: "swapi",
-        port: 3306,
-        host: "localhost",
-        username: "root",
-        password: "123321",
+        database: process.env.DB_NAME,
+        port: +process.env.DB_PORT,
+        host: process.env.DB_HOST,
+        username: process.env.DB_USERNAME,
+        password: process.env.DB_PASSWORD,
         entities: ["dist/**/*.entity*{.ts,.js}"],
         migrations: ["dist/database/migrations-for-creating-tables/*{.ts,.js}"],
     }
