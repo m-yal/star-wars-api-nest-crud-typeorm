@@ -35,10 +35,32 @@ export class CrudService {
     
     async add(body: any, unitType: UnitTypes): Promise<ExecutedDto> {
         const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
-        const newUnit = body; //todo for realtion use only ...Rel type in DTO
+        const newUnit = body;
         await this.addUnit(newUnit, unitType);
-        console.log("=== newUnit before adding to DB: " + JSON.stringify(newUnit));
+        console.log("=== newUnit before saving: " + JSON.stringify(newUnit));
         await currentUnitRepository.save(newUnit);
+        return {executed: true};
+    }
+
+    async update(body: any, id: string, unitType: UnitTypes): Promise<ExecutedDto> {//todo remove id: string later
+        const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
+        const updateData = body;
+        let unitToSave;
+        // if (this.isRealtionsPresentForUpdate(updateData, unitType)) {
+        //     const unitToUpdate = await currentUnitRepository.findOneByOrFail({id: +id});
+        //     unitToSave = {...unitToUpdate, ...updateData};
+        // } else {
+
+        // }
+        console.log("=== newUnit before saving: " + JSON.stringify(unitToSave));
+        await currentUnitRepository.save(unitToSave);
+        return {executed: true};
+    }
+
+    async delete(id: string, unitType: UnitTypes): Promise<ExecutedDto> {
+        const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
+        const unit: Unit = await currentUnitRepository.findOneBy({url: id});
+        await currentUnitRepository.remove(unit);
         return {executed: true};
     }
 
@@ -114,19 +136,6 @@ export class CrudService {
         } else {
             throw new Error("No such unit type repository found");
         }
-    }
-
-    async update(body: Unit, id: string, unitType: UnitTypes): Promise<ExecutedDto> {//todo remove id: string later
-        const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
-        await currentUnitRepository.update({url: id}, body);
-        return {executed: true};
-    }
-
-    async delete(id: string, unitType: UnitTypes): Promise<ExecutedDto> {
-        const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
-        const unit: Unit = await currentUnitRepository.findOneBy({url: id});
-        currentUnitRepository.remove(unit);
-        return {executed: true};
     }
 
     private getRepoBy(unitType: UnitTypes): CrudRepositories {
