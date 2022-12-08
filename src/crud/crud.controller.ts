@@ -23,7 +23,7 @@ export class CrudController {
 
     @Post("")
     @ApiAddUnits()
-    async add(@Body() body: Unit, @Query("unitType") unitType: UnitTypes): Promise<ExecutedDto> {
+    async add(@Body() body: any, @Query("unitType") unitType: UnitTypes): Promise<ExecutedDto> {
         return this.crudService.add(body, unitType);
     }
 

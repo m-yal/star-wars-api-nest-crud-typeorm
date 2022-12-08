@@ -5,13 +5,13 @@ export abstract class BaseEntity {
     @PrimaryGeneratedColumn("increment")
     id: number;
     
-    @Column("varchar")
+    @Column("varchar", {nullable: true})
     created: string;
 
-    @Column("varchar")
+    @Column("varchar", {nullable: true})
     edited: string;
 
-    @Column("varchar")
+    @Column("varchar", {nullable: true})
     url: string;
     
     @Column({type: "varchar", default: ""})

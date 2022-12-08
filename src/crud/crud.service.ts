@@ -27,28 +27,68 @@ export class CrudService {
     
     async get(page: number, unitType: UnitTypes): Promise<GetUnitsDto> {
         const pageIndex: number = page - 1;
-        const currentRepository: CrudRepositories = this.getRepoBy(unitType);
-        const units: Unit[] = await currentRepository.find(this.generateFindUpToTenUnitsOptions(pageIndex, unitType));
-        const allUnitsInRepoAmount: number = await currentRepository.count();
+        const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
+        const units: Unit[] = await currentUnitRepository.find(this.generateFindUpToTenUnitsOptions(pageIndex, unitType));
+        const allUnitsInRepoAmount: number = await currentUnitRepository.count();
         return await this.assembleReturnObject(units, pageIndex, page, allUnitsInRepoAmount);
     }
     
-    async add(body: Unit, unitType: UnitTypes): Promise<ExecutedDto> {
-        const currentRepository: CrudRepositories = this.getRepoBy(unitType);
-        await currentRepository.insert(body);
+    async add(body: any, unitType: UnitTypes): Promise<ExecutedDto> {
+        const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
+        const newUnit = body; //todo for realtion use only ...Rel type in DTO
+        if (unitType === UnitTypeEnum.People) {
+            const relationsFields = Object.keys(newUnit).filter(field => Array.isArray(newUnit[field]));
+            // console.log("relationsFields " + relationsFields);
+            for await (const field of relationsFields) {
+                console.log("field " + field);
+                const relationsIds = newUnit[field];
+                console.log("relationsIds " + relationsIds);
+                let relationUnits = [];
+                const relationUnitsRepo = await this.defineRepositoryForRelationSetting(unitType, field);
+                for await (const id of relationsIds) {
+                    const unitToPush = await relationUnitsRepo.findOneBy({id: id});
+                    console.log("unitToPush " + unitToPush);
+                    if (field === "homeworldRel") {
+                        relationUnits = unitToPush;
+                    } else {
+                        relationUnits.push(unitToPush);
+                    }
+                }
+                console.log("relationUnits before assigning to newUnit object: " + JSON.stringify(relationUnits));
+                newUnit[field] = relationUnits;
+                // console.log("relationUnits after pushing into it: " + JSON.stringify(newUnit[field]));
+            }
+        }
+        console.log("newUnit before adding to DB: " + JSON.stringify(newUnit));
+        await currentUnitRepository.save(newUnit);
         return {executed: true};
     }
 
-    async update(body: Unit, id: string, unitType: UnitTypes): Promise<ExecutedDto> {
-        const currentRepository: CrudRepositories = this.getRepoBy(unitType);
-        await currentRepository.update({url: id}, body);
+    private async defineRepositoryForRelationSetting(unitType: UnitTypeEnum, field: string): Promise<Repository<any>> {
+        if (unitType === UnitTypeEnum.People) {
+            switch (field) {
+                case "homeworldRel": return this.planetsRepository;
+                case "filmsRel": return this.filmsRepository;
+                case "speciesRel": return this.speciesRepository;
+                case "vehiclesRel": return this.vehiclesRepository;
+                case "starshipsRel": return this.starshipsRepository;
+                default: throw new Error("No such relation field found in this enitity");
+            }
+        }
+
+
+    }
+
+    async update(body: Unit, id: string, unitType: UnitTypes): Promise<ExecutedDto> {//todo remove id: string later
+        const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
+        await currentUnitRepository.update({url: id}, body);
         return {executed: true};
     }
 
     async delete(id: string, unitType: UnitTypes): Promise<ExecutedDto> {
-        const currentRepository: CrudRepositories = this.getRepoBy(unitType);
-        const unit: Unit = await currentRepository.findOneBy({url: id});
-        currentRepository.remove(unit);
+        const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
+        const unit: Unit = await currentUnitRepository.findOneBy({url: id});
+        currentUnitRepository.remove(unit);
         return {executed: true};
     }
 

@@ -1,5 +1,5 @@
 import { applyDecorators, HttpStatus } from "@nestjs/common";
-import { ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
+import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
 
 export function ApiAddUnits() {
     return applyDecorators(
@@ -8,6 +8,7 @@ export function ApiAddUnits() {
         ApiResponse({
             status: HttpStatus.CREATED,
             description: "Unit added to db"
-        })
+        }),
+        ApiBody({})
     )
 }
