@@ -25,7 +25,7 @@ export class Seeder implements MigrationInterface {
     private readonly httpService: HttpService = new HttpService();
     private queryRunner: QueryRunner;
     private readonly SWAPI_URL: string = "https://swapi.dev/api/";
-    private readonly entitiesForRawDataDownloading: EntityNames[] = [
+    private readonly entityTableNames: EntityNames[] = [
         EntityNames.People, EntityNames.Films,
         EntityNames.Planets, EntityNames.Species,
         EntityNames.Starships, EntityNames.Vehicles
@@ -43,7 +43,7 @@ export class Seeder implements MigrationInterface {
     }
 
     private async downloadRawDataFromApi() {
-        for await (const name of this.entitiesForRawDataDownloading) {
+        for await (const name of this.entityTableNames) {
             const data = await this.fetchEntity(name);
             await this.insertIntoDB(data, name);
         }

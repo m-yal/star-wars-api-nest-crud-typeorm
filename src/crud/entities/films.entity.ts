@@ -8,56 +8,56 @@ import { Vehicles } from "./vehicles.entity";
 
 @Entity()
 export class Films extends BaseEntity {
-    @Column("varchar")
+    @Column("varchar", {default: "unknown"})
     title: string;
 
-    @Column("int")
+    @Column("int", {nullable: true})
     episode_id: number
 
-    @Column("text")
+    @Column("text", {nullable: true})
     opening_crawl: string;
 
-    @Column("varchar")
+    @Column("varchar", {default: "unknown"})
     director: string;
 
-    @Column("varchar")
+    @Column("varchar", {default: "unknown"})
     producer: string;
 
-    @Column("varchar")
+    @Column("varchar", {default: "unknown"})
     release_date: string;
 
     @ManyToMany(() => People, (people) => people.filmsRel, {cascade: ["insert"]})
     @JoinTable({name: "films_people_rel"})
-    charactersRel?: People[];
+    charactersRel: People[];
     
-    @Column("text")
+    @Column("text", {nullable: true})
     characters?: string;
 
     @ManyToMany(() => Planets, (planets) => planets.filmsRel, {cascade: ["insert"]})
     @JoinTable({name: "films_palnets_rel"})
-    planetsRel?: Planets[];
+    planetsRel: Planets[];
 
-    @Column("text")
+    @Column("text", {nullable: true})
     planets?: string;
 
     @ManyToMany(() => Starships, (starhips) => starhips.filmsRel, {cascade: ["insert"]})
     @JoinTable({name: "films_starships_rel"})
-    starshipsRel?: Starships[];
+    starshipsRel: Starships[];
 
-    @Column("text")
+    @Column("text", {nullable: true})
     starships?: string;
 
     @ManyToMany(() => Vehicles, (vehicles) => vehicles.filmsRel, {cascade: ["insert"]})
     @JoinTable({name: "films_vehicles_rel"})
-    vehiclesRel?: Vehicles[];
+    vehiclesRel: Vehicles[];
 
-    @Column("text")
+    @Column("text", {nullable: true})
     vehicles?: string;
 
     @ManyToMany(() => Species, (species) => species.filmsRel, {cascade: ["insert"]})
     @JoinTable({name: "films_species_rel"})
-    speciesRel?: Species[];
+    speciesRel: Species[];
 
-    @Column("text")
+    @Column("text", {nullable: true})
     species?: string;
 }

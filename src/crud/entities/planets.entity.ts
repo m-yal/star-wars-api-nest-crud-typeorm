@@ -34,14 +34,14 @@ export class Planets extends BaseEntity {
 
     @OneToMany(() => People, (people) => people.homeworldRel, {cascade: ["insert"]})
     @JoinTable({name: "planet_peoples_rel"})
-    residentsRel?: People[];
+    residentsRel: People[];
 
-    @Column("text")
+    @Column("text", {nullable: true})
     residents?: string;
 
     @ManyToMany(() => Films, (films) => films.planetsRel, {cascade: ["insert"]})
-    filmsRel?: Films[];
+    filmsRel: Films[];
 
-    @Column("text")
+    @Column("text", {nullable: true})
     films?: string;
 }

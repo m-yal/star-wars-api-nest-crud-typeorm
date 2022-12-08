@@ -36,32 +36,36 @@ export class CrudService {
     async add(body: any, unitType: UnitTypes): Promise<ExecutedDto> {
         const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
         const newUnit = body; //todo for realtion use only ...Rel type in DTO
-        if (unitType === UnitTypeEnum.People) {
-            const relationsFields = Object.keys(newUnit).filter(field => Array.isArray(newUnit[field]));
-            // console.log("relationsFields " + relationsFields);
-            for await (const field of relationsFields) {
-                console.log("field " + field);
-                const relationsIds = newUnit[field];
-                console.log("relationsIds " + relationsIds);
-                let relationUnits = [];
-                const relationUnitsRepo = await this.defineRepositoryForRelationSetting(unitType, field);
-                for await (const id of relationsIds) {
-                    const unitToPush = await relationUnitsRepo.findOneBy({id: id});
-                    console.log("unitToPush " + unitToPush);
-                    if (field === "homeworldRel") {
-                        relationUnits = unitToPush;
-                    } else {
-                        relationUnits.push(unitToPush);
-                    }
-                }
-                console.log("relationUnits before assigning to newUnit object: " + JSON.stringify(relationUnits));
-                newUnit[field] = relationUnits;
-                // console.log("relationUnits after pushing into it: " + JSON.stringify(newUnit[field]));
-            }
-        }
-        console.log("newUnit before adding to DB: " + JSON.stringify(newUnit));
+        await this.addUnit(newUnit, unitType);
+        console.log("=== newUnit before adding to DB: " + JSON.stringify(newUnit));
         await currentUnitRepository.save(newUnit);
         return {executed: true};
+    }
+
+    private async addUnit(newUnit: any, unitType: UnitTypeEnum) {
+        const relationsFields = Object.keys(newUnit).filter(field => Array.isArray(newUnit[field]));
+        for await (const field of relationsFields) {
+            const relationsIds = await newUnit[field];
+            let relationUnits = this.defineContainerForRelationsUnits(field, unitType);
+            const relationUnitsRepo = await this.defineRepositoryForRelationSetting(unitType, field);
+            for await (const id of relationsIds) {
+                const unitToPush = await relationUnitsRepo.findOneBy({id: id});
+                if (Array.isArray(relationUnits)) {
+                    relationUnits.push(unitToPush);
+                } else {
+                    relationUnits = unitToPush;
+                }
+            }
+            newUnit[field] = relationUnits;
+        }
+    }
+
+    private defineContainerForRelationsUnits(field: string, unitType: UnitTypeEnum) {
+        if (unitType === UnitTypeEnum.People && field === "homeworldRel") {
+            return;
+        } else {
+            return [];
+        }
     }
 
     private async defineRepositoryForRelationSetting(unitType: UnitTypeEnum, field: string): Promise<Repository<any>> {
@@ -72,11 +76,44 @@ export class CrudService {
                 case "speciesRel": return this.speciesRepository;
                 case "vehiclesRel": return this.vehiclesRepository;
                 case "starshipsRel": return this.starshipsRepository;
-                default: throw new Error("No such relation field found in this enitity");
+                default: throw new Error(`No such relation for ${field} field found in this unitType (${unitType})`);
             }
+        } else if (unitType === UnitTypeEnum.Films) {
+            switch (field) {
+                case "charactersRel": return this.peopleRepository;
+                case "planetsRel": return this.planetsRepository;
+                case "starshipsRel": return this.starshipsRepository;
+                case "vehiclesRel": return this.vehiclesRepository;
+                case "speciesRel": return this.speciesRepository;
+                default: throw new Error(`No such relation for ${field} field found in this unitType (${unitType})`);
+            }
+        } else if (unitType === UnitTypeEnum.Planets) {
+            switch (field) {
+                case "residentsRel": return this.peopleRepository;
+                case "filmsRel": return this.filmsRepository;
+                default: throw new Error(`No such relation for ${field} field found in this unitType (${unitType})`);
+            }
+        } else if (unitType === UnitTypeEnum.Vehicles) {
+            switch (field) {
+                case "pilotsRel": return this.peopleRepository;
+                case "filmsRel": return this.filmsRepository;
+                default: throw new Error(`No such relation for ${field} field found in this unitType (${unitType})`);
+            }
+        } else if (unitType === UnitTypeEnum.Species) {
+            switch (field) {
+                case "peopleRel": return this.peopleRepository;
+                case "filmsRel": return this.filmsRepository;
+                default: throw new Error(`No such relation for ${field} field found in this unitType (${unitType})`);
+            }
+        } else if (unitType === UnitTypeEnum.Starhips) {
+            switch (field) {
+                case "pilotsRel": return this.peopleRepository;
+                case "filmsRel": return this.filmsRepository;
+                default: throw new Error(`No such relation for ${field} field found in this unitType (${unitType})`);
+            }
+        } else {
+            throw new Error("No such unit type repository found");
         }
-
-
     }
 
     async update(body: Unit, id: string, unitType: UnitTypes): Promise<ExecutedDto> {//todo remove id: string later

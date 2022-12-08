@@ -39,14 +39,14 @@ export class Vehicles extends BaseEntity {
     vehicle_class: string;
 
     @ManyToMany(() => People, people => people.vehiclesRel, {cascade: ["insert"]})
-    pilotsRel?: People[];
+    pilotsRel: People[];
 
-    @Column("text")
+    @Column("text", {nullable: true})
     pilots?: string;
     
     @ManyToMany(() => Films, films => films.vehiclesRel, {cascade: ["insert"]})
-    filmsRel?: Films[];
+    filmsRel: Films[];
 
-    @Column("text")
+    @Column("text", {nullable: true})
     films?: string;
 }

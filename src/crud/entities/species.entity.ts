@@ -35,20 +35,20 @@ export class Species extends BaseEntity {
 
     @OneToOne(() => Planets, {nullable: true, cascade: ["insert"]})
     @JoinColumn({name: "homeworldRel"})
-    homeworldRel?: Planets;
+    homeworldRel: Planets;
 
-    @Column("varchar")
+    @Column("varchar", {default: "unknown"})
     language: string;
 
     @ManyToMany(() => People, people => people.speciesRel, {cascade: ["insert"]})
-    peopleRel?: People[];
+    peopleRel: People[];
 
-    @Column("text")
+    @Column("text", {nullable: true})
     people?: string;
 
     @ManyToMany(() => Films, films => films.speciesRel, {cascade: ["insert"]})
-    filmsRel?: Films[];
+    filmsRel: Films[];
 
-    @Column("text")
+    @Column("text", {nullable: true})
     films?: string;
 }
