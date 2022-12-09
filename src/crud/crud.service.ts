@@ -42,19 +42,44 @@ export class CrudService {
         return {executed: true};
     }
 
-    async update(body: any, id: string, unitType: UnitTypes): Promise<ExecutedDto> {//todo remove id: string later
+    async update(body: any, id: string, unitType: UnitTypes): Promise<ExecutedDto> {
         const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
-        const updateData = body;
-        let unitToSave;
-        // if (this.isRealtionsPresentForUpdate(updateData, unitType)) {
-        //     const unitToUpdate = await currentUnitRepository.findOneByOrFail({id: +id});
-        //     unitToSave = {...unitToUpdate, ...updateData};
-        // } else {
-
-        // }
+        const partialData = body;
+        const unitToUpdate = await currentUnitRepository.findOneByOrFail({id: +id});
+        await this.updateUnitRelations(partialData, unitType);
+        const unitToSave = {...unitToUpdate, ...partialData};//todo check how does update execute without rest operator
         console.log("=== newUnit before saving: " + JSON.stringify(unitToSave));
         await currentUnitRepository.save(unitToSave);
         return {executed: true};
+    }
+
+    private async updateUnitRelations(partialData: any, unitType: UnitTypeEnum): Promise<void> {
+        const partialDataFields: string[] = Object.keys(partialData);
+        console.log("=== partialDataFields: " + partialDataFields);
+        await this.updateArrayRelationFields(partialData, unitType, partialDataFields);
+        await this.updateNonArrayRelationFields(partialData, unitType, partialDataFields);
+    }
+
+    private async updateArrayRelationFields(partialData: any, unitType: UnitTypeEnum, partialDataFields: string[]) {
+        for await (const fieldName of partialDataFields) {
+            if (!Array.isArray(partialData[fieldName])) continue;
+            console.log("=== fieldName with array: " + fieldName);
+            const relationIDs = partialData[fieldName];
+            console.log("=== relationIDs: " + relationIDs);
+            partialData[fieldName] = [];
+            const relationRepository = await this.defineRepositoryForRelationSetting(unitType, fieldName);
+            for await (const id of relationIDs) {
+                await partialData[fieldName].push(await relationRepository.findOneByOrFail({id: id}));
+            }
+        }
+    }
+
+    private async updateNonArrayRelationFields(partialData: any, unitType: UnitTypeEnum, partialDataFields: string[]) {
+        const homeworldRelFieldName = "homeworldRel";
+        if (unitType === UnitTypeEnum.People && partialDataFields.find((field: string) => field === homeworldRelFieldName)) {
+            partialData[homeworldRelFieldName] = await this.planetsRepository
+                .findOneByOrFail({id: partialData[homeworldRelFieldName]});
+        }
     }
 
     async delete(id: string, unitType: UnitTypes): Promise<ExecutedDto> {

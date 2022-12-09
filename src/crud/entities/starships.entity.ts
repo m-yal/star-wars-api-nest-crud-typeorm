@@ -44,13 +44,13 @@ export class Starships extends BaseEntity {
     @Column("varchar", {default: "unknown"})
     starship_class: string;
 
-    @ManyToMany(() => People, people => people.starshipsRel, {cascade: ["insert"]})
+    @ManyToMany(() => People, people => people.starshipsRel, {cascade: ["insert", "update"]})
     pilotsRel: People[];
 
     @Column("text", {nullable: true})
     pilots?: string;
 
-    @ManyToMany(() => Films, films => films.starshipsRel, {cascade: ["insert"]})
+    @ManyToMany(() => Films, films => films.starshipsRel, {cascade: ["insert", "update"]})
     filmsRel: Films[];
 
     @Column("text", {nullable: true})

@@ -32,14 +32,14 @@ export class Planets extends BaseEntity {
     @Column("varchar", {default: "unknown"})
     population: string;
 
-    @OneToMany(() => People, (people) => people.homeworldRel, {cascade: ["insert"]})
+    @OneToMany(() => People, (people) => people.homeworldRel, {cascade: ["insert", "update"]})
     @JoinTable({name: "planet_peoples_rel"})
     residentsRel: People[];
 
     @Column("text", {nullable: true})
     residents?: string;
 
-    @ManyToMany(() => Films, (films) => films.planetsRel, {cascade: ["insert"]})
+    @ManyToMany(() => Films, (films) => films.planetsRel, {cascade: ["insert", "update"]})
     filmsRel: Films[];
 
     @Column("text", {nullable: true})

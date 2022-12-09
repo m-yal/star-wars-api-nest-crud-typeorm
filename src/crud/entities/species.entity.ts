@@ -40,13 +40,13 @@ export class Species extends BaseEntity {
     @Column("varchar", {default: "unknown"})
     language: string;
 
-    @ManyToMany(() => People, people => people.speciesRel, {cascade: ["insert"]})
+    @ManyToMany(() => People, people => people.speciesRel, {cascade: ["insert", "update"]})
     peopleRel: People[];
 
     @Column("text", {nullable: true})
     people?: string;
 
-    @ManyToMany(() => Films, films => films.speciesRel, {cascade: ["insert"]})
+    @ManyToMany(() => Films, films => films.speciesRel, {cascade: ["insert", "update"]})
     filmsRel: Films[];
 
     @Column("text", {nullable: true})

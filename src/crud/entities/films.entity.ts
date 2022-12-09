@@ -26,35 +26,35 @@ export class Films extends BaseEntity {
     @Column("varchar", {default: "unknown"})
     release_date: string;
 
-    @ManyToMany(() => People, (people) => people.filmsRel, {cascade: ["insert"]})
+    @ManyToMany(() => People, (people) => people.filmsRel, {cascade: ["insert", "update"]})
     @JoinTable({name: "films_people_rel"})
     charactersRel: People[];
     
     @Column("text", {nullable: true})
     characters?: string;
 
-    @ManyToMany(() => Planets, (planets) => planets.filmsRel, {cascade: ["insert"]})
+    @ManyToMany(() => Planets, (planets) => planets.filmsRel, {cascade: ["insert", "update"]})
     @JoinTable({name: "films_palnets_rel"})
     planetsRel: Planets[];
 
     @Column("text", {nullable: true})
     planets?: string;
 
-    @ManyToMany(() => Starships, (starhips) => starhips.filmsRel, {cascade: ["insert"]})
+    @ManyToMany(() => Starships, (starhips) => starhips.filmsRel, {cascade: ["insert", "update"]})
     @JoinTable({name: "films_starships_rel"})
     starshipsRel: Starships[];
 
     @Column("text", {nullable: true})
     starships?: string;
 
-    @ManyToMany(() => Vehicles, (vehicles) => vehicles.filmsRel, {cascade: ["insert"]})
+    @ManyToMany(() => Vehicles, (vehicles) => vehicles.filmsRel, {cascade: ["insert", "update"]})
     @JoinTable({name: "films_vehicles_rel"})
     vehiclesRel: Vehicles[];
 
     @Column("text", {nullable: true})
     vehicles?: string;
 
-    @ManyToMany(() => Species, (species) => species.filmsRel, {cascade: ["insert"]})
+    @ManyToMany(() => Species, (species) => species.filmsRel, {cascade: ["insert", "update"]})
     @JoinTable({name: "films_species_rel"})
     speciesRel: Species[];
 

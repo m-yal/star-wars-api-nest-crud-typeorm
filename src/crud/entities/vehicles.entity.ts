@@ -38,13 +38,13 @@ export class Vehicles extends BaseEntity {
     @Column("varchar", {default: "unknown"})
     vehicle_class: string;
 
-    @ManyToMany(() => People, people => people.vehiclesRel, {cascade: ["insert"]})
+    @ManyToMany(() => People, people => people.vehiclesRel, {cascade: ["insert", "update"]})
     pilotsRel: People[];
 
     @Column("text", {nullable: true})
     pilots?: string;
     
-    @ManyToMany(() => Films, films => films.vehiclesRel, {cascade: ["insert"]})
+    @ManyToMany(() => Films, films => films.vehiclesRel, {cascade: ["insert", "update"]})
     filmsRel: Films[];
 
     @Column("text", {nullable: true})

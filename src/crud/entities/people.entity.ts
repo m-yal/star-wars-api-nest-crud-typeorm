@@ -32,33 +32,33 @@ export class People extends BaseEntity {
     @Column("varchar", {default: "unknown"})
     gender: string;
     
-    @ManyToOne(() => Planets, (planets) => planets.residentsRel, {cascade: ["insert"]})
+    @ManyToOne(() => Planets, (planets) => planets.residentsRel, {cascade: ["insert", "update"]})
     homeworldRel: Planets;
 
     @Column("varchar", {nullable: true})
     homeworld?: string;
     
-    @ManyToMany(() => Films, (films) => films.charactersRel, {cascade: ["insert"]})
+    @ManyToMany(() => Films, (films) => films.charactersRel, {cascade: ["insert", "update"]})
     filmsRel: Films[];
     
     @Column("text", {nullable: true})
     films?: string;
 
-    @ManyToMany(() => Species, species => species.peopleRel, {cascade: ["insert"]})
+    @ManyToMany(() => Species, species => species.peopleRel, {cascade: ["insert", "update"]})
     @JoinTable({name: "people_species_rel"})
     speciesRel: Species[];
     
     @Column("text", {nullable: true})
     species?: string;
 
-    @ManyToMany(() => Vehicles, vehicles => vehicles.pilotsRel, {cascade: ["insert"]})
+    @ManyToMany(() => Vehicles, vehicles => vehicles.pilotsRel, {cascade: ["insert", "update"]})
     @JoinTable({name: "people_vehicles_rel"})
     vehiclesRel: Vehicles[];
     
     @Column("text", {nullable: true})
     vehicles?: string;
 
-    @ManyToMany(() => Starships, starships => starships.pilotsRel, {cascade: ["insert"]})
+    @ManyToMany(() => Starships, starships => starships.pilotsRel, {cascade: ["insert", "update"]})
     @JoinTable({name: "people_starships_rel"})
     starshipsRel: Starships[];
     
