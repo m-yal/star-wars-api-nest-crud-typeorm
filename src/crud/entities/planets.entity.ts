@@ -8,44 +8,44 @@ import { PlanetsImage } from "src/files/entities/image.entity";
 export class Planets extends BaseEntity {
     @OneToMany(() => PlanetsImage, (planetsImage) => planetsImage.unit, {cascade: ["insert"]})
     @JoinTable({name: "planets_images_rel"})
-    images: PlanetsImage[];
+    images?: PlanetsImage[];
     
     @Column("varchar", {default: "unknown"})
-    name: string;
+    name?: string;
 
     @Column("varchar", {default: "unknown"})
-    rotation_period: string;
+    rotation_period?: string;
 
     @Column("varchar", {default: "unknown"})
-    orbital_period: string;
+    orbital_period?: string;
 
     @Column("varchar", {default: "unknown"})
-    diameter: string;
+    diameter?: string;
 
     @Column("varchar", {default: "unknown"})
-    climate: string;
+    climate?: string;
 
     @Column("varchar", {default: "unknown"})
-    gravity: string;
+    gravity?: string;
 
     @Column("varchar", {default: "unknown"})
-    terrain: string;
+    terrain?: string;
 
     @Column("varchar", {default: "unknown"})
-    surface_water: string;
+    surface_water?: string;
 
     @Column("varchar", {default: "unknown"})
-    population: string;
+    population?: string;
 
     @OneToMany(() => People, (people) => people.homeworldRel, {cascade: ["insert", "update"], onDelete: "CASCADE"})
     @JoinTable({name: "planet_peoples_rel"})
-    residentsRel: People[];
+    residentsRel?: People[];
 
     @Column("text", {nullable: true})
     residents?: string;
 
     @ManyToMany(() => Films, (films) => films.planetsRel, {cascade: ["insert", "update"], onDelete: "CASCADE"})
-    filmsRel: Films[];
+    filmsRel?: Films[];
 
     @Column("text", {nullable: true})
     films?: string;

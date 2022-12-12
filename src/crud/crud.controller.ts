@@ -7,7 +7,7 @@ import { ApiGetUnits } from './decorators/get.decorator';
 import { ApiUpdateUnit } from './decorators/update.decorator';
 import { ExecutedDto } from './dto/executed.dto';
 import { GetUnitsDto } from './dto/get-units.dto';
-import { Unit, UnitTypes } from './types/types';
+import { Unit, UnitTypes } from '../types/types';
 
 @ApiTags("Crud paths")
 @Controller('crud')
@@ -23,7 +23,7 @@ export class CrudController {
 
     @Post("")
     @ApiAddUnits()
-    async add(@Body() body: any, @Query("unitType") unitType: UnitTypes): Promise<ExecutedDto> {
+    async add(@Body() body: Unit, @Query("unitType") unitType: UnitTypes): Promise<ExecutedDto> {
         return this.crudService.add(body, unitType);
     }
 

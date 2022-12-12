@@ -1,4 +1,4 @@
-import { Unit } from "../types/types";
+import { Unit } from "../../types/types";
 
 export class GetUnitsDto {
     data: {

@@ -28,7 +28,6 @@
     "seed:run": "npm run seed:up; npm run seed:down",
     "seed:up": "npm run typeorm:seed -- migration:run",
     "seed:down": "npm run typeorm:seed -- migration:revert"
-
   },
   "dependencies": {
     "@nestjs/axios": "^1.0.0",
@@ -58,6 +57,7 @@
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
+    "class-validator": "^0.13.2",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",

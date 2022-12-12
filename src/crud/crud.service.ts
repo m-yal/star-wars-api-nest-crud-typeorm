@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Films } from './entities/films.entity';
 import { People } from './entities/people.entity';
@@ -9,7 +9,7 @@ import { Vehicles } from './entities/vehicles.entity';
 import { FindManyOptions, Repository } from 'typeorm';
 import { GetUnitsDto } from './dto/get-units.dto';
 import { ExecutedDto } from './dto/executed.dto';
-import { CrudRepositories, Unit, UnitTypes, UnitTypeEnum } from './types/types';
+import { CrudRepositories, Unit, UnitTypes, UnitTypeEnum, RelationField } from '../types/types';
 import * as fs from 'fs';
 
 
@@ -17,6 +17,7 @@ import * as fs from 'fs';
 export class CrudService {
 
     private readonly UNITS_PER_PAGE: number = 10;
+    private readonly EXECUTED_DTO: ExecutedDto = {executed: true};
 
     constructor(
         @InjectRepository(People) private readonly peopleRepository: Repository<Unit>,
@@ -28,6 +29,7 @@ export class CrudService {
     ){}
     
     async get(page: number, unitType: UnitTypes): Promise<GetUnitsDto> {
+        this.validate(page);
         const pageIndex: number = page - 1;
         const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
         const units: Unit[] = await currentUnitRepository.find(this.generateFindUpToTenUnitsOptions(pageIndex, unitType));
@@ -35,24 +37,22 @@ export class CrudService {
         return await this.assembleReturnObject(units, pageIndex, page, allUnitsInRepoAmount);
     }
     
-    async add(body: any, unitType: UnitTypes): Promise<ExecutedDto> {
+    async add(body: Unit, unitType: UnitTypes): Promise<ExecutedDto> {
         const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
-        const newUnit = body;
+        const newUnit: Unit = body;
         await this.addUnit(newUnit, unitType);
-        console.log("=== newUnit before saving: " + JSON.stringify(newUnit));
         await currentUnitRepository.save(newUnit);
-        return {executed: true};
+        return this.EXECUTED_DTO;
     }
 
-    async update(body: any, id: string, unitType: UnitTypes): Promise<ExecutedDto> {
+    async update(body: Unit, id: string, unitType: UnitTypes): Promise<ExecutedDto> {
         const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
-        const partialData = body;
-        const unitToUpdate = await currentUnitRepository.findOneByOrFail({id: +id});
+        const partialData: Unit = body;
+        const unitToUpdate: Unit = await currentUnitRepository.findOneByOrFail({id: +id});
         await this.updateUnitRelations(partialData, unitType);
-        const unitToSave = {...unitToUpdate, ...partialData};//todo check how does update execute without rest operator
-        console.log("=== newUnit before saving: " + JSON.stringify(unitToSave));
+        const unitToSave: Unit = {...unitToUpdate, ...partialData};
         await currentUnitRepository.save(unitToSave);
-        return {executed: true};
+        return this.EXECUTED_DTO;
     }
 
     async delete(id: string, unitType: UnitTypes): Promise<ExecutedDto> {
@@ -60,10 +60,17 @@ export class CrudService {
         const unit: Unit = await currentUnitRepository.findOneByOrFail({id: +id});
         await this.deleteImageFilesOf(unit);
         await currentUnitRepository.delete(unit);
-        return {executed: true};
+        return this.EXECUTED_DTO;
     }
 
-    private async deleteImageFilesOf(unit: Unit) {
+    
+
+    private validate(page: number): void {
+        if (!Number.isInteger(page)) throw new HttpException('Invalid input page number: must be integer!', HttpStatus.BAD_REQUEST);
+        if (page < 1) throw new HttpException('Invalid input page number: must be bigger than 1!', HttpStatus.BAD_REQUEST);
+    }
+
+    private async deleteImageFilesOf(unit: Unit): Promise<void> {
         for await (const image of unit.images) {
             const path: fs.PathLike = `${__dirname}/../../files/${image.filename}`;
             if (fs.existsSync(path)) {
@@ -74,43 +81,39 @@ export class CrudService {
         }
     }
 
-    private async updateUnitRelations(partialData: any, unitType: UnitTypeEnum): Promise<void> {
+    private async updateUnitRelations(partialData: Unit, unitType: UnitTypeEnum): Promise<void> {
         const partialDataFields: string[] = Object.keys(partialData);
-        console.log("=== partialDataFields: " + partialDataFields);
         await this.updateArrayRelationFields(partialData, unitType, partialDataFields);
         await this.updateNonArrayRelationFields(partialData, unitType, partialDataFields);
     }
 
-    private async updateArrayRelationFields(partialData: any, unitType: UnitTypeEnum, partialDataFields: string[]) {
+    private async updateArrayRelationFields(partialData: Unit, unitType: UnitTypeEnum, partialDataFields: string[]): Promise<void> {
         for await (const fieldName of partialDataFields) {
             if (!Array.isArray(partialData[fieldName])) continue;
-            console.log("=== fieldName with array: " + fieldName);
-            const relationIDs = partialData[fieldName];
-            console.log("=== relationIDs: " + relationIDs);
+            const relationIDs: string[] = partialData[fieldName];
             partialData[fieldName] = [];
-            const relationRepository = await this.defineRepositoryForRelationSetting(unitType, fieldName);
+            const relationRepository: CrudRepositories = await this.defineRepositoryForRelationSetting(unitType, fieldName);
             for await (const id of relationIDs) {
-                await partialData[fieldName].push(await relationRepository.findOneByOrFail({id: id}));
+                await partialData[fieldName].push(await relationRepository.findOneByOrFail({id: +id}));
             }
         }
     }
 
-    private async updateNonArrayRelationFields(partialData: any, unitType: UnitTypeEnum, partialDataFields: string[]) {
-        const homeworldRelFieldName = "homeworldRel";
+    private async updateNonArrayRelationFields(partialData: Unit, unitType: UnitTypeEnum, partialDataFields: string[]): Promise<void> {
+        const homeworldRelFieldName: string = "homeworldRel";
         if (unitType === UnitTypeEnum.People && partialDataFields.find((field: string) => field === homeworldRelFieldName)) {
-            partialData[homeworldRelFieldName] = await this.planetsRepository
-                .findOneByOrFail({id: partialData[homeworldRelFieldName]});
+            partialData[homeworldRelFieldName] = await this.planetsRepository.findOneByOrFail({id: partialData[homeworldRelFieldName]});
         }
     }
 
-    private async addUnit(newUnit: any, unitType: UnitTypeEnum) {
-        const relationsFields = Object.keys(newUnit).filter(field => Array.isArray(newUnit[field]));
+    private async addUnit(newUnit: Unit, unitType: UnitTypeEnum): Promise<void> {
+        const relationsFields: string[] = Object.keys(newUnit).filter(field => Array.isArray(newUnit[field]));
         for await (const field of relationsFields) {
-            const relationsIds = await newUnit[field];
-            let relationUnits = this.defineContainerForRelationsUnits(field, unitType);
-            const relationUnitsRepo = await this.defineRepositoryForRelationSetting(unitType, field);
+            const relationsIds: number[] = await newUnit[field];
+            let relationUnits: Unit | Unit[] = this.defineContainerForRelationsUnits(field, unitType);
+            const relationUnitsRepo: Repository<Unit> = await this.defineRepositoryForRelationSetting(unitType, field);
             for await (const id of relationsIds) {
-                const unitToPush = await relationUnitsRepo.findOneBy({id: id});
+                const unitToPush: Unit = await relationUnitsRepo.findOneBy({id: id});
                 if (Array.isArray(relationUnits)) {
                     relationUnits.push(unitToPush);
                 } else {
@@ -121,7 +124,7 @@ export class CrudService {
         }
     }
 
-    private defineContainerForRelationsUnits(field: string, unitType: UnitTypeEnum) {
+    private defineContainerForRelationsUnits(field: string, unitType: UnitTypeEnum): Unit | Unit[] {
         if (unitType === UnitTypeEnum.People && field === "homeworldRel") {
             return;
         } else {
@@ -129,7 +132,7 @@ export class CrudService {
         }
     }
 
-    private async defineRepositoryForRelationSetting(unitType: UnitTypeEnum, field: string): Promise<Repository<any>> {
+    private async defineRepositoryForRelationSetting(unitType: UnitTypeEnum, field: string): Promise<Repository<Unit>> {
         if (unitType === UnitTypeEnum.People) {
             switch (field) {
                 case "homeworldRel": return this.planetsRepository;
@@ -166,7 +169,7 @@ export class CrudService {
                 case "filmsRel": return this.filmsRepository;
                 default: throw new Error(`No such relation for ${field} field found in this unitType (${unitType})`);
             }
-        } else if (unitType === UnitTypeEnum.Starhips) {
+        } else if (unitType === UnitTypeEnum.Starships) {
             switch (field) {
                 case "pilotsRel": return this.peopleRepository;
                 case "filmsRel": return this.filmsRepository;
@@ -183,7 +186,7 @@ export class CrudService {
             case UnitTypeEnum.Films: return this.filmsRepository;
             case UnitTypeEnum.Planets: return this.planetsRepository;
             case UnitTypeEnum.Species: return this.speciesRepository;
-            case UnitTypeEnum.Starhips: return this.starshipsRepository;
+            case UnitTypeEnum.Starships: return this.starshipsRepository;
             case UnitTypeEnum.Vehicles: return this.vehiclesRepository;   
             default: throw new Error("No such repository found!");
         }
@@ -192,7 +195,7 @@ export class CrudService {
     /* RelationLoadStrategy is "query", beacuse on my device 
     occurs "FATAL ERROR: Reached heap limit Allocation failed 
     - JavaScript heap out of memory" during fetching up to ten films */
-    private generateFindUpToTenUnitsOptions(pageIndex:  number, unitType: UnitTypes): FindManyOptions {
+    private generateFindUpToTenUnitsOptions(pageIndex: number, unitType: UnitTypes): FindManyOptions {
         return {
             order: {
                 created: "DESC"
@@ -204,13 +207,13 @@ export class CrudService {
         }
     }
 
-    private defineRelationsFor(unitType: UnitTypes): string[] {
+    private defineRelationsFor(unitType: UnitTypes): RelationField[] {
         switch(unitType) {
             case UnitTypeEnum.People: return ["homeworldRel", "filmsRel", "speciesRel", "vehiclesRel", "starshipsRel", "images"];
             case UnitTypeEnum.Films: return ["charactersRel", "planetsRel", "starshipsRel", "vehiclesRel", "speciesRel", "images"];
             case UnitTypeEnum.Planets: return ["residentsRel", "filmsRel", "images"];
             case UnitTypeEnum.Species: return ["homeworldRel", "peopleRel", "filmsRel", "images"];
-            case UnitTypeEnum.Starhips: return ["pilotsRel", "filmsRel", "images"];
+            case UnitTypeEnum.Starships: return ["pilotsRel", "filmsRel", "images"];
             case UnitTypeEnum.Vehicles: return ["pilotsRel", "filmsRel", "images"];
             default: throw new Error("No realtions found for this unit type during getting up to 10 units")
         }

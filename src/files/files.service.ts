@@ -10,7 +10,7 @@ import { Planets } from 'src/crud/entities/planets.entity';
 import { Species } from 'src/crud/entities/species.entity';
 import { Starships } from 'src/crud/entities/starships.entity';
 import { Vehicles } from 'src/crud/entities/vehicles.entity';
-import { CrudRepositories, Unit, UnitTypeEnum, UnitTypes } from 'src/crud/types/types';
+import { CrudRepositories, Images, Unit, UnitTypeEnum, UnitTypes } from 'src/types/types';
 import { ExecutedDto } from 'src/crud/dto/executed.dto';
 import { FilmsImage, PeopleImage, PlanetsImage, SpeciesImage, StarshipsImage, VehiclesImage } from './entities/image.entity';
 
@@ -18,12 +18,12 @@ import { FilmsImage, PeopleImage, PlanetsImage, SpeciesImage, StarshipsImage, Ve
 export class FilesService {
 
     constructor(
-        @InjectRepository(People) private readonly peopleRepository: Repository<Unit>,
-        @InjectRepository(Films) private readonly filmsRepository: Repository<Unit>,
-        @InjectRepository(Planets) private readonly planetsRepository: Repository<Unit>,
-        @InjectRepository(Species) private readonly speciesRepository: Repository<Unit>,
-        @InjectRepository(Starships) private readonly starshipsRepository: Repository<Unit>,
-        @InjectRepository(Vehicles) private readonly vehiclesRepository: Repository<Unit>,
+        @InjectRepository(People) private readonly peopleRepository: Repository<People>,
+        @InjectRepository(Films) private readonly filmsRepository: Repository<Films>,
+        @InjectRepository(Planets) private readonly planetsRepository: Repository<Planets>,
+        @InjectRepository(Species) private readonly speciesRepository: Repository<Species>,
+        @InjectRepository(Starships) private readonly starshipsRepository: Repository<Starships>,
+        @InjectRepository(Vehicles) private readonly vehiclesRepository: Repository<Vehicles>,
         @InjectRepository(PeopleImage) private readonly peopleImageRepository: Repository<PeopleImage>,
         @InjectRepository(FilmsImage) private readonly filmsImageRepository: Repository<FilmsImage>,
         @InjectRepository(PlanetsImage) private readonly planetsImageRepository: Repository<PlanetsImage>,
@@ -57,16 +57,16 @@ export class FilesService {
 
 
 
-    private async pushImageDataToImagesField(unitToUpdate: Unit, image: Express.Multer.File, unitType: UnitTypeEnum) {
-        const imageToPut: any = this.createUnitImageBy(unitType);
+    private async pushImageDataToImagesField(unitToUpdate: Unit, image: Express.Multer.File, unitType: UnitTypeEnum): Promise<void> {
+        const imageToPut: Images = this.createUnitImageBy(unitType);
         imageToPut.filename = image.filename;
-        const presentImages = unitToUpdate.images;
+        const presentImages: Images[] = unitToUpdate.images;
         presentImages.push(imageToPut);
         unitToUpdate.images = presentImages;
     }
 
-    private async removeSingleImageRecordFromDB(imgName: string,unitType: UnitTypeEnum) {
-        const imageRepo: any = this.getImageRepoBy(unitType);
+    private async removeSingleImageRecordFromDB(imgName: string,unitType: UnitTypeEnum): Promise<void> {
+        const imageRepo: Repository<Images> = this.getImageRepoBy(unitType);
         await imageRepo.delete({filename: imgName});
     }
     
@@ -86,31 +86,31 @@ export class FilesService {
             case UnitTypeEnum.Films: return this.filmsRepository;
             case UnitTypeEnum.Planets: return this.planetsRepository;
             case UnitTypeEnum.Species: return this.speciesRepository;
-            case UnitTypeEnum.Starhips: return this.starshipsRepository;
+            case UnitTypeEnum.Starships: return this.starshipsRepository;
             case UnitTypeEnum.Vehicles: return this.vehiclesRepository;   
             default: throw new Error("No such repository found!");
         }
     }
 
-    getImageRepoBy(unitType: UnitTypeEnum) {
+    getImageRepoBy(unitType: UnitTypeEnum): Repository<Images> {
         switch (unitType) {
             case UnitTypeEnum.People: return this.peopleImageRepository;
             case UnitTypeEnum.Films: return this.filmsImageRepository;
             case UnitTypeEnum.Planets: return this.planetsImageRepository;
             case UnitTypeEnum.Species: return this.speciesImageRepository;
-            case UnitTypeEnum.Starhips: return this.starshipsImageRepository;
+            case UnitTypeEnum.Starships: return this.starshipsImageRepository;
             case UnitTypeEnum.Vehicles: return this.vehiclesImageRepository;   
             default: throw new Error("No such image repository found!");
         }
     }
 
-    private createUnitImageBy(unitType: UnitTypeEnum) {
+    private createUnitImageBy(unitType: UnitTypeEnum): Images {
         switch (unitType) {
             case UnitTypeEnum.People: return new PeopleImage();
             case UnitTypeEnum.Films: return new FilmsImage();
             case UnitTypeEnum.Planets: return new PlanetsImage();
             case UnitTypeEnum.Species: return new SpeciesImage();
-            case UnitTypeEnum.Starhips: return new StarshipsImage();
+            case UnitTypeEnum.Starships: return new StarshipsImage();
             case UnitTypeEnum.Vehicles: return new VehiclesImage();
             default: throw new Error("No such image exists found!");
         }

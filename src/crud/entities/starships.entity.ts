@@ -8,55 +8,55 @@ import { StarshipsImage } from "src/files/entities/image.entity";
 export class Starships extends BaseEntity {
     @OneToMany(() => StarshipsImage, (starshipsImage) => starshipsImage.unit, {cascade: ["insert"]})
     @JoinTable({name: "starships_images_rel"})
-    images: StarshipsImage[];
+    images?: StarshipsImage[];
 
     @Column("varchar", {default: "unknown"})
-    name: string;
+    name?: string;
 
     @Column("varchar", {default: "unknown"})
-    model: string;
+    model?: string;
 
     @Column("varchar", {default: "unknown"})
-    manufacturer: string;
+    manufacturer?: string;
 
     @Column("varchar", {default: "unknown"})
-    cost_in_credits: string;
+    cost_in_credits?: string;
 
     @Column("varchar", {default: "unknown"})
-    length: string;
+    length?: string;
 
     @Column("varchar", {default: "unknown"})
-    max_atmosphering_speed: string;
+    max_atmosphering_speed?: string;
 
     @Column("varchar", {default: "unknown"})
-    crew: string;
+    crew?: string;
 
     @Column("varchar", {default: "unknown"})
-    passengers: string;
+    passengers?: string;
 
     @Column("varchar", {default: "unknown"})
-    cargo_capacity: string;
+    cargo_capacity?: string;
 
     @Column("varchar", {default: "unknown"})
-    consumables: string;
+    consumables?: string;
 
     @Column("varchar", {default: "unknown"})
-    hyperdrive_rating: string;
+    hyperdrive_rating?: string;
 
     @Column("varchar", {default: "unknown"})
-    MGLT: string;
+    MGLT?: string;
 
     @Column("varchar", {default: "unknown"})
-    starship_class: string;
+    starship_class?: string;
 
     @ManyToMany(() => People, people => people.starshipsRel, {cascade: ["insert", "update"], onDelete: "CASCADE"})
-    pilotsRel: People[];
+    pilotsRel?: People[];
 
     @Column("text", {nullable: true})
     pilots?: string;
 
     @ManyToMany(() => Films, films => films.starshipsRel, {cascade: ["insert", "update"], onDelete: "CASCADE"})
-    filmsRel: Films[];
+    filmsRel?: Films[];
 
     @Column("text", {nullable: true})
     films?: string;

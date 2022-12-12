@@ -3,14 +3,14 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 @Entity()
 export abstract class BaseEntity {
     @PrimaryGeneratedColumn("increment")
-    id: number;
+    id?: number;
     
     @Column("varchar", {nullable: true})
-    created: string;
+    created?: string;
 
     @Column("varchar", {nullable: true})
-    edited: string;
+    edited?: string;
 
     @Column("varchar", {nullable: true})
-    url: string;
+    url?: string;
 }

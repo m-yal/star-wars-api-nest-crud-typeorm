@@ -4,7 +4,7 @@ import { FilesService } from './files.service';
 import { ApiDeleteFile, ApiDownloadFile, ApiUploadFiles } from './config/api-files-decorator.ts/api-files.decorators';
 import { ParseFiles } from './pipes/parse-files.pipe';
 import { multerOptions } from './config/multer/multer-options.config';
-import { UnitTypeEnum, UnitTypes } from 'src/crud/types/types';
+import { UnitTypeEnum, UnitTypes } from 'src/types/types';
 import { ExecutedDto } from 'src/crud/dto/executed.dto';
 
 @ApiTags("Files paths")
