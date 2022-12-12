@@ -12,6 +12,7 @@ import { Starships } from 'src/crud/entities/starships.entity';
 import { Vehicles } from 'src/crud/entities/vehicles.entity';
 import { CrudRepositories, Unit, UnitTypeEnum, UnitTypes } from 'src/crud/types/types';
 import { ExecutedDto } from 'src/crud/dto/executed.dto';
+import { FilmsImage, PeopleImage, PlanetsImage, SpeciesImage, StarshipsImage, VehiclesImage } from './entities/image.entity';
 
 @Injectable()
 export class FilesService {
@@ -23,50 +24,50 @@ export class FilesService {
         @InjectRepository(Species) private readonly speciesRepository: Repository<Unit>,
         @InjectRepository(Starships) private readonly starshipsRepository: Repository<Unit>,
         @InjectRepository(Vehicles) private readonly vehiclesRepository: Repository<Unit>,
+        @InjectRepository(PeopleImage) private readonly peopleImageRepository: Repository<PeopleImage>,
+        @InjectRepository(FilmsImage) private readonly filmsImageRepository: Repository<FilmsImage>,
+        @InjectRepository(PlanetsImage) private readonly planetsImageRepository: Repository<PlanetsImage>,
+        @InjectRepository(SpeciesImage) private readonly speciesImageRepository: Repository<SpeciesImage>,
+        @InjectRepository(StarshipsImage) private readonly starshipsImageRepository: Repository<StarshipsImage>,
+        @InjectRepository(VehiclesImage) private readonly vehiclesImageRepository: Repository<VehiclesImage>,
     ){}
 
-    private readonly FILENAMES_SEPARATOR: string = ";";
-    private readonly EXECUTION_RESULT_RESPONSE = {executed: true};
+    private readonly EXECUTION_RESULT_RESPONSE: ExecutedDto = {executed: true};
 
-    getBy(imgName: string): fs.ReadStream {
-        return createReadStream(join(process.cwd() + "/files", imgName));
+    getBy(imageName: string): fs.ReadStream {
+        return createReadStream(join(process.cwd() + "/files", imageName));
     }
     
-    async add(id: string, files: Express.Multer.File[], unitType: UnitTypes): Promise<ExecutedDto> {
-        const currentRepository: CrudRepositories = this.getRepoBy(unitType);
-        const unitToUpdate: Unit = await currentRepository.findOneBy({url: id});
+    async add(unitID: string, images: Express.Multer.File[], unitType: UnitTypes): Promise<ExecutedDto> {
+        const unitRepo: CrudRepositories = this.getUnitRepoBy(unitType);
+        const unitToUpdate: Unit = await unitRepo.findOne({where: {id: +unitID}, relations: ["images"]});
         if (!unitToUpdate) throw new NotFoundException();
-        unitToUpdate.images =  this.addImageLink(unitToUpdate.images, files);
-        await currentRepository.save(unitToUpdate);
+        for await (const image of images) {
+            await this.pushImageDataToImagesField(unitToUpdate, image, unitType);          
+        }
+        await unitRepo.save(unitToUpdate);
         return this.EXECUTION_RESULT_RESPONSE;
     }
 
-    async delete(imgName: string, id: string, unitType: UnitTypes): Promise<ExecutedDto> {
-        await this.removeImageLinkFromDB(imgName, id, unitType);
+    async delete(imgName: string, unitType: UnitTypes): Promise<ExecutedDto> {
+        await this.removeSingleImageRecordFromDB(imgName, unitType);
         this.removeImageFile(imgName);
         return this.EXECUTION_RESULT_RESPONSE;
     }
 
-    
 
-    //Service methods for service methods :)
-    extractFileLinks(unitToUpdate: string): string[] {
-        return unitToUpdate.split(this.FILENAMES_SEPARATOR);
+
+    private async pushImageDataToImagesField(unitToUpdate: Unit, image: Express.Multer.File, unitType: UnitTypeEnum) {
+        const imageToPut: any = this.createUnitImageBy(unitType);
+        imageToPut.filename = image.filename;
+        const presentImages = unitToUpdate.images;
+        presentImages.push(imageToPut);
+        unitToUpdate.images = presentImages;
     }
 
-    private async removeImageLinkFromDB(imgName: string, id: string, unitType: UnitTypes): Promise<void> {
-        const currentRepository: CrudRepositories = this.getRepoBy(unitType);
-        const unitToUpdate: any = await currentRepository.findOneBy({url: id});
-        unitToUpdate.images = this.transformImagesLinks(imgName, unitToUpdate.images);
-        await currentRepository.save(unitToUpdate);
-    }
-
-    private transformImagesLinks(imgName: string, images: string): string {
-        const newImagesLinks: string = images.replace(imgName, "")
-            .replace(this.FILENAMES_SEPARATOR.repeat(2), "")
-            .replace(`(^${this.FILENAMES_SEPARATOR})[1,]|(${this.FILENAMES_SEPARATOR}[1,]$)`, "");
-        newImagesLinks.replace(this.FILENAMES_SEPARATOR.repeat(1), this.FILENAMES_SEPARATOR);
-        return newImagesLinks;
+    private async removeSingleImageRecordFromDB(imgName: string,unitType: UnitTypeEnum) {
+        const imageRepo: any = this.getImageRepoBy(unitType);
+        await imageRepo.delete({filename: imgName});
     }
     
     private removeImageFile(imgName: string): ExecutedDto {
@@ -79,19 +80,7 @@ export class FilesService {
         }
     }
 
-    private addImageLink(imagesLinks: any, files: Express.Multer.File[]): string {
-        return imagesLinks === "" ? this.assembleFilenamesToOneStr(files) : imagesLinks + this.FILENAMES_SEPARATOR + this.assembleFilenamesToOneStr(files);
-    }
-
-    private assembleFilenamesToOneStr(files: Express.Multer.File[]): string {
-        let result: string = "";
-        for (const file of files) {
-            result += (file.filename + this.FILENAMES_SEPARATOR);
-        }
-        return result.replace(/;$/, "");
-    }
-
-    private getRepoBy(unitType: UnitTypes): CrudRepositories {
+    private getUnitRepoBy(unitType: UnitTypes): CrudRepositories {
         switch (unitType) {
             case UnitTypeEnum.People: return this.peopleRepository;
             case UnitTypeEnum.Films: return this.filmsRepository;
@@ -100,6 +89,30 @@ export class FilesService {
             case UnitTypeEnum.Starhips: return this.starshipsRepository;
             case UnitTypeEnum.Vehicles: return this.vehiclesRepository;   
             default: throw new Error("No such repository found!");
+        }
+    }
+
+    getImageRepoBy(unitType: UnitTypeEnum) {
+        switch (unitType) {
+            case UnitTypeEnum.People: return this.peopleImageRepository;
+            case UnitTypeEnum.Films: return this.filmsImageRepository;
+            case UnitTypeEnum.Planets: return this.planetsImageRepository;
+            case UnitTypeEnum.Species: return this.speciesImageRepository;
+            case UnitTypeEnum.Starhips: return this.starshipsImageRepository;
+            case UnitTypeEnum.Vehicles: return this.vehiclesImageRepository;   
+            default: throw new Error("No such image repository found!");
+        }
+    }
+
+    private createUnitImageBy(unitType: UnitTypeEnum) {
+        switch (unitType) {
+            case UnitTypeEnum.People: return new PeopleImage();
+            case UnitTypeEnum.Films: return new FilmsImage();
+            case UnitTypeEnum.Planets: return new PlanetsImage();
+            case UnitTypeEnum.Species: return new SpeciesImage();
+            case UnitTypeEnum.Starhips: return new StarshipsImage();
+            case UnitTypeEnum.Vehicles: return new VehiclesImage();
+            default: throw new Error("No such image exists found!");
         }
     }
 }

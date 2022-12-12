@@ -1,11 +1,16 @@
-import { Column, Entity, JoinColumn, ManyToMany, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne } from "typeorm";
 import { Films } from "./films.entity";
 import { People } from "./people.entity";
 import { Planets } from "./planets.entity";
 import { BaseEntity } from "./base-entity";
+import { SpeciesImage } from "src/files/entities/image.entity";
 
 @Entity()
 export class Species extends BaseEntity {
+    @OneToMany(() => SpeciesImage, (speciesImage) => speciesImage.unit, {cascade: ["insert"]})
+    @JoinTable({name: "species_images_rel"})
+    images: SpeciesImage[];
+    
     @Column("varchar", {default: "unknown"})
     name: string;
 
@@ -33,20 +38,20 @@ export class Species extends BaseEntity {
     @Column("varchar", {nullable: true})
     homeworld?: string | null;
 
-    @OneToOne(() => Planets, {nullable: true, cascade: ["insert"]})
+    @OneToOne(() => Planets, {nullable: true, cascade: ["insert", "update"], onDelete: "CASCADE"})
     @JoinColumn({name: "homeworldRel"})
     homeworldRel: Planets;
 
     @Column("varchar", {default: "unknown"})
     language: string;
 
-    @ManyToMany(() => People, people => people.speciesRel, {cascade: ["insert", "update"]})
+    @ManyToMany(() => People, people => people.speciesRel, {cascade: ["insert", "update"], onDelete: "CASCADE"})
     peopleRel: People[];
 
     @Column("text", {nullable: true})
     people?: string;
 
-    @ManyToMany(() => Films, films => films.speciesRel, {cascade: ["insert", "update"]})
+    @ManyToMany(() => Films, films => films.speciesRel, {cascade: ["insert", "update"], onDelete: "CASCADE"})
     filmsRel: Films[];
 
     @Column("text", {nullable: true})

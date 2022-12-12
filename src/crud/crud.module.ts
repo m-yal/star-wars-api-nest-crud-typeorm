@@ -10,7 +10,12 @@ import { Starships } from './entities/starships.entity';
 import { Vehicles } from './entities/vehicles.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([People, Films, Planets, Species, Starships, Vehicles])],
+  imports: [
+    TypeOrmModule.forFeature([
+      People, Films, Planets, 
+      Species, Starships, Vehicles
+    ])
+  ],
   providers: [CrudService],
   controllers: [CrudController]
 })

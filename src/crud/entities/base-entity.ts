@@ -1,4 +1,4 @@
-import { Column, Entity, Generated, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export abstract class BaseEntity {
@@ -13,7 +13,4 @@ export abstract class BaseEntity {
 
     @Column("varchar", {nullable: true})
     url: string;
-    
-    @Column({type: "varchar", default: ""})
-    images: string = "";
 }

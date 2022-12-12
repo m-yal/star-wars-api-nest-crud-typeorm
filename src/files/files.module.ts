@@ -7,11 +7,20 @@ import { Planets } from 'src/crud/entities/planets.entity';
 import { Species } from 'src/crud/entities/species.entity';
 import { Starships } from 'src/crud/entities/starships.entity';
 import { Vehicles } from 'src/crud/entities/vehicles.entity';
+import { FilmsImage, PeopleImage, PlanetsImage, SpeciesImage, StarshipsImage, VehiclesImage } from './entities/image.entity';
 import { FilesController } from './files.controller';
 import { FilesService } from './files.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([People, Films, Planets, Species, Starships, Vehicles]), MulterModule.register()],
+  imports: [
+    TypeOrmModule.forFeature([
+      People, Films, Planets, Species, 
+      Starships, Vehicles, PeopleImage, 
+      FilmsImage, PlanetsImage, SpeciesImage, 
+      StarshipsImage, VehiclesImage
+    ]), 
+    MulterModule.register()
+  ],
   controllers: [FilesController],
   providers: [FilesService]
 })

@@ -6,6 +6,7 @@ import { Planets } from "src/crud/entities/planets.entity";
 import { Species } from "src/crud/entities/species.entity";
 import { Starships } from "src/crud/entities/starships.entity";
 import { Vehicles } from "src/crud/entities/vehicles.entity";
+import { FilmsImage, PeopleImage, PlanetsImage, SpeciesImage, StarshipsImage, VehiclesImage } from "src/files/entities/image.entity";
 
 export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
     imports: [ConfigModule],
@@ -17,7 +18,12 @@ export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
         username: process.env.DB_USERNAME,
         database: process.env.DB_NAME,
         password: process.env.DB_PASSWORD,
-        entities: [People, Films, Planets, Species, Starships, Vehicles],
+        entities: [
+          People, Films, Planets, 
+          Species, Starships, Vehicles,
+          PeopleImage, FilmsImage, PlanetsImage,
+          SpeciesImage, StarshipsImage, VehiclesImage
+        ],
         synchronize: false,
       };
     },

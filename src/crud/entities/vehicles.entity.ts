@@ -1,10 +1,15 @@
-import { Column, Entity, ManyToMany } from "typeorm";
+import { StarshipsImage } from "src/files/entities/image.entity";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
 import { BaseEntity } from "./base-entity";
 import { Films } from "./films.entity";
 import { People } from "./people.entity";
 
 @Entity()
 export class Vehicles extends BaseEntity {
+    @OneToMany(() => StarshipsImage, (starshipsImage) => starshipsImage.unit, {cascade: ["insert"]})
+    @JoinTable({name: "vehicles_images_rel"})
+    images: StarshipsImage[];
+    
     @Column("varchar", {default: "unknown"})
     name: string;
 
@@ -38,13 +43,13 @@ export class Vehicles extends BaseEntity {
     @Column("varchar", {default: "unknown"})
     vehicle_class: string;
 
-    @ManyToMany(() => People, people => people.vehiclesRel, {cascade: ["insert", "update"]})
+    @ManyToMany(() => People, people => people.vehiclesRel, {cascade: ["insert", "update"], onDelete: "CASCADE"})
     pilotsRel: People[];
 
     @Column("text", {nullable: true})
     pilots?: string;
     
-    @ManyToMany(() => Films, films => films.vehiclesRel, {cascade: ["insert", "update"]})
+    @ManyToMany(() => Films, films => films.vehiclesRel, {cascade: ["insert", "update"], onDelete: "CASCADE"})
     filmsRel: Films[];
 
     @Column("text", {nullable: true})

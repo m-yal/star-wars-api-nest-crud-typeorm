@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Films } from './entities/films.entity';
 import { People } from './entities/people.entity';
@@ -10,6 +10,8 @@ import { FindManyOptions, Repository } from 'typeorm';
 import { GetUnitsDto } from './dto/get-units.dto';
 import { ExecutedDto } from './dto/executed.dto';
 import { CrudRepositories, Unit, UnitTypes, UnitTypeEnum } from './types/types';
+import * as fs from 'fs';
+
 
 @Injectable()
 export class CrudService {
@@ -53,6 +55,25 @@ export class CrudService {
         return {executed: true};
     }
 
+    async delete(id: string, unitType: UnitTypes): Promise<ExecutedDto> {
+        const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
+        const unit: Unit = await currentUnitRepository.findOneByOrFail({id: +id});
+        await this.deleteImageFilesOf(unit);
+        await currentUnitRepository.delete(unit);
+        return {executed: true};
+    }
+
+    private async deleteImageFilesOf(unit: Unit) {
+        for await (const image of unit.images) {
+            const path: fs.PathLike = `${__dirname}/../../files/${image.filename}`;
+            if (fs.existsSync(path)) {
+                fs.unlinkSync(path);
+            } else {
+                throw new NotFoundException('File for deletion not found');
+            }
+        }
+    }
+
     private async updateUnitRelations(partialData: any, unitType: UnitTypeEnum): Promise<void> {
         const partialDataFields: string[] = Object.keys(partialData);
         console.log("=== partialDataFields: " + partialDataFields);
@@ -80,13 +101,6 @@ export class CrudService {
             partialData[homeworldRelFieldName] = await this.planetsRepository
                 .findOneByOrFail({id: partialData[homeworldRelFieldName]});
         }
-    }
-
-    async delete(id: string, unitType: UnitTypes): Promise<ExecutedDto> {
-        const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
-        const unit: Unit = await currentUnitRepository.findOneBy({url: id});
-        await currentUnitRepository.remove(unit);
-        return {executed: true};
     }
 
     private async addUnit(newUnit: any, unitType: UnitTypeEnum) {
@@ -192,12 +206,12 @@ export class CrudService {
 
     private defineRelationsFor(unitType: UnitTypes): string[] {
         switch(unitType) {
-            case UnitTypeEnum.People: return ["homeworldRel", "filmsRel", "speciesRel", "vehiclesRel", "starshipsRel"];
-            case UnitTypeEnum.Films: return ["charactersRel", "planetsRel", "starshipsRel", "vehiclesRel", "speciesRel"];
-            case UnitTypeEnum.Planets: return ["residentsRel", "filmsRel"];
-            case UnitTypeEnum.Species: return ["homeworldRel", "peopleRel", "filmsRel"];
-            case UnitTypeEnum.Starhips: return ["pilotsRel", "filmsRel"];
-            case UnitTypeEnum.Vehicles: return ["pilotsRel", "filmsRel"];
+            case UnitTypeEnum.People: return ["homeworldRel", "filmsRel", "speciesRel", "vehiclesRel", "starshipsRel", "images"];
+            case UnitTypeEnum.Films: return ["charactersRel", "planetsRel", "starshipsRel", "vehiclesRel", "speciesRel", "images"];
+            case UnitTypeEnum.Planets: return ["residentsRel", "filmsRel", "images"];
+            case UnitTypeEnum.Species: return ["homeworldRel", "peopleRel", "filmsRel", "images"];
+            case UnitTypeEnum.Starhips: return ["pilotsRel", "filmsRel", "images"];
+            case UnitTypeEnum.Vehicles: return ["pilotsRel", "filmsRel", "images"];
             default: throw new Error("No realtions found for this unit type during getting up to 10 units")
         }
     }
