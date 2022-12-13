@@ -47,7 +47,7 @@ export class Seeder implements MigrationInterface {
         do {
             const {data} = await firstValueFrom(this.httpService.get(link));
             link = await data.next;
-            console.log("Next page for upload: " + link);
+            console.log("Next page for download: " + link);
             results = results.concat(this.convertArraysToString(await data.results));
         } while (link);
         return results;

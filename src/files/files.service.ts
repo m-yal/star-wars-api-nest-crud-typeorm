@@ -32,13 +32,11 @@ export class FilesService {
         @InjectRepository(VehiclesImage) private readonly vehiclesImageRepository: Repository<VehiclesImage>,
     ){}
 
-    private readonly EXECUTION_RESULT_RESPONSE: ExecutedDto = {executed: true};
-
     getBy(imageName: string): fs.ReadStream {
         return createReadStream(join(process.cwd() + "/files", imageName));
     }
     
-    async add(unitID: string, images: Express.Multer.File[], unitType: UnitTypes): Promise<ExecutedDto> {
+    async add(unitID: string, images: Express.Multer.File[], unitType: UnitTypes): Promise<true> {
         const unitRepo: CrudRepositories = this.getUnitRepoBy(unitType);
         const unitToUpdate: Unit = await unitRepo.findOne({where: {id: +unitID}, relations: ["images"]});
         if (!unitToUpdate) throw new NotFoundException();
@@ -46,13 +44,13 @@ export class FilesService {
             await this.pushImageDataToImagesField(unitToUpdate, image, unitType);          
         }
         await unitRepo.save(unitToUpdate);
-        return this.EXECUTION_RESULT_RESPONSE;
+        return true;
     }
 
-    async delete(imgName: string, unitType: UnitTypes): Promise<ExecutedDto> {
+    async delete(imgName: string, unitType: UnitTypes): Promise<true> {
         await this.removeSingleImageRecordFromDB(imgName, unitType);
         this.removeImageFile(imgName);
-        return this.EXECUTION_RESULT_RESPONSE;
+        return true;
     }
 
 

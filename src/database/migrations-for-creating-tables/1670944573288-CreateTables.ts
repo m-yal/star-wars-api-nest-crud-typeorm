@@ -1,9 +1,13 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class CreateTables1670870615118 implements MigrationInterface {
-    name = 'CreateTables1670870615118'
+export class CreateTables1670944573288 implements MigrationInterface {
+    name = 'CreateTables1670944573288'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`CREATE TABLE \`planets\` (\`id\` int NOT NULL AUTO_INCREMENT, \`created\` varchar(255) NULL, \`edited\` varchar(255) NULL, \`url\` varchar(255) NULL, \`name\` varchar(255) NOT NULL DEFAULT 'unknown', \`rotation_period\` varchar(255) NOT NULL DEFAULT 'unknown', \`orbital_period\` varchar(255) NOT NULL DEFAULT 'unknown', \`diameter\` varchar(255) NOT NULL DEFAULT 'unknown', \`climate\` varchar(255) NOT NULL DEFAULT 'unknown', \`gravity\` varchar(255) NOT NULL DEFAULT 'unknown', \`terrain\` varchar(255) NOT NULL DEFAULT 'unknown', \`surface_water\` varchar(255) NOT NULL DEFAULT 'unknown', \`population\` varchar(255) NOT NULL DEFAULT 'unknown', \`residents\` text NULL, \`films\` text NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
+        await queryRunner.query(`CREATE TABLE \`species\` (\`id\` int NOT NULL AUTO_INCREMENT, \`created\` varchar(255) NULL, \`edited\` varchar(255) NULL, \`url\` varchar(255) NULL, \`name\` varchar(255) NOT NULL DEFAULT 'unknown', \`classification\` varchar(255) NOT NULL DEFAULT 'unknown', \`designation\` varchar(255) NOT NULL DEFAULT 'unknown', \`average_height\` varchar(255) NOT NULL DEFAULT 'unknown', \`skin_colors\` varchar(255) NOT NULL DEFAULT 'unknown', \`hair_colors\` varchar(255) NOT NULL DEFAULT 'unknown', \`eye_colors\` varchar(255) NOT NULL DEFAULT 'unknown', \`average_lifespan\` varchar(255) NOT NULL DEFAULT 'unknown', \`homeworld\` varchar(255) NULL, \`language\` varchar(255) NOT NULL DEFAULT 'unknown', \`people\` text NULL, \`films\` text NULL, \`homeworldRel\` int NULL, UNIQUE INDEX \`REL_651deb429602ad70fd4b8d8050\` (\`homeworldRel\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
+        await queryRunner.query(`CREATE TABLE \`starships\` (\`id\` int NOT NULL AUTO_INCREMENT, \`created\` varchar(255) NULL, \`edited\` varchar(255) NULL, \`url\` varchar(255) NULL, \`name\` varchar(255) NOT NULL DEFAULT 'unknown', \`model\` varchar(255) NOT NULL DEFAULT 'unknown', \`manufacturer\` varchar(255) NOT NULL DEFAULT 'unknown', \`cost_in_credits\` varchar(255) NOT NULL DEFAULT 'unknown', \`length\` varchar(255) NOT NULL DEFAULT 'unknown', \`max_atmosphering_speed\` varchar(255) NOT NULL DEFAULT 'unknown', \`crew\` varchar(255) NOT NULL DEFAULT 'unknown', \`passengers\` varchar(255) NOT NULL DEFAULT 'unknown', \`cargo_capacity\` varchar(255) NOT NULL DEFAULT 'unknown', \`consumables\` varchar(255) NOT NULL DEFAULT 'unknown', \`hyperdrive_rating\` varchar(255) NOT NULL DEFAULT 'unknown', \`MGLT\` varchar(255) NOT NULL DEFAULT 'unknown', \`starship_class\` varchar(255) NOT NULL DEFAULT 'unknown', \`pilots\` text NULL, \`films\` text NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
+        await queryRunner.query(`CREATE TABLE \`vehicles\` (\`id\` int NOT NULL AUTO_INCREMENT, \`created\` varchar(255) NULL, \`edited\` varchar(255) NULL, \`url\` varchar(255) NULL, \`name\` varchar(255) NOT NULL DEFAULT 'unknown', \`model\` varchar(255) NOT NULL DEFAULT 'unknown', \`manufacturer\` varchar(255) NOT NULL DEFAULT 'unknown', \`cost_in_credits\` varchar(255) NOT NULL DEFAULT 'unknown', \`length\` varchar(255) NOT NULL DEFAULT 'unknown', \`max_atmosphering_speed\` varchar(255) NOT NULL DEFAULT 'unknown', \`crew\` varchar(255) NOT NULL DEFAULT 'unknown', \`passengers\` varchar(255) NOT NULL DEFAULT 'unknown', \`cargo_capacity\` varchar(255) NOT NULL DEFAULT 'unknown', \`consumables\` varchar(255) NOT NULL DEFAULT 'unknown', \`vehicle_class\` varchar(255) NOT NULL DEFAULT 'unknown', \`pilots\` text NULL, \`films\` text NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`people\` (\`id\` int NOT NULL AUTO_INCREMENT, \`created\` varchar(255) NULL, \`edited\` varchar(255) NULL, \`url\` varchar(255) NULL, \`name\` varchar(255) NOT NULL DEFAULT 'unknown', \`height\` varchar(255) NOT NULL DEFAULT 'unknown', \`mass\` varchar(255) NOT NULL DEFAULT 'unknown', \`hair_color\` varchar(255) NOT NULL DEFAULT 'unknown', \`skin_color\` varchar(255) NOT NULL DEFAULT 'unknown', \`eye_color\` varchar(255) NOT NULL DEFAULT 'unknown', \`birth_year\` varchar(255) NOT NULL DEFAULT 'unknown', \`gender\` varchar(255) NOT NULL DEFAULT 'unknown', \`homeworld\` varchar(255) NULL, \`films\` text NULL, \`species\` text NULL, \`vehicles\` text NULL, \`starships\` text NULL, \`homeworldRelId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`films_image\` (\`filename\` varchar(255) NOT NULL, \`unitId\` int NULL, PRIMARY KEY (\`filename\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`people_image\` (\`filename\` varchar(255) NOT NULL, \`unitId\` int NULL, PRIMARY KEY (\`filename\`)) ENGINE=InnoDB`);
@@ -20,19 +24,6 @@ export class CreateTables1670870615118 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE \`films_starships_rel\` (\`filmsId\` int NOT NULL, \`starshipsId\` int NOT NULL, INDEX \`IDX_c876c35d31e1cc70c64fc3cadc\` (\`filmsId\`), INDEX \`IDX_81b169aa077ee1db5f33abb49b\` (\`starshipsId\`), PRIMARY KEY (\`filmsId\`, \`starshipsId\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`films_vehicles_rel\` (\`filmsId\` int NOT NULL, \`vehiclesId\` int NOT NULL, INDEX \`IDX_6febc218282981f4617e4f4559\` (\`filmsId\`), INDEX \`IDX_635bc8c26c57f052c05f86910a\` (\`vehiclesId\`), PRIMARY KEY (\`filmsId\`, \`vehiclesId\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`films_species_rel\` (\`filmsId\` int NOT NULL, \`speciesId\` int NOT NULL, INDEX \`IDX_6e9e64731d924193fa023dd4cc\` (\`filmsId\`), INDEX \`IDX_dc5623a15aacbba5bcd2803388\` (\`speciesId\`), PRIMARY KEY (\`filmsId\`, \`speciesId\`)) ENGINE=InnoDB`);
-        await queryRunner.query(`ALTER TABLE \`planets\` DROP COLUMN \`images\``);
-        await queryRunner.query(`ALTER TABLE \`species\` DROP COLUMN \`images\``);
-        await queryRunner.query(`ALTER TABLE \`starships\` DROP COLUMN \`images\``);
-        await queryRunner.query(`ALTER TABLE \`vehicles\` DROP COLUMN \`images\``);
-        await queryRunner.query(`ALTER TABLE \`planets\` ADD \`residents\` text NULL`);
-        await queryRunner.query(`ALTER TABLE \`planets\` ADD \`films\` text NULL`);
-        await queryRunner.query(`ALTER TABLE \`species\` ADD \`homeworld\` varchar(255) NULL`);
-        await queryRunner.query(`ALTER TABLE \`species\` ADD \`people\` text NULL`);
-        await queryRunner.query(`ALTER TABLE \`species\` ADD \`films\` text NULL`);
-        await queryRunner.query(`ALTER TABLE \`starships\` ADD \`pilots\` text NULL`);
-        await queryRunner.query(`ALTER TABLE \`starships\` ADD \`films\` text NULL`);
-        await queryRunner.query(`ALTER TABLE \`vehicles\` ADD \`pilots\` text NULL`);
-        await queryRunner.query(`ALTER TABLE \`vehicles\` ADD \`films\` text NULL`);
         await queryRunner.query(`ALTER TABLE \`species\` ADD CONSTRAINT \`FK_651deb429602ad70fd4b8d80503\` FOREIGN KEY (\`homeworldRel\`) REFERENCES \`planets\`(\`id\`) ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE \`people\` ADD CONSTRAINT \`FK_f26997a3c1448e7b6aab6c1de80\` FOREIGN KEY (\`homeworldRelId\`) REFERENCES \`planets\`(\`id\`) ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE \`films_image\` ADD CONSTRAINT \`FK_8bc1aa1394dbbef5f02bb9ec01b\` FOREIGN KEY (\`unitId\`) REFERENCES \`films\`(\`id\`) ON DELETE CASCADE ON UPDATE NO ACTION`);
@@ -84,19 +75,6 @@ export class CreateTables1670870615118 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE \`films_image\` DROP FOREIGN KEY \`FK_8bc1aa1394dbbef5f02bb9ec01b\``);
         await queryRunner.query(`ALTER TABLE \`people\` DROP FOREIGN KEY \`FK_f26997a3c1448e7b6aab6c1de80\``);
         await queryRunner.query(`ALTER TABLE \`species\` DROP FOREIGN KEY \`FK_651deb429602ad70fd4b8d80503\``);
-        await queryRunner.query(`ALTER TABLE \`vehicles\` DROP COLUMN \`films\``);
-        await queryRunner.query(`ALTER TABLE \`vehicles\` DROP COLUMN \`pilots\``);
-        await queryRunner.query(`ALTER TABLE \`starships\` DROP COLUMN \`films\``);
-        await queryRunner.query(`ALTER TABLE \`starships\` DROP COLUMN \`pilots\``);
-        await queryRunner.query(`ALTER TABLE \`species\` DROP COLUMN \`films\``);
-        await queryRunner.query(`ALTER TABLE \`species\` DROP COLUMN \`people\``);
-        await queryRunner.query(`ALTER TABLE \`species\` DROP COLUMN \`homeworld\``);
-        await queryRunner.query(`ALTER TABLE \`planets\` DROP COLUMN \`films\``);
-        await queryRunner.query(`ALTER TABLE \`planets\` DROP COLUMN \`residents\``);
-        await queryRunner.query(`ALTER TABLE \`vehicles\` ADD \`images\` varchar(255) NOT NULL DEFAULT ''`);
-        await queryRunner.query(`ALTER TABLE \`starships\` ADD \`images\` varchar(255) NOT NULL DEFAULT ''`);
-        await queryRunner.query(`ALTER TABLE \`species\` ADD \`images\` varchar(255) NOT NULL DEFAULT ''`);
-        await queryRunner.query(`ALTER TABLE \`planets\` ADD \`images\` varchar(255) NOT NULL DEFAULT ''`);
         await queryRunner.query(`DROP INDEX \`IDX_dc5623a15aacbba5bcd2803388\` ON \`films_species_rel\``);
         await queryRunner.query(`DROP INDEX \`IDX_6e9e64731d924193fa023dd4cc\` ON \`films_species_rel\``);
         await queryRunner.query(`DROP TABLE \`films_species_rel\``);
@@ -129,6 +107,11 @@ export class CreateTables1670870615118 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE \`people_image\``);
         await queryRunner.query(`DROP TABLE \`films_image\``);
         await queryRunner.query(`DROP TABLE \`people\``);
+        await queryRunner.query(`DROP TABLE \`vehicles\``);
+        await queryRunner.query(`DROP TABLE \`starships\``);
+        await queryRunner.query(`DROP INDEX \`REL_651deb429602ad70fd4b8d8050\` ON \`species\``);
+        await queryRunner.query(`DROP TABLE \`species\``);
+        await queryRunner.query(`DROP TABLE \`planets\``);
     }
 
 }

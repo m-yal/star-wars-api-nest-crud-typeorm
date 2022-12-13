@@ -1,9 +1,5 @@
-import { Unit } from "../../types/types";
+import { UpToTenUnitsPage } from "../../types/types";
 
-export class GetUnitsDto {
-    data: {
-        units: Unit[];
-        hasNext: boolean;
-        hasPrev: boolean;
-    }
+export interface GetUnitsDto {
+    data: UpToTenUnitsPage
 }

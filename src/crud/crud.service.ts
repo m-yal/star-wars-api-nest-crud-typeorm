@@ -7,9 +7,7 @@ import { Species } from './entities/species.entity';
 import { Starships } from './entities/starships.entity';
 import { Vehicles } from './entities/vehicles.entity';
 import { FindManyOptions, Repository } from 'typeorm';
-import { GetUnitsDto } from './dto/get-units.dto';
-import { ExecutedDto } from './dto/executed.dto';
-import { CrudRepositories, Unit, UnitTypes, UnitTypeEnum, RelationField } from '../types/types';
+import { CrudRepositories, Unit, UnitTypes, UnitTypeEnum, RelationField, UpToTenUnitsPage } from '../types/types';
 import * as fs from 'fs';
 
 
@@ -17,7 +15,6 @@ import * as fs from 'fs';
 export class CrudService {
 
     private readonly UNITS_PER_PAGE: number = 10;
-    private readonly EXECUTED_DTO: ExecutedDto = {executed: true};
 
     constructor(
         @InjectRepository(People) private readonly peopleRepository: Repository<Unit>,
@@ -28,8 +25,8 @@ export class CrudService {
         @InjectRepository(Vehicles) private readonly vehiclesRepository: Repository<Unit>,
     ){}
     
-    async get(page: number, unitType: UnitTypes): Promise<GetUnitsDto> {
-        this.validate(page);
+    async get(page: number, unitType: UnitTypes): Promise<UpToTenUnitsPage> {
+        this.validate(+page);
         const pageIndex: number = page - 1;
         const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
         const units: Unit[] = await currentUnitRepository.find(this.generateFindUpToTenUnitsOptions(pageIndex, unitType));
@@ -37,30 +34,30 @@ export class CrudService {
         return await this.assembleReturnObject(units, pageIndex, page, allUnitsInRepoAmount);
     }
     
-    async add(body: Unit, unitType: UnitTypes): Promise<ExecutedDto> {
+    async add(body: Unit, unitType: UnitTypes): Promise<true> {
         const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
         const newUnit: Unit = body;
         await this.addUnit(newUnit, unitType);
         await currentUnitRepository.save(newUnit);
-        return this.EXECUTED_DTO;
+        return true;
     }
 
-    async update(body: Unit, id: string, unitType: UnitTypes): Promise<ExecutedDto> {
+    async update(body: Unit, id: string, unitType: UnitTypes): Promise<true> {
         const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
         const partialData: Unit = body;
         const unitToUpdate: Unit = await currentUnitRepository.findOneByOrFail({id: +id});
         await this.updateUnitRelations(partialData, unitType);
         const unitToSave: Unit = {...unitToUpdate, ...partialData};
         await currentUnitRepository.save(unitToSave);
-        return this.EXECUTED_DTO;
+        return true;
     }
 
-    async delete(id: string, unitType: UnitTypes): Promise<ExecutedDto> {
+    async delete(id: string, unitType: UnitTypes): Promise<true> {
         const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
-        const unit: Unit = await currentUnitRepository.findOneByOrFail({id: +id});
-        await this.deleteImageFilesOf(unit);
-        await currentUnitRepository.delete(unit);
-        return this.EXECUTED_DTO;
+        const unit: Unit = await currentUnitRepository.findOneOrFail({where: {id: +id}, relations: ["images"]});
+        this.deleteImageFilesOf(unit);
+        await currentUnitRepository.remove(unit);
+        return true;
     }
 
     
@@ -70,8 +67,9 @@ export class CrudService {
         if (page < 1) throw new HttpException('Invalid input page number: must be bigger than 1!', HttpStatus.BAD_REQUEST);
     }
 
-    private async deleteImageFilesOf(unit: Unit): Promise<void> {
-        for await (const image of unit.images) {
+    private deleteImageFilesOf(unit: Unit): void {
+        if (unit.images.length === 0) return;
+        for (const image of unit.images) {
             const path: fs.PathLike = `${__dirname}/../../files/${image.filename}`;
             if (fs.existsSync(path)) {
                 fs.unlinkSync(path);
@@ -219,13 +217,11 @@ export class CrudService {
         }
     }
 
-    private async assembleReturnObject(units: Unit[], pageIndex: number, page: number, allUnitsInRepoAmount: number): Promise<GetUnitsDto> {
+    private async assembleReturnObject(units: Unit[], pageIndex: number, page: number, allUnitsInRepoAmount: number): Promise<UpToTenUnitsPage> {
         return {
-            data: {
-                units: units,
-                hasNext: page * this.UNITS_PER_PAGE < allUnitsInRepoAmount ? true : false,
-                hasPrev: pageIndex === 0 ? false : true
-            }
+            units: units,
+            hasNext: page * this.UNITS_PER_PAGE < allUnitsInRepoAmount ? true : false,
+            hasPrev: pageIndex === 0 ? false : true
         }
     }
 }

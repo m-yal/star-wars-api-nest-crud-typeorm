@@ -1,3 +1,3 @@
-export class ExecutedDto {
+export interface ExecutedDto {
     executed: boolean
 }

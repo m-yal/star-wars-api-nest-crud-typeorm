@@ -6,7 +6,7 @@ import { People } from "./people.entity";
 
 @Entity()
 export class Vehicles extends BaseEntity {
-    @OneToMany(() => StarshipsImage, (starshipsImage) => starshipsImage.unit, {cascade: ["insert"]})
+    @OneToMany(() => StarshipsImage, (starshipsImage) => starshipsImage.unit, {onDelete: "CASCADE"})
     @JoinTable({name: "vehicles_images_rel"})
     images?: StarshipsImage[];
     

@@ -26,3 +26,8 @@ export type RelationField = "homeworldRel" | "filmsRel" | "speciesRel" | "vehicl
     | "pilotsRel" | "peopleRel" | "images";
 export type UnitRecordValue = typeof People | typeof Planets | typeof Starships | typeof Vehicles | typeof Species | typeof Species;
 export type Images = PeopleImage | FilmsImage | PlanetsImage | SpeciesImage | StarshipsImage | VehiclesImage;
+export interface UpToTenUnitsPage {
+    units: Unit[],
+    hasNext: boolean,
+    hasPrev: boolean
+}

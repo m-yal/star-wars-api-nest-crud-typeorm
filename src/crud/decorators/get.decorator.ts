@@ -1,6 +1,6 @@
 import { applyDecorators, HttpStatus } from "@nestjs/common";
 import { ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
-import { GetUnitsDto } from "../dto/get-units.dto";
+import { DataResponseInterceptor } from "src/interceptors/up-to-ten-units-response.interceptor";
 
 export function ApiGetUnits() {
     return applyDecorators(
@@ -10,7 +10,7 @@ export function ApiGetUnits() {
         ApiResponse({
             status: HttpStatus.OK,
             description: "Up to ten units sent to client",
-            type: GetUnitsDto
+            type: DataResponseInterceptor
         })
     )
 }
