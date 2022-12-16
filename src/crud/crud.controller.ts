@@ -13,7 +13,7 @@ import { DataResponseInterceptor } from 'src/interceptors/up-to-ten-units-respon
 @Controller('crud')
 export class CrudController {
     
-    constructor(private crudService: CrudService) {}
+    constructor(private readonly crudService: CrudService) {}
 
     @Get("")
     @ApiGetUnits()

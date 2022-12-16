@@ -8,6 +8,7 @@ import { Planets } from './entities/planets.entity';
 import { Species } from './entities/species.entity';
 import { Starships } from './entities/starships.entity';
 import { Vehicles } from './entities/vehicles.entity';
+import { MySQLUnitsRepository } from './crud-mysql.repository';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { Vehicles } from './entities/vehicles.entity';
       Species, Starships, Vehicles
     ])
   ],
-  providers: [CrudService],
+  providers: [CrudService, MySQLUnitsRepository],
   controllers: [CrudController]
 })
 export class CrudModule {
