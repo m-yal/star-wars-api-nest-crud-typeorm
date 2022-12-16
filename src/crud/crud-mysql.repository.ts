@@ -72,8 +72,6 @@ export class MySQLUnitsRepository {
             const path: fs.PathLike = `${__dirname}/../../files/${image.filename}`;
             if (fs.existsSync(path)) {
                 fs.unlinkSync(path);
-            } else {
-                throw new NotFoundException('File for deletion not found');
             }
         }
     }

@@ -16,7 +16,7 @@ export class FilesController {
     @Get("")
     @ApiDownloadFile()
     getAll(@Query("imageName") imageName: string): StreamableFile {
-        return new StreamableFile(this.fileService.getBy(imageName));
+        return new StreamableFile(this.fileService.get(imageName));
     }
 
     //writted partially with a help of: https://notiz.dev/blog/type-safe-file-uploads
