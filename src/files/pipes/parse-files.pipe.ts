@@ -5,7 +5,6 @@ import { ArgumentMetadata, Injectable, PipeTransform, BadRequestException, } fro
     transform( files: Express.Multer.File[], metadata: ArgumentMetadata): Express.Multer.File[] {
       if (!files) throw new BadRequestException('Validation failed (file expected)');
       if (files.length === 0) throw new BadRequestException('Validation failed (files expected)');
-      console.log("files.length " + files.length);
       return files;
     }
   }

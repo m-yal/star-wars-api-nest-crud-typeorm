@@ -10,9 +10,10 @@ import { FindManyOptions, Repository } from 'typeorm';
 import { CrudRepositories, Unit, UnitTypes, UnitTypeEnum, UpToTenUnitsPage } from '../types/types';
 import * as fs from 'fs';
 import { UNITS_RELATIONS_FIELDS_MAP, UNITS_PER_PAGE } from './constants';
+import { UnitRepository } from './interfaces/unit-repository.interface';
 
 @Injectable()
-export class MySQLUnitsRepository {
+export class MySQLUnitsRepository implements UnitRepository {
 
     constructor(
         @InjectRepository(People) private readonly peopleRepository: Repository<People>,
