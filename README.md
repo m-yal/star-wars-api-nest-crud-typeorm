@@ -9,15 +9,19 @@ Star Wars data API written on [Nest](https://github.com/nestjs/nest) and MySQL. 
 $ npm install
 ```
 2. Install [mysql server](https://pen-y-fan.github.io/2021/08/08/How-to-install-MySQL-on-WSL-2-Ubuntu/) and set password for root user.
-3. Launch compilation of typesript
+3. Copy data form .env.example to .env and change config data according to yours needs
+```bash
+$ cp .env.example .env
+```
+4. Launch compilation of typesript
 ```bash
 $  npm run build
 ```
-4. Launch migration for creating tables:
+5. Launch migration for creating tables:
 ```bash
 $ npm run migration:run
 ```
-5. Launch seeding db by [swapi.dev](swapi.dev) data
+6. Launch seeding db by [swapi.dev](swapi.dev) data
 ```bash
 $ npm run seed:up
 ```
