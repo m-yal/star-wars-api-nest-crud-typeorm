@@ -1,8 +1,9 @@
 import { applyDecorators, HttpStatus } from "@nestjs/common";
 import { ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
 import { ExecutedResponseInterseptor } from "src/interceptors/executed-response.interceptor";
+import { ApplyDecorators } from "src/types/types";
 
-export function ApiDeleteUnit() {
+export function ApiDeleteUnit(): ApplyDecorators {
     return applyDecorators(
         ApiResponse({
             status: HttpStatus.OK,

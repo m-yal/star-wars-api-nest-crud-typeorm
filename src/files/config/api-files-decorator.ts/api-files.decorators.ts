@@ -1,18 +1,19 @@
-import { applyDecorators, Header, HttpStatus, UseInterceptors } from '@nestjs/common';
+import { applyDecorators, CustomDecorator, Header, HttpStatus, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { ApiBody, ApiConsumes, ApiOperation, ApiProduces, ApiResponse } from '@nestjs/swagger';
-import { getApiBodySchema } from '../swagger/swagger-api-body.schema';
+import { ApplyDecorators } from 'src/types/types';
+import { getUploadFilesBodySchema } from '../swagger/swagger-api-body.schema';
 
-export function ApiUploadFiles(fieldName: string = 'files', maxCount: number, multerOptions?: MulterOptions) {
+export function ApiUploadFiles(fieldName: string = 'files', maxCount: number, multerOptions?: MulterOptions): ApplyDecorators {
   return applyDecorators(
     UseInterceptors(FilesInterceptor(fieldName, maxCount, multerOptions)),
     ApiConsumes('multipart/form-data'),
-    ApiBody(getApiBodySchema(fieldName))
+    ApiBody(getUploadFilesBodySchema(fieldName))
   );
 }
 
-export function ApiDownloadFile() {
+export function ApiDownloadFile(): ApplyDecorators {
   return applyDecorators(
     ApiOperation({summary: "Get one image from one person"}),
     ApiResponse({
@@ -28,7 +29,7 @@ export function ApiDownloadFile() {
   );
 }
 
-export function ApiDeleteFile() {
+export function ApiDeleteFile(): ApplyDecorators {
   return applyDecorators(
     ApiResponse({
       status: HttpStatus.OK,

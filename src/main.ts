@@ -12,7 +12,7 @@ async function bootstrap() {
     .build();
   const document: OpenAPIObject = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("swagger", app, document);
-  await app.listen(process.env.PORT);
-  console.log("Server started on port: " + process.env.PORT);
+  await app.listen(process.env.API_PORT);
+  console.log("Server started on port: " + process.env.API_PORT);
 }
 bootstrap();  

@@ -12,20 +12,20 @@ import * as fs from "fs";
 import * as path from "path";
 
 export class Seeder implements MigrationInterface {
-    name = 'Seeder1669806219723';
+    name: string = 'Seeder1669806219723';
 
     private readonly httpService: HttpService = new HttpService();
     private queryRunner: QueryRunner;
     private readonly SWAPI_URL: string = "https://swapi.dev/api/";
-    private readonly entityTableNames:UnitTypeEnum[] = [
+    private readonly entityTableNames: UnitTypeEnum[] = [
        UnitTypeEnum.People, UnitTypeEnum.Films,
        UnitTypeEnum.Planets, UnitTypeEnum.Species,
        UnitTypeEnum.Starships, UnitTypeEnum.Vehicles
     ];
-    private readonly entiitesForRelationBinding:UnitTypeEnum[] = [
+    private readonly entiitesForRelationBinding: UnitTypeEnum[] = [
        UnitTypeEnum.People,UnitTypeEnum.Planets,UnitTypeEnum.Films
     ]
-    private readonly URL_SPLITTERATOR = ",";
+    private readonly URL_SPLITTERATOR: string = ",";
 
 
     public async up(queryRunner: QueryRunner): Promise<void> {

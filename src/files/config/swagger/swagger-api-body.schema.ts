@@ -1,4 +1,4 @@
-export function getApiBodySchema(fieldName: string) {
+export function getUploadFilesBodySchema(fieldName: string) {
   return {
     schema: {
     type: 'object',

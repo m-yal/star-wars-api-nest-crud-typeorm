@@ -111,7 +111,7 @@ export class MySQLUnitsRepository implements UnitRepository {
         return newUnit;
     }
 
-    private async setRelations(newUnit: Unit, field: string, unitType: UnitTypeEnum) {
+    private async setRelations(newUnit: Unit, field: string, unitType: UnitTypeEnum): Promise<void> {
         const relationsIds: number[] = await newUnit[field];
         let relationUnits: Unit | Unit[] = this.defineContainerForRelationsUnits(field, unitType);
         const relationUnitsRepo: Repository<Unit> = await this.defineRepositoryForRelationSetting(unitType, field);

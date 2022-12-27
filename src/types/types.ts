@@ -31,3 +31,5 @@ export interface UpToTenUnitsPage {
     hasNext: boolean,
     hasPrev: boolean
 }
+export type FileMymeTypeFilter = (req: any, file: Express.Multer.File, callback: (error: Error | null, acceptFile: boolean) => void) => void;
+export type ApplyDecorators = <TFunction extends Function, Y>(target: object | TFunction, propertyKey?: string | symbol, descriptor?: TypedPropertyDescriptor<Y>) => void;
