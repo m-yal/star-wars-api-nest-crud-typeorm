@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
 import { map, Observable } from "rxjs";
-import { GetUnitsDto } from "src/crud/dto/get-units.dto";
+import { GetUnitsDto } from "src/modules/crud/dto/get-units.dto";
 
 @Injectable()
 export class DataResponseInterceptor implements NestInterceptor<GetUnitsDto> {

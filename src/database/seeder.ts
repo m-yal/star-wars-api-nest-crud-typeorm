@@ -1,11 +1,11 @@
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
-import { People } from "src/crud/entities/people.entity";
-import { Films } from "src/crud/entities/films.entity";
-import { Planets } from "src/crud/entities/planets.entity";
-import { Species } from "src/crud/entities/species.entity";
-import { Starships } from "src/crud/entities/starships.entity";
-import { Vehicles } from "src/crud/entities/vehicles.entity";
+import { People } from "src/modules/crud/entities/people.entity";
+import { Films } from "src/modules/crud/entities/films.entity";
+import { Planets } from "src/modules/crud/entities/planets.entity";
+import { Species } from "src/modules/crud/entities/species.entity";
+import { Starships } from "src/modules/crud/entities/starships.entity";
+import { Vehicles } from "src/modules/crud/entities/vehicles.entity";
 import { Unit, UnitRecordValue, UnitTypeEnum } from "src/types/types";
 import { MigrationInterface, QueryRunner, Repository } from "typeorm";
 import * as fs from "fs";
@@ -66,7 +66,6 @@ export class Seeder implements MigrationInterface {
         const objKeys: string = Object.keys(results[0]).toString(); //[0] because one instance is enough for defining input data schema
         const objKeysAmount: number = Object.keys(results[0]).length;
         const quesionMarks: string = "?, ".repeat(objKeysAmount).replace(/, $/, "");
-        console.log(`obj keys ${objKeys} \n obj keys amount ${objKeysAmount} \n questions marks ${quesionMarks}`);
         for await (const obj of results) {
             await this.queryRunner.query(`INSERT INTO ${entityName}(${objKeys}) VALUES (${quesionMarks})`, Object.values(obj));
         }

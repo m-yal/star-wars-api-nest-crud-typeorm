@@ -1,12 +1,13 @@
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModuleAsyncOptions, TypeOrmModuleOptions } from "@nestjs/typeorm";
-import { Films } from "src/crud/entities/films.entity";
-import { People } from "src/crud/entities/people.entity";
-import { Planets } from "src/crud/entities/planets.entity";
-import { Species } from "src/crud/entities/species.entity";
-import { Starships } from "src/crud/entities/starships.entity";
-import { Vehicles } from "src/crud/entities/vehicles.entity";
-import { FilmsImage, PeopleImage, PlanetsImage, SpeciesImage, StarshipsImage, VehiclesImage } from "src/files/entities/image.entity";
+import { User } from "src/modules/auth/entities/user.entity";
+import { Films } from "src/modules/crud/entities/films.entity";
+import { People } from "src/modules/crud/entities/people.entity";
+import { Planets } from "src/modules/crud/entities/planets.entity";
+import { Species } from "src/modules/crud/entities/species.entity";
+import { Starships } from "src/modules/crud/entities/starships.entity";
+import { Vehicles } from "src/modules/crud/entities/vehicles.entity";
+import { FilmsImage, PeopleImage, PlanetsImage, SpeciesImage, StarshipsImage, VehiclesImage } from "src/modules/files/entities/image.entity";
 
 export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
     imports: [ConfigModule],
@@ -22,7 +23,8 @@ export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
           People, Films, Planets, 
           Species, Starships, Vehicles,
           PeopleImage, FilmsImage, PlanetsImage,
-          SpeciesImage, StarshipsImage, VehiclesImage
+          SpeciesImage, StarshipsImage, VehiclesImage,
+          User,
         ],
         synchronize: false,
       };

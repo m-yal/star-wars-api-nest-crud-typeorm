@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
 import { map, Observable } from "rxjs";
-import { ExecutedDto } from "src/crud/dto/executed.dto";
+import { ExecutedDto } from "src/modules/crud/dto/executed.dto";
 
 @Injectable()
 export class ExecutedResponseInterseptor implements NestInterceptor<ExecutedDto> {

@@ -1,11 +1,11 @@
-import { FilmsImage, PeopleImage, PlanetsImage, SpeciesImage, StarshipsImage, VehiclesImage } from "src/files/entities/image.entity";
+import { FilmsImage, PeopleImage, PlanetsImage, SpeciesImage, StarshipsImage, VehiclesImage } from "src/modules/files/entities/image.entity";
 import { Repository } from "typeorm";
-import { Films } from "../crud/entities/films.entity";
-import { People } from "../crud/entities/people.entity";
-import { Planets } from "../crud/entities/planets.entity";
-import { Species } from "../crud/entities/species.entity";
-import { Starships } from "../crud/entities/starships.entity";
-import { Vehicles } from "../crud/entities/vehicles.entity";
+import { Films } from "../modules/crud/entities/films.entity";
+import { People } from "../modules/crud/entities/people.entity";
+import { Planets } from "../modules/crud/entities/planets.entity";
+import { Species } from "../modules/crud/entities/species.entity";
+import { Starships } from "../modules/crud/entities/starships.entity";
+import { Vehicles } from "../modules/crud/entities/vehicles.entity";
 
 export enum UnitTypeEnum {
     People = "people",

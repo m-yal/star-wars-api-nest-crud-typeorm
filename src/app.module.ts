@@ -2,17 +2,22 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmAsyncConfig } from './config/typeorm.config';
-import { FilesModule } from './files/files.module';
-import { CrudModule } from './crud/crud.module';
+import { FilesModule } from './modules/files/files.module';
+import { CrudModule } from './modules/crud/crud.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({isGlobal: true, envFilePath: ".env"}),
+    ConfigModule.forRoot(
+      {
+        isGlobal: true,
+        envFilePath: ".env"
+      }
+    ),
     TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
     FilesModule,
     CrudModule,
+    AuthModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}
