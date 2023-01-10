@@ -1,16 +1,18 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Films } from './entities/films.entity';
-import { People } from './entities/people.entity';
-import { Planets } from './entities/planets.entity';
-import { Species } from './entities/species.entity';
-import { Starships } from './entities/starships.entity';
-import { Vehicles } from './entities/vehicles.entity';
+import { Films } from './config/entities/films.entity';
+import { People } from './config/entities/people.entity';
+import { Planets } from './config/entities/planets.entity';
+import { Species } from './config/entities/species.entity';
+import { Starships } from './config/entities/starships.entity';
+import { Vehicles } from './config/entities/vehicles.entity';
 import { FindManyOptions, Repository } from 'typeorm';
-import { CrudRepositories, Unit, UnitTypes, UnitTypeEnum, UpToTenUnitsPage } from '../../types/types';
 import * as fs from 'fs';
-import { UNITS_RELATIONS_FIELDS_MAP, UNITS_PER_PAGE } from './constants';
-import { UnitRepository } from './interfaces/unit-repository.interface';
+import { UNITS_RELATIONS_FIELDS_MAP, TEN_UNITS_PER_PAGE } from './config/constants';
+import { UnitRepository } from './config/interfaces/unit-repository.interface';
+import { CrudRepositories, FilesRepositoryType, Unit, UnitTypeEnum, UnitTypes, UpToTenUnitsPage } from 'src/common/types/types';
+import { awsS3ClientConfig } from 'src/common/configs/aws-s3.config';
+import { S3 } from 'aws-sdk';
 
 @Injectable()
 export class MySQLUnitsRepository implements UnitRepository {
@@ -21,7 +23,7 @@ export class MySQLUnitsRepository implements UnitRepository {
         @InjectRepository(Planets) private readonly planetsRepository: Repository<Planets>,
         @InjectRepository(Species) private readonly speciesRepository: Repository<Species>,
         @InjectRepository(Starships) private readonly starshipsRepository: Repository<Starships>,
-        @InjectRepository(Vehicles) private readonly vehiclesRepository: Repository<Vehicles>,  
+        @InjectRepository(Vehicles) private readonly vehiclesRepository: Repository<Vehicles>, 
     ){}
     
     async get(page: number, unitType: UnitTypes): Promise<UpToTenUnitsPage> {
@@ -53,7 +55,7 @@ export class MySQLUnitsRepository implements UnitRepository {
     async delete(id: string, unitType: UnitTypes): Promise<true> {
         const currentUnitRepository: CrudRepositories = this.getRepoBy(unitType);
         const unit: Unit = await currentUnitRepository.findOneOrFail({where: {id: +id}, relations: ["images"]});
-        this.deleteImageFilesOf(unit);
+        this.deleteImageOf(unit);
         await currentUnitRepository.remove(unit);
         return true;
     }
@@ -67,12 +69,27 @@ export class MySQLUnitsRepository implements UnitRepository {
         if (page < 1) throw new HttpException('Invalid input page number: must be bigger than 1!', HttpStatus.BAD_REQUEST);
     }
 
-    private deleteImageFilesOf(unit: Unit): void {
+    private deleteImageOf(unit: Unit): void {
         if (unit.images.length === 0) return;
-        for (const image of unit.images) {
-            const path: fs.PathLike = `${__dirname}/../../files/${image.filename}`;
-            if (fs.existsSync(path)) {
-                fs.unlinkSync(path);
+        if (process.env.FILES_STORAGE_TYPE === FilesRepositoryType.AWS) {
+            console.log("aws delte image from mysql crud repo");
+            const s3 = new S3(awsS3ClientConfig);
+            for (const image of unit.images) {
+                const deleteOptions = {
+                    Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
+                    Key: image.filename
+                };
+                console.log("delete options: " + JSON.stringify(deleteOptions));
+                s3.deleteObject(deleteOptions).promise();
+            }
+        } else if (process.env.FILES_STORAGE_TYPE === FilesRepositoryType.FS) {
+            for (const image of unit.images) {
+                const path: fs.PathLike = `./${process.env.IMAGES_RELATIVE_FILE_PATH}/${image.filename}`;
+                if (fs.existsSync(path)) {
+                    fs.unlinkSync(path);
+                } else {
+                    throw new NotFoundException('File for deletion not found');
+                }
             }
         }
     }
@@ -202,8 +219,8 @@ export class MySQLUnitsRepository implements UnitRepository {
             order: {
                 created: "DESC"
             },
-            take: UNITS_PER_PAGE,
-            skip: pageIndex * UNITS_PER_PAGE,
+            take: TEN_UNITS_PER_PAGE,
+            skip: pageIndex * TEN_UNITS_PER_PAGE,
             relations: UNITS_RELATIONS_FIELDS_MAP.get(unitType),
             relationLoadStrategy: "query", 
         }
@@ -212,7 +229,7 @@ export class MySQLUnitsRepository implements UnitRepository {
     private async assembleGetResponseObject(units: Unit[], pageIndex: number, page: number, allUnitsInRepoAmount: number): Promise<UpToTenUnitsPage> {
         return {
             units: units,
-            hasNext: page * UNITS_PER_PAGE < allUnitsInRepoAmount ? true : false,
+            hasNext: page * TEN_UNITS_PER_PAGE < allUnitsInRepoAmount ? true : false,
             hasPrev: pageIndex === 0 ? false : true
         }
     }

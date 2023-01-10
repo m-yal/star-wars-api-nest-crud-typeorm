@@ -1,26 +1,25 @@
 import { InjectRepository } from "@nestjs/typeorm";
-import { ReadStream } from "fs";
-import { Films } from "src/modules/crud/entities/films.entity";
-import { People } from "src/modules/crud/entities/people.entity";
-import { Planets } from "src/modules/crud/entities/planets.entity";
-import { Species } from "src/modules/crud/entities/species.entity";
-import { Starships } from "src/modules/crud/entities/starships.entity";
-import { Vehicles } from "src/modules/crud/entities/vehicles.entity";
-import { CrudRepositories, Images, Unit, UnitTypeEnum, UnitTypes } from "src/types/types";
+import { Films } from "src/modules/crud/config/entities/films.entity";
+import { People } from "src/modules/crud/config/entities/people.entity";
+import { Planets } from "src/modules/crud/config/entities/planets.entity";
+import { Species } from "src/modules/crud/config/entities/species.entity";
+import { Starships } from "src/modules/crud/config/entities/starships.entity";
+import { Vehicles } from "src/modules/crud/config/entities/vehicles.entity";
+import { CrudRepositories, Images, Unit, UnitTypeEnum, UnitTypes } from "src/common/types/types";
 import { Repository } from "typeorm";
-import { FilmsImage, PeopleImage, PlanetsImage, SpeciesImage, StarshipsImage, VehiclesImage } from "./entities/image.entity";
-import { FilesRepository } from "./interfaces/files-repository.interface";
+import { FilmsImage, PeopleImage, PlanetsImage, SpeciesImage, StarshipsImage, VehiclesImage } from "./config/entities/image.entity";
+import { AWSImagesRepository } from "./config/interfaces/repositories.interfaces";
 import { S3 } from 'aws-sdk';
-import { ConfigService } from "@nestjs/config";
 import { config } from 'dotenv';
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { extname } from "path";
 import internal from "stream";
+import { awsS3ClientConfig } from "src/common/configs/aws-s3.config";
 
 config();
 
 @Injectable()
-export class AwsS3FilesRepository implements FilesRepository {
+export class AwsS3FilesRepository implements AWSImagesRepository {
     
     constructor(
         @InjectRepository(People) private readonly peopleRepository: Repository<People>,
@@ -44,6 +43,12 @@ export class AwsS3FilesRepository implements FilesRepository {
     }
 
     async add(unitID: string, images: Express.Multer.File[], unitType: UnitTypes): Promise<true> {
+        const unitRepo: CrudRepositories = this.getUnitRepoBy(unitType);
+        const unitToUpdate: Unit = await unitRepo.findOne({where: {id: +unitID}, relations: ["images"]});
+        if (!unitToUpdate) {
+            throw new NotFoundException("Not found unit for adding images");
+        };
+        
         this.rename(images);
         const s3 = this.getS3();
         const awsResponses: Promise<any>[] = images.map(image => {
@@ -53,16 +58,13 @@ export class AwsS3FilesRepository implements FilesRepository {
                 Key: image.filename
             }).promise();
         });
-        Promise.all(awsResponses).then((values) => {
+        await Promise.all(awsResponses).then((values) => {
             console.log("awsResponses: " + JSON.stringify(values));
         });
         
-        //todo
-        const unitRepo: CrudRepositories = this.getUnitRepoBy(unitType);
-        const unitToUpdate: Unit = await unitRepo.findOne({where: {id: +unitID}, relations: ["images"]});
-        if (!unitToUpdate) throw new NotFoundException();
+
         for await (const image of images) {
-            await this.pushImageDataToImagesField(unitToUpdate, image, unitType);          
+            await this.updateImageField(unitToUpdate, image, unitType);          
         }
         await unitRepo.save(unitToUpdate);
 
@@ -70,16 +72,7 @@ export class AwsS3FilesRepository implements FilesRepository {
     }
 
     async delete(imgName: string, unitType: UnitTypes): Promise<true> {
-        const options = this.getAwsS3GetOrDeleteOptions(imgName);
-        const deleteResponses = [];
-        this.getS3().deleteObject(options).promise().then((value) => {
-            deleteResponses.push(value);
-        });
-        Promise.all(deleteResponses).then((values) => {
-            console.log("awsResponses: " + JSON.stringify(values));
-        });
-
-        //todo
+        await this.removeImageFromS3(imgName);
         await this.removeSingleImageRecordFromDB(imgName, unitType);
 
         return true;
@@ -88,6 +81,17 @@ export class AwsS3FilesRepository implements FilesRepository {
 
 
 
+
+    private async removeImageFromS3(imgName: string) {
+        const options = this.getAwsS3GetOrDeleteOptions(imgName);
+        const deleteResponses = [];
+        this.getS3().deleteObject(options).promise().then((value) => {
+            deleteResponses.push(value);
+        });
+        Promise.all(deleteResponses).then((values) => {
+            console.log("awsResponses: " + JSON.stringify(values));
+        });
+    }
 
     private getAwsS3GetOrDeleteOptions(imgName: string) {
         return {
@@ -108,7 +112,7 @@ export class AwsS3FilesRepository implements FilesRepository {
         }
     }
 
-    private async pushImageDataToImagesField(unitToUpdate: Unit, image: Express.Multer.File, unitType: UnitTypeEnum): Promise<void> {
+    private async updateImageField(unitToUpdate: Unit, image: Express.Multer.File, unitType: UnitTypeEnum): Promise<void> {
         const imageToPut: Images = this.createUnitImageBy(unitType);
         imageToPut.filename = image.filename;
         const presentImages: Images[] = unitToUpdate.images;
@@ -155,14 +159,6 @@ export class AwsS3FilesRepository implements FilesRepository {
     }
 
     private getS3(): S3 {
-        return new S3(this.getS3ClientConfig());
-    }
-
-    private getS3ClientConfig(): S3.ClientConfiguration {
-        return {
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-            region: process.env.AWS_REGION, 
-        }
+        return new S3(awsS3ClientConfig);
     }
 }

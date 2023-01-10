@@ -1,16 +1,13 @@
-import { Injectable } from "@nestjs/common";
-import { UnitTypes } from "src/types/types";
-import { MySQLFilesRepository } from "./files.mysql.repository";
-import * as fs from 'fs';
-import { AwsS3FilesRepository } from "./files.aws-s3.repository";
+import { Inject, Injectable } from "@nestjs/common";
 import internal from "stream";
+import { UnitTypes } from "src/common/types/types";
+import { SwapiImagesRepository } from "./config/interfaces/repositories.interfaces";
 
 @Injectable()
 export class FilesService {
-
-    constructor(private readonly repository: AwsS3FilesRepository){}
-
-    get(imageName: string): fs.ReadStream | internal.Readable {
+    constructor(@Inject("SwapiImagesRepository")private readonly repository: SwapiImagesRepository){}
+    
+    get(imageName: string): internal.Readable {
         return this.repository.get(imageName);
     }
     

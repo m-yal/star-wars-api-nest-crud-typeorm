@@ -1,13 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Role } from "./entities/role.enum";
-import { User } from "./entities/user.entity";
-import { UsersRepository } from "./interfaces/users.repository.interface";
+import { Role } from "./config/entities/role.enum";
+import { User } from "./config/entities/user.entity";
 
 @Injectable()
-export class UsersMysqlRepository implements UsersRepository {
-
+export class UsersMysqlRepository {
     constructor(@InjectRepository(User) private readonly repository: Repository<User>) { }
 
     async findOneBy(username: string): Promise<any> {

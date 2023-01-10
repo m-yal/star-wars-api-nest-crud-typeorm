@@ -1,31 +1,32 @@
-import { Controller, Get, Post, UseGuards, Request, Body } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Controller, Get, Post, UseGuards, Request, Body, Inject } from '@nestjs/common';
+import { ApiBody, ApiTags } from "@nestjs/swagger";
 import { UsersService } from './users.service';
-import { AuthenticatedGuard } from './guards/authenticated.guard';
-import { LocalAuthGuard } from './guards/local.auth.guard';
+import { LocalAuthGuard } from './config/guards/local.auth.guard';
+import { ExecutedDto } from '../crud/config/dto/executed.dto';
+import { IAuthController } from './config/interfaces/auth.interface';
+import { NewUserDto } from './config/dto/new-user.dto';
 
 @ApiTags("Auth paths")
 @Controller("auth")
-export class AuthController {
-
+export class AuthController implements IAuthController {
   constructor(private readonly usersService: UsersService) { }
 
   @Post('login')
   @ApiBody({})
   @UseGuards(LocalAuthGuard)
-  async login(@Request() req): Promise<any> {
-    return { msg: "Logged in!" };
+  async login(@Request() req): Promise<ExecutedDto> {
+    return { executed: true };
   }
 
   @Get('logout')
-  async logout(@Request() req): Promise<any> {
+  async logout(@Request() req): Promise<ExecutedDto> {
     await req.session.destroy();
-    return { msg: "Logged out" };
+    return { executed: true };
   }
 
   @Post('register')
   @ApiBody({})
-  async addUser(@Body('password') password: string, @Body('username') userName: string, @Request() req) {
+  async addUser(@Body('password') password: string, @Body('username') userName: string, @Request() req): Promise<NewUserDto> {
     await req.session.destroy();
     const result = await this.usersService.insertOne(userName, password);
     return {
@@ -34,11 +35,5 @@ export class AuthController {
       userName: result.username,
       roles: result.roles
     };
-  }
-
-  @UseGuards(AuthenticatedGuard)
-  @Get('protected')
-  getHello(@Request() req): string {
-    return "Hello!";
   }
 }

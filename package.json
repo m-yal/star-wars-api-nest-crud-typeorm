@@ -24,7 +24,7 @@
     "migration:run": "npm run typeorm:createTable -- migration:run",
     "migration:revert": "npm run typeorm:createTable -- migration:revert",
     "migration:reset": "npm run seed:down; npm run migration:revert; npm run migration:generate; npm run migration:run; npm run seed:up",
-    "typeorm:seed": "npm run build && npx typeorm -d dist/database/data-sources/data-source-for-seeding.js",
+    "typeorm:seed": "npm run build && npx typeorm -d dist/common/database-preparation/seeding/data-source-for-seeding.js",
     "seed:up": "npm run typeorm:seed -- migration:run",
     "seed:down": "npm run typeorm:seed -- migration:revert",
     "docker:up": "npm run migration:run; npm run seed:up; npm run start:prod"
