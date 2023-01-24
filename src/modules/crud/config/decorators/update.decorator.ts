@@ -1,27 +1,20 @@
 import { applyDecorators, HttpStatus, UseGuards, UseInterceptors } from "@nestjs/common";
-import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
+import { ApiBody, ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
+import { number } from "joi";
 import { ExecutedResponseInterseptor } from "src/common/interceptors/executed-response.interceptor";
-import { ApplyDecorators, UnitTypeEnum } from "src/common/types/types";
-import { Roles } from "src/modules/auth/config/decorators/roles.decorator";
-import { Role } from "src/modules/auth/config/entities/role.enum";
-import { RolesGuard } from "src/modules/auth/config/guards/roles.guard";
+import { ApplyDecorators, Units } from "src/common/types/types";
+import { Roles } from "src/modules/auth/decorators/roles.decorator";
+import { Role } from "src/modules/auth/entities/role.enum";
+import { RolesGuard } from "src/modules/auth/guards/roles.guard";
 
-export function ApiUpdateUnit(): ApplyDecorators {
+export function UpdateUnitDecorators(inputDto: Units): ApplyDecorators {
     return applyDecorators(
-        ApiQuery({ name: "id", schema: { default: 1 } }),
-        ApiQuery({ name: "unitType", schema: { default: UnitTypeEnum.People } }),
-        ApiBody({schema: {
-            default: {
-                name: "Marius",
-                height: 170,
-                mass: 70,
-                hair_color: "black",
-                skin_color: "white",
-                eye_color: "brown",
-                birth_year: "2000",
-                gender: "male",
+        ApiParam({ name: "id", type: number, schema: { default: 1 }}),
+        ApiBody({
+            schema: {
+                default: inputDto
             }
-        }}),
+        }),
         ApiResponse({
             status: HttpStatus.OK,
             type: ExecutedResponseInterseptor
@@ -29,6 +22,6 @@ export function ApiUpdateUnit(): ApplyDecorators {
         Roles(Role.ADMIN),
         // UseGuards(RolesGuard),
         UseInterceptors(ExecutedResponseInterseptor),
-        ApiOperation({ summary: "Update single unit under id in query params" }),
+        ApiOperation({ summary: "Update single unit under name in query params" }),
     )
 }

@@ -1,18 +1,17 @@
-import { Controller, Delete, Get, Post, Query, StreamableFile, UploadedFiles } from '@nestjs/common';
+import { Controller, Delete, Get, Inject, Post, Query, StreamableFile, UploadedFiles } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { FilesService } from './files.service';
 import { ParseFiles } from './config/pipes/parse-files.pipe';
 import { multerOptions } from './config/multer/multer-options.config';
-import { UnitTypes } from 'src/common/types/types';
-import { DownloadFileDecorators } from './config/decorators/download.decorators';
-import { UploadFilesDecorators } from './config/decorators/upload.decorators';
-import { DeleteFileDecorators } from './config/decorators/delete.decorators';
+import { DownloadFileDecorators } from './decorators/download.decorators';
+import { UploadFilesDecorators } from './decorators/upload.decorators';
+import { DeleteFileDecorators } from './decorators/delete.decorators';
 
 @ApiTags("Files paths")
 @Controller('files')
 export class FilesController {
 
-    constructor(private readonly fileService: FilesService) { }
+    constructor(@Inject("IFilesActions") private readonly fileService: FilesService) { }
 
     @Get("")
     @DownloadFileDecorators()
@@ -20,16 +19,15 @@ export class FilesController {
         return new StreamableFile(this.fileService.get(imageName));
     }
 
-    //writted partially with a help of: https://notiz.dev/blog/type-safe-file-uploads
     @Post("")
     @UploadFilesDecorators("files", undefined, multerOptions)
-    add(@UploadedFiles(ParseFiles) files: Array<Express.Multer.File>, @Query("unitID") unitID: string, @Query("unitType") unitType: UnitTypes): Promise<true> {
-        return this.fileService.add(unitID, files, unitType);
+    add(@UploadedFiles(ParseFiles) files: Array<Express.Multer.File>): Promise<string[]> {
+        return this.fileService.add(files);
     }
 
     @Delete("")
     @DeleteFileDecorators()
-    delete(@Query("imgName") imgName: string, @Query("unitType") unitType: UnitTypes): Promise<true> {
-        return this.fileService.delete(imgName, unitType);
+    delete(@Query("imgName") imgName: string): Promise<true> {
+        return this.fileService.delete(imgName);
     }
 }

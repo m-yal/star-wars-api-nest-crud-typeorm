@@ -1,22 +1,26 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { User } from './config/entities/user.entity';
-import { IUsersService } from './config/interfaces/users.interface';
-import { UsersMysqlRepository } from './users.mysql.repository';
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { User } from './entities/user.entity';
+import { IUsersMysqlRepository } from './interfaces/users.repository.interfaces';
+import { IUsersService } from './interfaces/users.service.interface';
 
 @Injectable()
 export class UsersService implements IUsersService {
 
-    constructor(private readonly repository: UsersMysqlRepository) {}
+    constructor(@Inject("IUsersMysqlRepository")private readonly repository: IUsersMysqlRepository) {}
 
     async findOneBy(username: string): Promise<User> {
-        return await this.repository.findOneBy(username);
+        try {
+            return await this.repository.findOneBy(username);
+        } catch (error) {
+            throw new UnauthorizedException();
+        }
     }
 
     async insertOne(username: string, password: string): Promise<User> {
         try {
             return await this.repository.insertOne(username, password);
         } catch (error) {
-            throw new ForbiddenException("Username already exists!")
+            throw new BadRequestException("Username already exists!");
         }
     }
 }

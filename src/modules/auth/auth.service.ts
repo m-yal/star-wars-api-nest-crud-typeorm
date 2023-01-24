@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { User } from './config/entities/user.entity';
-import { IAuthService } from './config/interfaces/auth.interface';
-import { UsersService } from './users.service';
+import { Inject, Injectable } from '@nestjs/common';
+import { User } from './entities/user.entity';
+import { IAuthService } from './interfaces/auth.controller.interface';
+import { IUsersService } from './interfaces/users.service.interface';
 
 @Injectable()
 export class AuthService implements IAuthService {
-    constructor(private usersService: UsersService) { }
+    constructor(@Inject("IUsersService")private usersService: IUsersService) { }
 
     async validateUser(username: string, password: string): Promise<string[] | null> {
         const user: User = await this.usersService.findOneBy(username);

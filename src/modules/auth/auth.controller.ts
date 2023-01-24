@@ -1,31 +1,31 @@
-import { Controller, Get, Post, UseGuards, Request, Body, Inject } from '@nestjs/common';
-import { ApiBody, ApiTags } from "@nestjs/swagger";
-import { UsersService } from './users.service';
-import { LocalAuthGuard } from './config/guards/local.auth.guard';
+import { Controller, Get, Post, Request, Body, Inject } from '@nestjs/common';
+import { ApiTags } from "@nestjs/swagger";
 import { ExecutedDto } from '../crud/config/dto/executed.dto';
-import { IAuthController } from './config/interfaces/auth.interface';
-import { NewUserDto } from './config/dto/new-user.dto';
+import { IAuthController } from './interfaces/auth.controller.interface';
+import { NewUserDto } from './dto/new-user.dto';
+import { IUsersService } from './interfaces/users.service.interface';
+import { LoginDecorators, LogoutDecorators, RegisterDecorators } from './decorators/auth.controller.decorators';
 
 @ApiTags("Auth paths")
 @Controller("auth")
 export class AuthController implements IAuthController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(@Inject("IUsersService")private readonly usersService: IUsersService) { }
 
   @Post('login')
-  @ApiBody({})
-  @UseGuards(LocalAuthGuard)
+  @LoginDecorators()
   async login(@Request() req): Promise<ExecutedDto> {
     return { executed: true };
   }
 
   @Get('logout')
+  @LogoutDecorators()
   async logout(@Request() req): Promise<ExecutedDto> {
     await req.session.destroy();
     return { executed: true };
   }
 
   @Post('register')
-  @ApiBody({})
+  @RegisterDecorators()
   async addUser(@Body('password') password: string, @Body('username') userName: string, @Request() req): Promise<NewUserDto> {
     await req.session.destroy();
     const result = await this.usersService.insertOne(userName, password);
