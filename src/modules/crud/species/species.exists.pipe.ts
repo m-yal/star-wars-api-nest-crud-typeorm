@@ -6,11 +6,11 @@ import { SpeciesService } from './species.service';
 export class SpeciesExistsPipe implements PipeTransform {
   constructor(private readonly speciesService: SpeciesService) {}
 
-  async transform(id: number) {
-    const exists = await this.speciesService.exists(id);
+  async transform(name: string) {
+    const exists = await this.speciesService.exists(name);
     if (!exists) {
-      throw new NotFoundException(`Specie with id: ${id} not found`);
+      throw new NotFoundException(`Specie with name: ${name} not found`);
     }
-    return id;
+    return name;
   }
 }

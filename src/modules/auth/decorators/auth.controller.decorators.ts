@@ -1,7 +1,7 @@
 import { applyDecorators, UseGuards } from "@nestjs/common";
 import { ApiBody, ApiOperation } from "@nestjs/swagger";
 import { ApplyDecorators } from "src/common/types/types";
-import { LocalAuthGuard } from "../config/guards/local.auth.guard";
+import { LocalAuthGuard } from "../guards/local.auth.guard";
 
 export function LoginDecorators(): ApplyDecorators {
     return applyDecorators(

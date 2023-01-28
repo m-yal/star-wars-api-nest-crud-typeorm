@@ -1,5 +1,6 @@
 import { DataSource, DataSourceOptions } from "typeorm";
 import { config } from 'dotenv';
+import { Seeder } from "./seeder";
 
 config();
 const { env } = process;
@@ -14,7 +15,8 @@ class DataSourceForSeeding {
         username: env.DB_USERNAME,
         password: env.DB_PASSWORD,
         entities: [env.ENTITIES_PROJECT_PATH],
-        migrations: [env.MIGRATION_PROJECT_PATH],
+        // migrations: ["/dist/**/seeder{.ts,.js}"],
+        migrations: [Seeder],
     }
 
     private readonly dataSource: DataSource = new DataSource(this.dataSourceOptions);

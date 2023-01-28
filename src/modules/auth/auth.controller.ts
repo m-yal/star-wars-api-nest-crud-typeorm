@@ -5,6 +5,7 @@ import { IAuthController } from './interfaces/auth.controller.interface';
 import { NewUserDto } from './dto/new-user.dto';
 import { IUsersService } from './interfaces/users.service.interface';
 import { LoginDecorators, LogoutDecorators, RegisterDecorators } from './decorators/auth.controller.decorators';
+import { Users } from './entities/users.entity';
 
 @ApiTags("Auth paths")
 @Controller("auth")
@@ -28,10 +29,9 @@ export class AuthController implements IAuthController {
   @RegisterDecorators()
   async addUser(@Body('password') password: string, @Body('username') userName: string, @Request() req): Promise<NewUserDto> {
     await req.session.destroy();
-    const result = await this.usersService.insertOne(userName, password);
+    const result: Users = await this.usersService.insertOneUser(userName, password);
     return {
       msg: 'User successfully registered',
-      userId: result.id,
       userName: result.username,
       roles: result.roles
     };

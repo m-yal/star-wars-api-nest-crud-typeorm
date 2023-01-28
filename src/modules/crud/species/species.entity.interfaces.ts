@@ -6,11 +6,11 @@ import { Planets } from "../planets/planets.entity";
 interface ISpeciesBaseData {
     classification?: string;
     designation?: string;
-    average_height?: number;
+    average_height?: string;
     skin_colors?: string;
     hair_colors?: string;
     eye_colors?: string;
-    average_lifespan?: number;
+    average_lifespan?: string;
     language?: string;
 }
 

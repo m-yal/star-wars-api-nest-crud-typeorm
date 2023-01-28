@@ -20,11 +20,11 @@ export class PrepareFilmBodyPipe implements PipeTransform {
 
     async transform(value: any, metadata: ArgumentMetadata) {
         const [characters, planets, starships, species, vehicles] = await Promise.all([
-            this.peopleService.findByIds(value.characters || []),
-            this.planetsService.findByIds(value.planets || []),
-            this.starshipsService.findByIds(value.starships || []),
-            this.speciesService.findByIds(value.species || []),
-            this.vehiclesService.findByIds(value.vehicles || []),
+            this.peopleService.findByNames(value.characters || []),
+            this.planetsService.findByNames(value.planets || []),
+            this.starshipsService.findByNames(value.starships || []),
+            this.speciesService.findByNames(value.species || []),
+            this.vehiclesService.findByNames(value.vehicles || []),
         ]);
         return plainToInstance(Films, {
             ...value,

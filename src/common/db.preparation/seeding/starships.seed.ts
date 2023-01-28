@@ -1,97 +1,94 @@
-import axios from 'axios';
-import { Films } from 'src/modules/crud/films/films.entity';
-import { People } from 'src/modules/crud/people/people.entity';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 import { Starships } from 'src/modules/crud/starships/starships.entity';
-import { DataSource } from 'typeorm';
+import { QueryRunner } from 'typeorm';
 
 type StarshipsRelations = {
   name: string,
-  pilots: string[],
-  films: string[],
+  // pilots: string[],
+  // films: string[],
 }
 
 export default class StarshipsSeeder {
 
   private readonly FIRST_PAGE_URL = 'https://swapi.dev/api/starships/?page=1';
   private readonly relationsURLs: StarshipsRelations[] = [];
-
-  constructor(private readonly dataSource: DataSource) { }
-
-  public async baseDataSeed(): Promise<void> {
-    await this.seedBaseDateRecursively(this.FIRST_PAGE_URL);
+  private readonly httpService = new HttpService();
+  private queryRunner: QueryRunner;
+  private readonly RELATION_FIELD_ENTITY_MAP = {
+    // "pilots": People,
+    // "films": Films,
   }
 
-  public async setRelations(): Promise<void> {
-    this.relationsURLs.forEach(async starshipRelations => {
-      const starshipsRepository = await this.dataSource.getRepository(Starships);
-      const starhip: Starships = await starshipsRepository.findOneBy({ name: starshipRelations.name });
-      await this.queryRelatedEntities(starhip, starshipRelations);
-      await starshipsRepository.save(starhip);
-    });
+  public async baseDataSeed(queryRunner: QueryRunner): Promise<void> {
+    this.queryRunner = queryRunner;
+    await this.seedBaseDateRecursively(this.FIRST_PAGE_URL);
+    console.log("relationsURLs " + JSON.stringify(this.relationsURLs));
+
+  }
+
+  public async setRelations(queryRunner: QueryRunner): Promise<void> {
+    this.queryRunner = queryRunner;
+    // const starshipsRepository = await this.queryRunner.manager.getRepository(Starships);
+    // const promises = this.relationsURLs.map(async starshipRelations => {
+    //   const starhip: Starships = await starshipsRepository.findOneBy({ name: starshipRelations.name });
+    //   await this.queryRelatedEntities(starhip, starshipRelations);
+    //   await starshipsRepository.save(starhip);
+    // })
+    // await Promise.all(promises);
   }
 
 
 
   private async queryRelatedEntities(starhip: Starships, starshipRelations: StarshipsRelations) {
-    const relationFieldName = ["pilots", "films"];
-    const entityType = [People, Films];
-    for (let i = 0; i < relationFieldName.length; i++) {
-      starshipRelations[relationFieldName[i]].forEach(async (url: string) => {
-        starhip[relationFieldName[i]].push(await this.dataSource.manager.findOneBy(entityType[i], { url }));
-      });
-    }
+    const relationFeildsNames: string[] = Object.keys(this.RELATION_FIELD_ENTITY_MAP);
+    const promises = relationFeildsNames.map(async (relationFieldName: string) => {
+      starhip[relationFieldName] = [];
+      const relatedUnitURLs: string[] = starshipRelations[relationFieldName] || [];
+      const promises = relatedUnitURLs.map(async (url: string): Promise<void> => {
+        return await starhip[relationFieldName].push(await this.queryRunner.manager.findOneBy(this.RELATION_FIELD_ENTITY_MAP[relationFieldName], { url }));
+      })
+      await Promise.all(promises);
+    })
+    await Promise.all(promises);
   }
 
   private async seedBaseDateRecursively(pageURL: string): Promise<void> {
-    const { data } = await axios.get(pageURL);
-    await this.insertBaseData(data);
-    this.collectRelationsURLs(data);
+    const { data } = await firstValueFrom(this.httpService.get<any>(pageURL));
+    const promises = data.results.map(async unit => {
+      await this.insertBaseData(unit);
+      this.collectRelationsURLs(unit);
+    });
+    await Promise.all(promises);
     if (data.next) {
       return this.seedBaseDateRecursively(data.next);
     }
   }
 
   private async insertBaseData(data: any) {
-    await this.dataSource
-      .createQueryBuilder()
-      .insert()
-      .into(Starships)
-      .values({
-        name: data.name,
-        url: data.url,
-        model: data.model,
-        manufacturer: data.manufacturer,
-        cost_in_credits: !Number.isNaN(+data.cost_in_credits)
-          ? +data.cost_in_credits
-          : null,
-        length: !Number.isNaN(+data.length) ? +data.length : null,
-        max_atmosphering_speed: !Number.isNaN(
-          +data.max_atmosphering_speed,
-        )
-          ? +data.max_atmosphering_speed
-          : null,
-        crew: !Number.isNaN(+data.crew) ? +data.crew : null,
-        passengers: !Number.isNaN(+data.passengers)
-          ? +data.passengers
-          : null,
-        cargo_capacity: !Number.isNaN(+data.cargo_capacity)
-          ? +data.cargo_capacity
-          : null,
-        consumables: data.consumables,
-        hyperdrive_rating: !Number.isNaN(+data.hyperdrive_rating)
-          ? +data.hyperdrive_rating
-          : null,
-        MGLT: !Number.isNaN(+data.MGLT) ? +data.MGLT : null,
-        starship_class: data.starship_class,
-      })
-      .execute();
+    await this.queryRunner.manager.save(Starships, {
+      name: String(data.name),
+      url: String(data.url),
+      model: String(data.model),
+      manufacturer: String(data.manufacturer),
+      cost_in_credits: String(data.cost_in_credits),
+      length: String(data.length),
+      max_atmosphering_speed: String(data.max_atmosphering_speed),
+      crew: String(data.crew),
+      passengers: String(data.passengers),
+      cargo_capacity: String(data.cargo_capacity),
+      consumables: String(data.consumables),
+      hyperdrive_rating: String(data.hyperdrive_rating),
+      MGLT: String(data.MGLT),
+      starship_class: String(data.starship_class),
+    })
   }
 
   private collectRelationsURLs(data: any) {
     this.relationsURLs.push({
       name: data.name,
-      pilots: data.pilots,
-      films: data.films,
+      // pilots: data.pilots,
+      // films: data.films,
     });
   }
 }

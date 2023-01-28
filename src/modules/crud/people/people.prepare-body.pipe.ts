@@ -18,10 +18,10 @@ export class PreparePeopleBodyPipe implements PipeTransform {
 
     async transform(value: any, metadata: ArgumentMetadata) {
         const [films, species, starships, vehicles] = await Promise.all([
-            this.filmsService.findByIds(value.films || []),
-            this.speciesService.findByIds(value.species || []),
-            this.starshipsService.findByIds(value.starships || []),
-            this.vehiclesService.findByIds(value.vehicles || []),
+            this.filmsService.findByNames(value.films || []),
+            this.speciesService.findByNames(value.species || []),
+            this.starshipsService.findByNames(value.starships || []),
+            this.vehiclesService.findByNames(value.vehicles || []),
         ]);
         return plainToInstance(People, {
             ...value,

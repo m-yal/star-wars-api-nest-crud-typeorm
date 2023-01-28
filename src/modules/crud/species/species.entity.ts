@@ -10,44 +10,44 @@ import { Files } from "src/modules/files/file.entity";
 export class Species extends BaseEntity implements ISpeciesEntity {
 
     /* Base data */
-    @Column("varchar", { default: "unknown" })
+    @Column()
     classification: string;
 
-    @Column("varchar", { default: "unknown" })
+    @Column()
     designation: string;
 
-    @Column("int", { nullable: true })
-    average_height: number;
+    @Column()
+    average_height: string;
 
-    @Column("varchar", { default: "unknown" })
+    @Column()
     skin_colors: string;
 
-    @Column("varchar", { default: "unknown" })
+    @Column()
     hair_colors: string;
 
-    @Column("varchar", { default: "unknown" })
+    @Column()
     eye_colors: string;
 
-    @Column("int", { nullable: true })
-    average_lifespan: number;
+    @Column()
+    average_lifespan: string;
 
-    @Column("varchar", { default: "unknown" })
+    @Column()
     language: string;
 
 
 
     /* Relations */
-    @OneToOne(() => Planets, { nullable: true, cascade: ["insert", "update"], onDelete: "CASCADE" })
-    @JoinColumn({ name: "homeworldRel" })
+    @OneToOne(() => Planets, { nullable: true, /*cascade: ["insert", "update"], onDelete: "CASCADE"*/ })
+    @JoinColumn()
     homeworld: Planets;
 
-    @ManyToMany(() => People, people => people.species, { cascade: ["insert", "update"], onDelete: "CASCADE" })
+    @ManyToMany(() => People, people => people.species, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
     people: People[];
 
-    @ManyToMany(() => Films, films => films.species, { cascade: ["insert", "update"], onDelete: "CASCADE" })
+    @ManyToMany(() => Films, films => films.species, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
     films: Films[];
 
     @OneToMany(() => Files, (files) => files.name)
-    @JoinTable({ name: "species_images_rel" })
+    @JoinTable()
     images: Files[];
 }

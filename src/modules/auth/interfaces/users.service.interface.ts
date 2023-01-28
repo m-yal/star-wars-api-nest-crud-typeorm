@@ -1,6 +1,6 @@
-import { User } from "../entities/user.entity";
+import { Users } from "../entities/users.entity";
 
 export interface IUsersService {
-    findOneBy(username: string): Promise<User>;
-    insertOne(username: string, password: string): Promise<User>;
+    findOneBy(username: string): Promise<Users>;
+    insertOneUser(username: string, password: string): Promise<Users>;
 }

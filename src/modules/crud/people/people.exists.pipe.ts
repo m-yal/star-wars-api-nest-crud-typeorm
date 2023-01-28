@@ -7,11 +7,11 @@ export class PeopleExistsPipe implements PipeTransform {
 
     constructor(private readonly peopleService: PeopleService) { }
 
-    async transform(id: number) {
-        const exists = await this.peopleService.exists(id);
+    async transform(name: string) {
+        const exists = await this.peopleService.exists(name);
         if (!exists) {
-            throw new NotFoundException(`People with id: ${id} not found`);
+            throw new NotFoundException(`People with name: ${name} not found`);
         }
-        return id;
+        return name;
     }
 }

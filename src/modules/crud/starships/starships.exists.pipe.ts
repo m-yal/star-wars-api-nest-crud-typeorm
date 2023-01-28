@@ -5,11 +5,11 @@ import { StarshipsService } from './startships.service';
 export class StarshipExistsPipe implements PipeTransform {
   constructor(private readonly starshipsService: StarshipsService) {}
 
-  async transform(id: number) {
-    const exists = await this.starshipsService.exists(id);
+  async transform(name: string) {
+    const exists = await this.starshipsService.exists(name);
     if (!exists) {
-      throw new NotFoundException(`Starship with id: ${id} not found`);
+      throw new NotFoundException(`Starship with name: ${name} not found`);
     }
-    return id;
+    return name;
   }
 }

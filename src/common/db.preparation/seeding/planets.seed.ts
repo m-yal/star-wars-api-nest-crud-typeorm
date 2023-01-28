@@ -1,91 +1,91 @@
-import { Films } from "src/modules/crud/films/films.entity";
 import { People } from "src/modules/crud/people/people.entity";
 import { Planets } from "src/modules/crud/planets/planets.entity";
-import { DataSource } from "typeorm";
-import axios from 'axios';
+import { QueryRunner } from "typeorm";
+import { firstValueFrom } from 'rxjs';
+import { HttpService } from "@nestjs/axios";
 
 type PlanetsRelations = {
   name: string,
   residents: string[],
-  films: string[],
+  // films: string[],
 }
 
 export class PlanetsSeeder {
   
   private readonly FIRST_PAGE_URL = 'https://swapi.dev/api/planets/?page=1';
   private readonly relationsURLs: PlanetsRelations[] = [];
-
-  constructor(private readonly dataSource: DataSource) { }
-
-  public async baseDataSeed(): Promise<void> {
-    await this.seedBaseDateRecursively(this.FIRST_PAGE_URL);
+  private readonly httpService = new HttpService();
+  private queryRunner: QueryRunner;
+  private readonly RELATION_FIELD_ENTITY_MAP = {
+    "residents": People, 
+    // "films": Films,
   }
 
-  public async setRelations(): Promise<void> {
-    this.relationsURLs.forEach(async planetRelations => {
-      const planetsRepository = await this.dataSource.getRepository(Planets)
+  public async baseDataSeed(queryRunner: QueryRunner): Promise<void> {
+    this.queryRunner = queryRunner;
+    await this.seedBaseDateRecursively(this.FIRST_PAGE_URL);
+    console.log("relationsURLs " + JSON.stringify(this.relationsURLs));
+
+  }
+
+  public async setRelations(queryRunner: QueryRunner): Promise<void> {
+    this.queryRunner = queryRunner;
+    const planetsRepository = await this.queryRunner.manager.getRepository(Planets)
+    const promises = this.relationsURLs.map(async planetRelations => {
       const planet: Planets = await planetsRepository.findOneBy({ name: planetRelations.name });
       await this.queryRelatedEntities(planet, planetRelations);
       await planetsRepository.save(planet);
-    });
+    })
+    await Promise.all(promises);
   }
 
 
 
   private async queryRelatedEntities(planet: Planets, planetRelations: PlanetsRelations) {
-    const relationFieldName = ["residents", "films"];
-    const entityType = [People, Films];
-    for (let i = 0; i < relationFieldName.length; i++) {
-      planetRelations[relationFieldName[i]].forEach(async (url: string) => {
-        planet[relationFieldName[i]].push(await this.dataSource.manager.findOneBy(entityType[i], { url }));
-      });
-    }
+    const relationFeildsNames: string[] = Object.keys(this.RELATION_FIELD_ENTITY_MAP);
+    const promises = relationFeildsNames.map(async (relationFieldName: string) => {
+      planet[relationFieldName] = [];
+      const relatedUnitURLs: string[] = planetRelations[relationFieldName] || [];
+      const promises = relatedUnitURLs.map(async (url: string): Promise<void> => {
+        return await planet[relationFieldName].push(await this.queryRunner.manager.findOneBy(this.RELATION_FIELD_ENTITY_MAP[relationFieldName], { url }));
+      })
+      await Promise.all(promises);
+    })
+    await Promise.all(promises);
   }
 
   private async seedBaseDateRecursively(pageURL: string): Promise<void> {
-    const { data } = await axios.get(pageURL);
-    await this.insertBaseData(data);
-    this.collectRelationsURLs(data);
+    const { data } = await firstValueFrom(this.httpService.get<any>(pageURL));
+    const promises = data.results.map(async unit => {
+      await this.insertBaseData(unit);
+      this.collectRelationsURLs(unit);
+    })
+    await Promise.all(promises);
     if (data.next) {
       return this.seedBaseDateRecursively(data.next);
     }
   }
 
   private async insertBaseData(data: any) {
-    await this.dataSource
-      .createQueryBuilder()
-      .insert()
-      .into(Planets)
-      .values({
-        name: data.name,
-        url: data.url,
-        rotation_period: Number.isNaN(+data.rotation_period)
-          ? null
-          : +data.rotation_period,
-        orbital_period: !Number.isNaN(+data.orbital_period)
-          ? +data.orbital_period
-          : null,
-        diameter: !Number.isNaN(+data.diameter)
-          ? +data.diameter
-          : null,
-        climate: data.climate,
-        gravity: data.gravity,
-        terrain: data.terrain,
-        surface_water: !Number.isNaN(+data.surface_water)
-          ? +data.surface_water
-          : null,
-        population: !Number.isNaN(+data.population)
-          ? +data.population
-          : null,
-      })
-      .execute();
+    await this.queryRunner.manager.save(Planets, {
+      name: String(data.name),
+      url: String(data.url),
+      rotation_period: String(data.rotation_period),
+      orbital_period: String(data.orbital_period),
+      diameter: String(data.diameter),
+      climate: String(data.climate),
+      gravity: String(data.gravity),
+      terrain: String(data.terrain),
+      surface_water: String(data.surface_water),
+      population: String(data.population),
+    });
   }
 
   private collectRelationsURLs(data: any) {
     this.relationsURLs.push({
       name: data.name,
       residents: data.residents,
-      films: data.films,
+      // films: data.films,
     });
   }
 }

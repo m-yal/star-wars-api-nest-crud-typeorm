@@ -1,91 +1,92 @@
-import axios from 'axios';
-import { Films } from 'src/modules/crud/films/films.entity';
-import { People } from 'src/modules/crud/people/people.entity';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 import { Vehicles } from 'src/modules/crud/vehicles/vehicles.entity';
-import { DataSource } from 'typeorm';
+import { QueryRunner } from 'typeorm';
 
 type VehiclesRelations = {
   name: string,
-  pilots: string[],
-  films: string[],
+  // pilots: string[],
+  // films: string[],
 }
 
 export default class VehiclesSeeder {
 
   private readonly FIRST_PAGE_URL = 'https://swapi.dev/api/vehicles/?page=1';
   private readonly relationsURLs: VehiclesRelations[] = [];
-
-  constructor(private readonly dataSource: DataSource) { }
-
-  public async baseDataSeed(): Promise<void> {
-    await this.seedBaseDateRecursively(this.FIRST_PAGE_URL);
+  private readonly httpService = new HttpService();
+  private queryRunner: QueryRunner;
+  private readonly RELATION_FIELD_ENTITY_MAP = {
+    // "pilots": People,
+    // "films": Films,
   }
 
-  public async setRelations(): Promise<void> {
-    this.relationsURLs.forEach(async vehicleRelations => {
-      const vehiclesRepository = await this.dataSource.getRepository(Vehicles);
-      const vehicle: Vehicles = await vehiclesRepository.findOneBy({ name: vehicleRelations.name });
-      await this.queryRelatedEntities(vehicle, vehicleRelations);
-      await vehiclesRepository.save(vehicle);
-    });
+  public async baseDataSeed(queryRunner: QueryRunner): Promise<void> {
+    this.queryRunner = queryRunner;
+    await this.seedBaseDateRecursively(this.FIRST_PAGE_URL);
+    console.log("relationsURLs " + JSON.stringify(this.relationsURLs));
+
+  }
+
+  public async setRelations(queryRunner: QueryRunner): Promise<void> {
+    this.queryRunner = queryRunner;
+    // const vehiclesRepository = await this.queryRunner.manager.getRepository(Vehicles);
+    // const promises = this.relationsURLs.map(async vehicleRelations => {
+    //   const vehicle: Vehicles = await vehiclesRepository.findOneBy({ name: vehicleRelations.name });
+    //   await this.queryRelatedEntities(vehicle, vehicleRelations);
+    //   await vehiclesRepository.save(vehicle);
+    // })
+    // await Promise.all(promises);
   }
 
 
 
   private async queryRelatedEntities(vehicle: Vehicles, vehicleRelations: VehiclesRelations) {
-    const relationFieldName = ["pilots", "films"];
-    const entityType = [People, Films];
-    for (let i = 0; i < relationFieldName.length; i++) {
-      vehicleRelations[relationFieldName[i]].forEach(async (url: string) => {
-        vehicle[relationFieldName[i]].push(await this.dataSource.manager.findOneBy(entityType[i], { url }));
-      });
-    }
+    const relationFeildsNames: string[] = Object.keys(this.RELATION_FIELD_ENTITY_MAP);
+    const promises = relationFeildsNames.map(async (relationFieldName: string) => {
+      vehicle[relationFieldName] = [];
+      const relatedUnitURLs: string[] = vehicleRelations[relationFieldName] || [];
+      const promises = relatedUnitURLs.map(async (url: string): Promise<void> => {
+        return await vehicle[relationFieldName].push(await this.queryRunner.manager.findOneBy(this.RELATION_FIELD_ENTITY_MAP[relationFieldName], { url }));
+      })
+      await Promise.all(promises);
+    })
+    await Promise.all(promises);
   }
 
   private async seedBaseDateRecursively(pageURL: string): Promise<void> {
-    const { data } = await axios.get(pageURL);
-    await this.insertBaseData(data);
-    this.collectRelationsURLs(data);
+    const { data } = await firstValueFrom(this.httpService.get<any>(pageURL));
+    const promises = data.results.map(async unit => {
+      await this.insertBaseData(unit);
+      this.collectRelationsURLs(unit);
+    });
+    await Promise.all(promises);
     if (data.next) {
       return this.seedBaseDateRecursively(data.next);
     }
   }
 
   private async insertBaseData(data: any) {
-    await this.dataSource
-      .createQueryBuilder()
-      .insert()
-      .into(Vehicles)
-      .values({
-        name: data.name,
-        url: data.url,
-        model: data.model,
-        manufacturer: data.manufacturer,
-        cost_in_credits: !Number.isNaN(+data.cost_in_credits)
-          ? +data.cost_in_credits
-          : null,
-        length: !Number.isNaN(+data.length) ? +data.length : null,
-        max_atmosphering_speed: !Number.isNaN(+data.max_atmosphering_speed)
-          ? +data.max_atmosphering_speed
-          : null,
-        crew: !Number.isNaN(+data.crew) ? +data.crew : null,
-        passengers: !Number.isNaN(+data.passengers)
-          ? +data.passengers
-          : null,
-        cargo_capacity: !Number.isNaN(+data.cargo_capacity)
-          ? +data.cargo_capacity
-          : null,
-        consumables: data.consumables,
-        vehicle_class: data.vehicle_class,
-      })
-      .execute();
+    await this.queryRunner.manager.save(Vehicles, {
+      name: String(data.name),
+      url: String(data.url),
+      model: String(data.model),
+      manufacturer: String(data.manufacturer),
+      cost_in_credits: String(data.cost_in_credits),
+      length: String(data.length),
+      max_atmosphering_speed: String(data.max_atmosphering_speed),
+      crew: String(data.crew),
+      passengers: String(data.passengers),
+      cargo_capacity: String(data.cargo_capacity),
+      consumables: String(data.consumables),
+      vehicle_class: String(data.vehicle_class),
+    });
   }
 
   private collectRelationsURLs(data: any) {
     this.relationsURLs.push({
       name: data.name,
-      pilots: data.pilots,
-      films: data.films,
+      // pilots: data.pilots,
+      // films: data.films,
     });
   }
 }

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
 import { Planets } from "../planets/planets.entity";
 import { Species } from "../species/species.entity";
 import { Starships } from "../starships/starships.entity";
@@ -11,48 +11,48 @@ import { IPeopleEntity } from "./people.entity.interfaces";
 @Entity()
 export class People extends BaseEntity implements IPeopleEntity {
 
-    @Column("int", { nullable: true })
-    height: number;
+    @Column()
+    height: string;
 
-    @Column("int", { nullable: true })
-    mass: number;
+    @Column()
+    mass: string;
 
-    @Column("varchar", { default: "unknown" })
+    @Column()
     hair_color: string;
 
-    @Column("varchar", { default: "unknown" })
+    @Column()
     skin_color: string;
 
-    @Column("varchar", { default: "unknown" })
+    @Column()
     eye_color: string;
 
-    @Column("int", { nullable: true })
-    birth_year: number;
+    @Column()
+    birth_year: string;
 
-    @Column("varchar", { default: "unknown" })
+    @Column()
     gender: string;
 
 
     
-    @ManyToOne(() => Planets, (planets) => planets.residents, { cascade: ["insert", "update"], onDelete: "CASCADE" })
+    @ManyToOne(() => Planets, (planets) => planets.residents, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
     homeworld: Planets;
 
-    @ManyToMany(() => Films, (films) => films.characters, { cascade: ["insert", "update"], onDelete: "CASCADE" })
+    @ManyToMany(() => Films, (films) => films.characters, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
     films: Films[];
 
-    @ManyToMany(() => Species, species => species.people, { cascade: ["insert", "update"], onDelete: "CASCADE" })
-    @JoinTable({ name: "people_species_rel" })
+    @ManyToMany(() => Species, species => species.people, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
+    @JoinTable()
     species: Species[];
 
-    @ManyToMany(() => Vehicles, vehicles => vehicles.pilots, { cascade: ["insert", "update"], onDelete: "CASCADE" })
-    @JoinTable({ name: "people_vehicles_rel" })
+    @ManyToMany(() => Vehicles, vehicles => vehicles.pilots, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
+    @JoinTable()
     vehicles: Vehicles[];
 
-    @ManyToMany(() => Starships, starships => starships.pilots, { cascade: ["insert", "update"], onDelete: "CASCADE" })
-    @JoinTable({ name: "people_starships_rel" })
+    @ManyToMany(() => Starships, starships => starships.pilots, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
+    @JoinTable()
     starships: Starships[];
 
     @OneToMany(() => Files, (files) => files.name)
-    @JoinTable({ name: "people_images_rel" })
+    @JoinTable()
     images: Files[];
 }

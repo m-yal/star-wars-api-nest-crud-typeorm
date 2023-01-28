@@ -6,11 +6,11 @@ import { FilmsService } from './films.service';
 export class FilmExistsPipe implements PipeTransform {
   constructor(private readonly filmsService: FilmsService) {}
 
-  async transform(id: number) {
-    const exists = await this.filmsService.exists(id);
+  async transform(name: string) {
+    const exists = await this.filmsService.exists(name);
     if (!exists) {
-      throw new NotFoundException(`Film with id: ${id} not found`);
+      throw new NotFoundException(`Film with name: ${name} not found`);
     }
-    return id;
+    return name;
   }
 }

@@ -6,12 +6,12 @@ import { Films } from "../films/films.entity";
 import { Files } from "src/modules/files/file.entity";
 
 export interface IPeopleBaseData {
-    height?: number;
-    mass?: number;
+    height?: string;
+    mass?: string;
     hair_color?: string;
     skin_color?: string;
     eye_color?: string;
-    birth_year?: number;
+    birth_year?: string;
     gender?: string;
 }
 

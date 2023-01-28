@@ -14,8 +14,8 @@ export class PrepareStarshipsBodyPipe implements PipeTransform {
 
     async transform(value: any, metadata: ArgumentMetadata) {
         const [pilots, films] = await Promise.all([
-            this.peopleService.findByIds(value.pilots || []),
-            this.filmsService.findByIds(value.films || []),
+            this.peopleService.findByNames(value.pilots || []),
+            this.filmsService.findByNames(value.films || []),
         ]);
         return plainToInstance(Starships, {
             ...value,

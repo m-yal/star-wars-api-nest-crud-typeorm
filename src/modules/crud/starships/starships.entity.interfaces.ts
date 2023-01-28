@@ -5,15 +5,15 @@ import { People } from "../people/people.entity";
 interface IStarshipsBaseData {
     model?: string;
     manufacturer?: string;
-    cost_in_credits?: number;
-    length?: number;
-    max_atmosphering_speed?: number;
-    crew?: number;
-    passengers?: number;
-    cargo_capacity?: number;
+    cost_in_credits?: string;
+    length?: string;
+    max_atmosphering_speed?: string;
+    crew?: string;
+    passengers?: string;
+    cargo_capacity?: string;
     consumables?: string;
-    hyperdrive_rating?: number;
-    MGLT?: number;
+    hyperdrive_rating?: string;
+    MGLT?: string;
     starship_class?: string;
 }
 

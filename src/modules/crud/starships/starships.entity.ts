@@ -8,52 +8,52 @@ import { Files } from "src/modules/files/file.entity";
 @Entity()
 export class Starships extends BaseEntity implements IStarshipsEntity {
 
-    @Column("varchar", { default: "unknown" })
+    @Column()
     model: string;
 
-    @Column("varchar", { default: "unknown" })
+    @Column()
     manufacturer: string;
 
-    @Column("int", { nullable: true })
-    cost_in_credits: number;
+    @Column()
+    cost_in_credits: string;
 
-    @Column("int", { nullable: true })
-    length: number;
+    @Column()
+    length: string;
 
-    @Column("int", { nullable: true })
-    max_atmosphering_speed: number;
+    @Column()
+    max_atmosphering_speed: string;
 
-    @Column("int", { nullable: true })
-    crew: number;
+    @Column()
+    crew: string;
 
-    @Column("int", { nullable: true })
-    passengers: number;
+    @Column()
+    passengers: string;
 
-    @Column("int", { nullable: true })
-    cargo_capacity: number;
+    @Column()
+    cargo_capacity: string;
 
-    @Column("varchar", { default: "unknown" })
+    @Column()
     consumables: string;
 
-    @Column("int", { nullable: true })
-    hyperdrive_rating: number;
+    @Column()
+    hyperdrive_rating: string;
 
-    @Column("int", { nullable: true })
-    MGLT: number;
+    @Column()
+    MGLT: string;
 
-    @Column("varchar", { default: "unknown" })
+    @Column()
     starship_class: string;
 
 
 
 
-    @ManyToMany(() => People, people => people.starships, { cascade: ["insert", "update"], onDelete: "CASCADE" })
+    @ManyToMany(() => People, people => people.starships, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
     pilots: People[];
 
-    @ManyToMany(() => Films, films => films.starships, { cascade: ["insert", "update"], onDelete: "CASCADE" })
+    @ManyToMany(() => Films, films => films.starships, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
     films: Films[];
 
     @OneToMany(() => Files, (files) => files.name)
-    @JoinTable({ name: "starships_images_rel" })
+    @JoinTable()
     images: Files[];
 }

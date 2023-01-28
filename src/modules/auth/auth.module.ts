@@ -3,16 +3,16 @@ import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { User } from './entities/user.entity';
+import { Users } from './entities/users.entity';
 import { SessionSerializer } from './session/session.serializer';
-import { LocalStrategy } from './config/strategy/local.strategy';
+import { LocalStrategy } from './strategy/local.strategy';
 import { UsersMysqlRepository } from './users.mysql.repository';
 import { UsersService } from './users.service';
 
 @Module({
   imports: [
     PassportModule.register({ session: true }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([Users]),
   ],
   providers: [
     AuthService,

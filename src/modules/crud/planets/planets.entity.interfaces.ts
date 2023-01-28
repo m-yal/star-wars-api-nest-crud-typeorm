@@ -3,14 +3,14 @@ import { Films } from "../films/films.entity";
 import { People } from "../people/people.entity";
 
 interface IPlanetsBaseData {
-    rotation_period?: number;
-    orbital_period?: number;
-    diameter?: number;
+    rotation_period?: string;
+    orbital_period?: string;
+    diameter?: string;
     climate?: string;
     gravity?: string;
     terrain?: string;
-    surface_water?: number;
-    population?: number;
+    surface_water?: string;
+    population?: string;
 }
 
 interface IPlanetsRelations {

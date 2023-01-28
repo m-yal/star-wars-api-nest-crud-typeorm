@@ -8,16 +8,16 @@ export class FilesService implements IFilesActions {
 
     constructor(@Inject("SwapiImagesRepository") private readonly repository: ISwapiImagesRepository){}
     
-    get(imageName: string): internal.Readable {
-        return this.repository.get(imageName);
+    get(fileName: string): internal.Readable {
+        return this.repository.get(fileName);
     }
     
     async add(files: Express.Multer.File[]): Promise<string[]> {
         return this.repository.add(files);
     }
 
-    async delete(imageName: string): Promise<true> {
-        return this.repository.delete(imageName);
+    async delete(fileName: string): Promise<true> {
+        return this.repository.delete(fileName);
     }
 
     async fileExists(fileName: string): Promise<boolean> {

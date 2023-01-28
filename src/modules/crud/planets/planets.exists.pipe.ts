@@ -6,11 +6,11 @@ import { PlanetsService } from './planets.service';
 export class PlanetExistsPipe implements PipeTransform {
   constructor(private readonly planetsService: PlanetsService) {}
 
-  async transform(id: number) {
-    const exists = await this.planetsService.exists(id);
+  async transform(name: string) {
+    const exists = await this.planetsService.exists(name);
     if (!exists) {
-      throw new NotFoundException(`Planet with id: ${id} not found`);
+      throw new NotFoundException(`Planet with name: ${name} not found`);
     }
-    return id;
+    return name;
   }
 }

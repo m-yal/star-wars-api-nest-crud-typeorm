@@ -4,7 +4,7 @@ import { IUniversalEntityUnitData } from "../interfaces/common.unit.interfaces";
 @Entity()
 export abstract class BaseEntity implements IUniversalEntityUnitData {
 
-    @PrimaryColumn("varchar", { unique: true })
+    @PrimaryColumn({ unique: true })
     name: string;
 
     @Column("varchar", {default: "unknown", unique: true})

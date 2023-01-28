@@ -1,8 +1,9 @@
-import { User } from "../entities/user.entity";
+import { Users } from "../entities/users.entity";
 
 interface UsersRepository {
-    findOneBy(username: string): Promise<User>;
-    insertOne(username: string, password: string): Promise<User>;
+    findOneBy(username: string): Promise<Users>;
+    insertOneUser(username: string, password: string): Promise<Users>;
+    insertOneAdmin(username: string, password: string): Promise<Users>;
 }
 
 export interface IUsersMysqlRepository extends UsersRepository { }

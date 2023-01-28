@@ -7,7 +7,7 @@ import { Vehicles } from "../vehicles/vehicles.entity";
 
 interface IFilmsBaseData {
     name?: string;
-    episode_id?: number
+    episode_id?: string
     opening_crawl?: string;
     director?: string;
     producer?: string;

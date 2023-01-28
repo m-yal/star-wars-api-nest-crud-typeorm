@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
 import { People } from "../people/people.entity";
 import { BaseEntity } from "../config/base-entity";
 import { Files } from "src/modules/files/file.entity";
@@ -8,41 +8,41 @@ import { IPlanetsEntity } from "./planets.entity.interfaces";
 @Entity()
 export class Planets extends BaseEntity implements IPlanetsEntity {
 
-    @Column("int", { nullable: true })
-    rotation_period: number;
+    @Column()
+    rotation_period: string;
 
-    @Column("int", { nullable: true })
-    orbital_period: number;
+    @Column()
+    orbital_period: string;
 
-    @Column("int", { nullable: true })
-    diameter: number;
+    @Column()
+    diameter: string;
 
-    @Column("varchar", { default: "unknown" })
+    @Column()
     climate: string;
 
-    @Column("varchar", { default: "unknown" })
+    @Column()
     gravity: string;
 
-    @Column("varchar", { default: "unknown" })
+    @Column()
     terrain: string;
 
-    @Column("int", { nullable: true })
-    surface_water: number;
+    @Column()
+    surface_water: string;
 
-    @Column("int", { nullable: true })
-    population: number;
+    @Column()
+    population: string;
 
 
     
     /* Relations */
-    @OneToMany(() => People, (people) => people.homeworld, { cascade: ["insert", "update"], onDelete: "CASCADE" })
-    @JoinTable({ name: "planet_peoples_rel" })
+    @OneToMany(() => People, (people) => people.homeworld, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
+    @JoinTable()
     residents: People[];
 
-    @ManyToMany(() => Films, (films) => films.planets, { cascade: ["insert", "update"], onDelete: "CASCADE" })
+    @ManyToMany(() => Films, (films) => films.planets, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
     films: Films[];
 
     @OneToMany(() => Files, (files) => files.name)
-    @JoinTable({ name: "planets_images_rel" })
+    @JoinTable()
     images: Files[];
 }

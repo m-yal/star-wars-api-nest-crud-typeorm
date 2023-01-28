@@ -60,6 +60,22 @@ export class AwsS3FilesRepository implements IAWSImagesRepository {
         return fileNames.map((fileName) => ({ name: fileName }));
     }
 
+    // https://ncoughlin.com/posts/aws-s3-delete-files-programatically/
+    async emptyBucket() {
+        const s3 = this.getS3();
+        const listedObjects = await s3.listObjectsV2().promise();
+        if (listedObjects.Contents.length === 0) return;
+        const deleteParams = {
+            Bucket: this.AWS_PUBLIC_BUCKET_NAME,
+            Delete: { Objects: [] }
+        };
+        listedObjects.Contents.forEach(({ Key }) => deleteParams.Delete.Objects.push({ Key }));
+        await s3.deleteObjects(deleteParams, function(err, data) {
+            if (err) console.log(err, err.stack); // an error occurred
+            else console.log(data); // successful response
+        });
+    }
+
 
 
 

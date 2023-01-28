@@ -1,13 +1,13 @@
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModuleAsyncOptions, TypeOrmModuleOptions } from "@nestjs/typeorm";
-import { User } from "src/modules/auth/entities/user.entity";
+import { Users } from "src/modules/auth/entities/users.entity";
 import { Films } from "src/modules/crud/films/films.entity";
 import { People } from "src/modules/crud/people/people.entity";
 import { Planets } from "src/modules/crud/planets/planets.entity";
 import { Species } from "src/modules/crud/species/species.entity";
 import { Starships } from "src/modules/crud/starships/starships.entity";
 import { Vehicles } from "src/modules/crud/vehicles/vehicles.entity";
-import { FilmsImage, PeopleImage, PlanetsImage, SpeciesImage, StarshipsImage, VehiclesImage } from "src/modules/files/file.entity";
+import { Files } from "src/modules/files/file.entity";
 
 export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
     imports: [ConfigModule],
@@ -22,9 +22,7 @@ export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
         entities: [
           People, Films, Planets, 
           Species, Starships, Vehicles,
-          PeopleImage, FilmsImage, PlanetsImage,
-          SpeciesImage, StarshipsImage, VehiclesImage,
-          User,
+          Files, Users,
         ],
         synchronize: false,
       };

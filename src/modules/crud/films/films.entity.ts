@@ -1,5 +1,5 @@
 import { Files } from "src/modules/files/file.entity";
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, UpdateDateColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
 import { BaseEntity } from "../config/base-entity";
 import { People } from "../people/people.entity";
 import { Planets } from "../planets/planets.entity";
@@ -11,46 +11,46 @@ import { IFilmsEntity } from "./films.entity.interfaces";
 @Entity()
 export class Films extends BaseEntity implements IFilmsEntity {
 
-    @Column("int", {nullable: true})
-    episode_id: number
+    @Column()
+    episode_id: string
 
-    @Column("text", {nullable: true})
+    @Column("longtext")
     opening_crawl: string;
 
-    @Column("varchar", {default: "unknown"})
+    @Column()
     director: string;
 
-    @Column("varchar", {default: "unknown"})
+    @Column()
     producer: string;
 
-    @Column({ type: 'date', default: '1970-01-01' })
+    @Column({ type: 'date' })
     release_date: Date;
 
 
 
 
-    
-    @ManyToMany(() => People, (people) => people.films, {cascade: ["insert", "update"], onDelete: "CASCADE"})
-    @JoinTable({name: "films_people_rel"})
+
+    @ManyToMany(() => People, (people) => people.films, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
+    @JoinTable()
     characters: People[];
-    
-    @ManyToMany(() => Planets, (planets) => planets.films, {cascade: ["insert", "update"], onDelete: "CASCADE"})
-    @JoinTable({name: "films_palnets_rel"})
+
+    @ManyToMany(() => Planets, (planets) => planets.films, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
+    @JoinTable()
     planets: Planets[];
 
-    @ManyToMany(() => Starships, (starhips) => starhips.films, {cascade: ["insert", "update"], onDelete: "CASCADE"})
-    @JoinTable({name: "films_starships_rel"})
+    @ManyToMany(() => Starships, (starhips) => starhips.films, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
+    @JoinTable()
     starships: Starships[];
-    
-    @ManyToMany(() => Vehicles, (vehicles) => vehicles.films, {cascade: ["insert", "update"], onDelete: "CASCADE"})
-    @JoinTable({name: "films_vehicles_rel"})
+
+    @ManyToMany(() => Vehicles, (vehicles) => vehicles.films, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
+    @JoinTable()
     vehicles: Vehicles[];
 
-    @ManyToMany(() => Species, (species) => species.films, {cascade: ["insert", "update"], onDelete: "CASCADE"})
-    @JoinTable({name: "films_species_rel"})
+    @ManyToMany(() => Species, (species) => species.films, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
+    @JoinTable()
     species: Species[];
-    
+
     @OneToMany(() => Files, (files) => files.name)
-    @JoinTable({name: "films_images_rel"})
+    @JoinTable()
     images: Files[];
 }
