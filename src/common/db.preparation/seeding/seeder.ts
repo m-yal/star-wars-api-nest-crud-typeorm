@@ -13,27 +13,37 @@ config();
 export class Seeder implements MigrationInterface {
     name: string = 'Seeder1669806219723';
 
-    private readonly SEEDERS_ARRAY = [
-        new FilmsSeeder(), new PeopleSeeder(),
-        // new PlanetsSeeder(), new SpeciesSeeder(),
-        // new StarshipsSeeder(), new VehiclesSeeder(),
-        // new UsersSeeder(),
-    ];
+    private entitySeedersArray;
     private readonly IMAGES_RELATIVE_FILE_PATH = process.env.IMAGES_RELATIVE_FILE_PATH;
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        const baseDataSeedRequests = this.SEEDERS_ARRAY.map(async seeder => await seeder.baseDataSeed(queryRunner));
+        this.setupEntitySeeders(queryRunner);
+
+        const baseDataSeedRequests = this.entitySeedersArray.map(async seeder => await seeder.baseDataSeed());
         await Promise.all(baseDataSeedRequests);
 
-        const setRelationsSeedRequests = this.SEEDERS_ARRAY.map(async seeder => await seeder.setRelations(queryRunner));
+        const setRelationsSeedRequests = this.entitySeedersArray.map(async seeder => await seeder.setRelations());
         await Promise.all(setRelationsSeedRequests);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         // await this.deleteAllImageFiles(queryRunner);
+        await queryRunner.query("SET FOREIGN_KEY_CHECKS = 0;")
+        await queryRunner.clearTable("people");
+        await queryRunner.clearTable("films");
+        await queryRunner.clearTable("films_characters_people")
+        //...
+        await queryRunner.query("SET FOREIGN_KEY_CHECKS = 1;")
     }
 
-
+    private setupEntitySeeders(queryRuner: QueryRunner) {
+        this.entitySeedersArray = [
+            new FilmsSeeder(queryRuner), new PeopleSeeder(queryRuner),
+            // new PlanetsSeeder(), new SpeciesSeeder(),
+            // new StarshipsSeeder(), new VehiclesSeeder(),
+            // new UsersSeeder(),
+        ];
+    }
 
     private async deleteAllImageFiles(queryRunner: QueryRunner): Promise<void> {
         //1. delete all files in images dir (recursively delete dir)

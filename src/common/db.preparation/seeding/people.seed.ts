@@ -5,7 +5,7 @@ import { Planets } from 'src/modules/crud/planets/planets.entity';
 import { Species } from 'src/modules/crud/species/species.entity';
 import { Starships } from 'src/modules/crud/starships/starships.entity';
 import { Vehicles } from 'src/modules/crud/vehicles/vehicles.entity';
-import { QueryRunner } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 
 type PeopleRelations = {
   name: string,
@@ -21,20 +21,20 @@ export default class PeopleSeeder {
   private readonly relationsURLs: PeopleRelations[] = [];
   private readonly httpService = new HttpService();
   private queryRunner: QueryRunner;
-  private readonly RELATION_FIELD_ENTITY_MAP = {
-    // "species": Species,
-    // "vehicles": Vehicles,
-    // "starships": Starships,
+  private peopleRepository: Repository<People>;
+
+  constructor(queryRuner: QueryRunner) {
+    this.queryRunner = queryRuner;
+    this.peopleRepository = queryRuner.manager.getRepository(People);
   }
 
-  public async baseDataSeed(queryRunner: QueryRunner): Promise<void> {
-    this.queryRunner = queryRunner;
+  public async baseDataSeed(): Promise<void> {
     await this.seedBaseDateRecursively(this.FIRST_PAGE_URL);
-
+    console.log("=== after base data seed of people: " + JSON.stringify(this.relationsURLs));
+    console.log("=== after base data seed of people length: " + this.relationsURLs.length);
   }
 
-  public async setRelations(queryRunner: QueryRunner): Promise<void> {
-    this.queryRunner = queryRunner;
+  public async setRelations(): Promise<void> {
     // const peopleRepository = await this.queryRunner.manager.getRepository(People);
     // const promises = this.relationsURLs.map(async peopleRelations => {
     //   const people: People = await peopleRepository.findOneBy({ name: peopleRelations.name });
@@ -48,17 +48,17 @@ export default class PeopleSeeder {
 
 
   private async queryRelatedEntities(people: People, peopleRelations: PeopleRelations) {
-    // people.homeworld = await this.queryRunner.manager.findOneBy(Planets, { url: peopleRelations.homeworld });
-    const relationFeildsNames: string[] = Object.keys(this.RELATION_FIELD_ENTITY_MAP);
-    const promises = relationFeildsNames.map(async (relationFieldName: string) => {
-      people[relationFieldName] = [];
-      const relatedUnitURLs: string[] = peopleRelations[relationFieldName] || [];
-      const promises = relatedUnitURLs.map(async (url: string): Promise<void> => {
-        return await people[relationFieldName].push(await this.queryRunner.manager.findOneBy(this.RELATION_FIELD_ENTITY_MAP[relationFieldName], { url }));
-      })
-      await Promise.all(promises);
-    })
-    await Promise.all(promises);
+    // // people.homeworld = await this.queryRunner.manager.findOneBy(Planets, { url: peopleRelations.homeworld });
+    // const relationFeildsNames: string[] = Object.keys(this.RELATION_FIELD_ENTITY_MAP);
+    // const promises = relationFeildsNames.map(async (relationFieldName: string) => {
+    //   people[relationFieldName] = [];
+    //   const relatedUnitURLs: string[] = peopleRelations[relationFieldName] || [];
+    //   const promises = relatedUnitURLs.map(async (url: string): Promise<void> => {
+    //     return await people[relationFieldName].push(await this.queryRunner.manager.findOneBy(this.RELATION_FIELD_ENTITY_MAP[relationFieldName], { url }));
+    //   })
+    //   await Promise.all(promises);
+    // })
+    // await Promise.all(promises);
   }
 
   private async seedBaseDateRecursively(pageURL: string): Promise<void> {
@@ -74,7 +74,7 @@ export default class PeopleSeeder {
   }
 
   private async insertBaseData(data: any) {
-    await this.queryRunner.manager.save(People, {
+    const person = await this.peopleRepository.create({
       name: String(data.name),
       url: String(data.url),
       height: String(data.height),
@@ -84,7 +84,8 @@ export default class PeopleSeeder {
       eye_color: String(data.eye_color),
       birth_year: String(data.birth_year),
       gender: String(data.gender),
-    })
+    });
+    await this.peopleRepository.save(person);
   }
 
   private collectRelationsURLs(data: any) {
