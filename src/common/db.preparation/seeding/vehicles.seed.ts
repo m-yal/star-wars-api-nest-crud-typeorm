@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { Vehicles } from 'src/modules/crud/vehicles/vehicles.entity';
-import { QueryRunner } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 
 type VehiclesRelations = {
   name: string,
@@ -14,21 +14,28 @@ export default class VehiclesSeeder {
   private readonly FIRST_PAGE_URL = 'https://swapi.dev/api/vehicles/?page=1';
   private readonly relationsURLs: VehiclesRelations[] = [];
   private readonly httpService = new HttpService();
+
   private queryRunner: QueryRunner;
-  private readonly RELATION_FIELD_ENTITY_MAP = {
+  private vehiclesRepository: Repository<Vehicles>;
+
+
+  private readonly RELATIONS_MAP = {
     // "pilots": People,
     // "films": Films,
   }
 
-  public async baseDataSeed(queryRunner: QueryRunner): Promise<void> {
+  constructor(queryRunner: QueryRunner) {
     this.queryRunner = queryRunner;
+    this.vehiclesRepository = this.queryRunner.manager.getRepository(Vehicles);
+  }
+
+  public async baseDataSeed(): Promise<void> {
     await this.seedBaseDateRecursively(this.FIRST_PAGE_URL);
-    console.log("relationsURLs " + JSON.stringify(this.relationsURLs));
+    console.log("=== relationsURLs of vehicles " + JSON.stringify(this.relationsURLs));
 
   }
 
-  public async setRelations(queryRunner: QueryRunner): Promise<void> {
-    this.queryRunner = queryRunner;
+  public async setRelations(): Promise<void> {
     // const vehiclesRepository = await this.queryRunner.manager.getRepository(Vehicles);
     // const promises = this.relationsURLs.map(async vehicleRelations => {
     //   const vehicle: Vehicles = await vehiclesRepository.findOneBy({ name: vehicleRelations.name });
@@ -38,20 +45,6 @@ export default class VehiclesSeeder {
     // await Promise.all(promises);
   }
 
-
-
-  private async queryRelatedEntities(vehicle: Vehicles, vehicleRelations: VehiclesRelations) {
-    const relationFeildsNames: string[] = Object.keys(this.RELATION_FIELD_ENTITY_MAP);
-    const promises = relationFeildsNames.map(async (relationFieldName: string) => {
-      vehicle[relationFieldName] = [];
-      const relatedUnitURLs: string[] = vehicleRelations[relationFieldName] || [];
-      const promises = relatedUnitURLs.map(async (url: string): Promise<void> => {
-        return await vehicle[relationFieldName].push(await this.queryRunner.manager.findOneBy(this.RELATION_FIELD_ENTITY_MAP[relationFieldName], { url }));
-      })
-      await Promise.all(promises);
-    })
-    await Promise.all(promises);
-  }
 
   private async seedBaseDateRecursively(pageURL: string): Promise<void> {
     const { data } = await firstValueFrom(this.httpService.get<any>(pageURL));
@@ -66,7 +59,7 @@ export default class VehiclesSeeder {
   }
 
   private async insertBaseData(data: any) {
-    await this.queryRunner.manager.save(Vehicles, {
+    const vehicle = this.vehiclesRepository.create({
       name: String(data.name),
       url: String(data.url),
       model: String(data.model),
@@ -80,13 +73,14 @@ export default class VehiclesSeeder {
       consumables: String(data.consumables),
       vehicle_class: String(data.vehicle_class),
     });
+    await this.vehiclesRepository.save(vehicle);
   }
 
   private collectRelationsURLs(data: any) {
     this.relationsURLs.push({
       name: data.name,
-      // pilots: data.pilots,
-      // films: data.films,
+      // pilots: data.pilots || [],
+      // films: data.films || [],
     });
   }
 }

@@ -12,10 +12,10 @@ import { EntityManager, QueryRunner, Repository } from 'typeorm';
 type FilmsRelations = {
   name: string,
   characters: string[],
-  // planets: string[],
-  // starships: string[],
-  // vehicles: string[],
-  // species: string[],
+  planets: string[],
+  starships: string[],
+  vehicles: string[],
+  species: string[],
 }
 
 export class FilmsSeeder {
@@ -23,50 +23,53 @@ export class FilmsSeeder {
   private readonly FIRST_PAGE_URL = 'https://swapi.dev/api/films/?page=1';
   private readonly relationsURLs: FilmsRelations[] = [];
   private readonly httpService = new HttpService();
-  
+
   private queryRunner: QueryRunner;
   private filmsRepository: Repository<Films>;
-  private peopleRepository: Repository<People>;
+
+  private readonly RELATIONS_MAP = {
+    'characters': People,
+    'planets': Planets,
+    'starships': Starships,
+    'vehicles': Vehicles,
+    'species': Species,
+  }
 
   constructor(queryRuner: QueryRunner) {
     this.queryRunner = queryRuner;
-    this.filmsRepository = this.queryRunner.manager.getRepository(Films);
-    this.peopleRepository = this.queryRunner.manager.getRepository(People);
+    this.filmsRepository = this.queryRunner.manager.getRepository(Films); //refactor - manager to another var
   }
 
   public async baseDataSeed(): Promise<void> {
     await this.seedBaseDateRecursively(this.FIRST_PAGE_URL);
-    console.log("=== after base data seed of films: " + JSON.stringify(this.relationsURLs));
   }
 
   public async setRelations(): Promise<void> {
+    const relationsFieldsNames = Object.keys(this.RELATIONS_MAP);
     for await (const filmRelationsUrls of this.relationsURLs) {
       const film = await this.filmsRepository.findOne({
         where: { name: filmRelationsUrls.name },
-        relations: ['characters'],
+        relations: relationsFieldsNames,
       })
-      console.log("=== film name: " + film.name);
-      
-      // film.characters = [];
-      // await filmRepository.save(film);
-      const characters: People[] = await this.getCharacters(filmRelationsUrls.characters, this.peopleRepository);
-      // const updatedFilm = await filmRepository.merge(film, { characters });
-      film.characters = characters;
-      // await filmRepository.save(updatedFilm);
+      for await (const relationFieldName of relationsFieldsNames) {
+        const relatedUnits = await this.getRelatedUnit(filmRelationsUrls[relationFieldName], relationFieldName);
+        film[relationFieldName] = relatedUnits;
+      }
       await this.filmsRepository.save(film);
     }
   }
 
 
 
-
-  private async getCharacters(charactersUrls: string[], peopleRepository: Repository<People>): Promise<People[]> {
-    const characters: People[] = [];
-    for await (const characterUrl of charactersUrls) {
-      const character = await peopleRepository.findOneBy({ url: characterUrl });
-      characters.push(character);      
-    }
-    return characters;
+  private async getRelatedUnit(unitUrls: string[], relationFieldname: string) {
+    const units = [];
+    const relatedUnitRepository = this.queryRunner.manager.getRepository(this.RELATIONS_MAP[relationFieldname]);
+    const unresolvedPromises = unitUrls.map(async unitUrl => {
+      const unit = await relatedUnitRepository.findOneBy({ url: unitUrl });
+      units.push(unit);
+    });
+    await Promise.all(unresolvedPromises);
+    return units;
   }
 
   private async seedBaseDateRecursively(pageURL: string): Promise<void> {
@@ -97,11 +100,11 @@ export class FilmsSeeder {
   private collectRelationsURLs(data: any) {
     this.relationsURLs.push({
       name: data.title,
-      characters: data.characters,
-      // planets: data.planets,
-      // starships: data.starhips,
-      // vehicles: data.vehicles,
-      // species: data.species,
+      characters: data.characters || [],
+      planets: data.planets || [],
+      starships: data.starhips || [],
+      vehicles: data.vehicles || [],
+      species: data.species || [],
     });
   }
 }

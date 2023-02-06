@@ -1,13 +1,12 @@
 import { People } from "src/modules/crud/people/people.entity";
 import { Planets } from "src/modules/crud/planets/planets.entity";
-import { QueryRunner } from "typeorm";
+import { QueryRunner, Repository } from "typeorm";
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from "@nestjs/axios";
 
 type PlanetsRelations = {
   name: string,
   residents: string[],
-  // films: string[],
 }
 
 export class PlanetsSeeder {
@@ -15,43 +14,49 @@ export class PlanetsSeeder {
   private readonly FIRST_PAGE_URL = 'https://swapi.dev/api/planets/?page=1';
   private readonly relationsURLs: PlanetsRelations[] = [];
   private readonly httpService = new HttpService();
+
   private queryRunner: QueryRunner;
-  private readonly RELATION_FIELD_ENTITY_MAP = {
-    "residents": People, 
-    // "films": Films,
+  private planetsRepository: Repository<Planets>;
+  
+  private readonly RELATIONS_MAP = {
+    "residents": People,
   }
 
-  public async baseDataSeed(queryRunner: QueryRunner): Promise<void> {
+  constructor(queryRunner: QueryRunner) {
     this.queryRunner = queryRunner;
+    this.planetsRepository = this.queryRunner.manager.getRepository(Planets);
+  }
+
+  public async baseDataSeed(): Promise<void> {
     await this.seedBaseDateRecursively(this.FIRST_PAGE_URL);
-    console.log("relationsURLs " + JSON.stringify(this.relationsURLs));
-
   }
 
-  public async setRelations(queryRunner: QueryRunner): Promise<void> {
-    this.queryRunner = queryRunner;
-    const planetsRepository = await this.queryRunner.manager.getRepository(Planets)
-    const promises = this.relationsURLs.map(async planetRelations => {
-      const planet: Planets = await planetsRepository.findOneBy({ name: planetRelations.name });
-      await this.queryRelatedEntities(planet, planetRelations);
-      await planetsRepository.save(planet);
-    })
-    await Promise.all(promises);
-  }
-
-
-
-  private async queryRelatedEntities(planet: Planets, planetRelations: PlanetsRelations) {
-    const relationFeildsNames: string[] = Object.keys(this.RELATION_FIELD_ENTITY_MAP);
-    const promises = relationFeildsNames.map(async (relationFieldName: string) => {
-      planet[relationFieldName] = [];
-      const relatedUnitURLs: string[] = planetRelations[relationFieldName] || [];
-      const promises = relatedUnitURLs.map(async (url: string): Promise<void> => {
-        return await planet[relationFieldName].push(await this.queryRunner.manager.findOneBy(this.RELATION_FIELD_ENTITY_MAP[relationFieldName], { url }));
+  public async setRelations(): Promise<void> {
+    const relationsFieldsNames = Object.keys(this.RELATIONS_MAP);
+    for await (const planetRelationsUrls of this.relationsURLs) {
+      const planet = await this.planetsRepository.findOne({
+        where: { name: planetRelationsUrls.name },
+        relations: relationsFieldsNames,
       })
-      await Promise.all(promises);
+      for await (const relationFieldName of relationsFieldsNames) {
+        const relatedUnits = await this.getRelatedUnit(planetRelationsUrls[relationFieldName], relationFieldName);
+        planet[relationFieldName] = relatedUnits;
+      }
+      await this.planetsRepository.save(planet);
+    }
+  }
+
+
+
+  private async getRelatedUnit(unitUrls: string[], relationFieldname: string) {
+    const units = [];
+    const relatedUnitRepository = this.queryRunner.manager.getRepository(this.RELATIONS_MAP[relationFieldname]);
+    const unresolvedPromises = unitUrls.map(async unitUrl => {
+      const unit = await relatedUnitRepository.findOneBy({ url: unitUrl });
+      units.push(unit);
     })
-    await Promise.all(promises);
+    await Promise.all(unresolvedPromises);
+    return units;
   }
 
   private async seedBaseDateRecursively(pageURL: string): Promise<void> {
@@ -67,7 +72,7 @@ export class PlanetsSeeder {
   }
 
   private async insertBaseData(data: any) {
-    await this.queryRunner.manager.save(Planets, {
+    const planet = this.planetsRepository.create({
       name: String(data.name),
       url: String(data.url),
       rotation_period: String(data.rotation_period),
@@ -78,14 +83,14 @@ export class PlanetsSeeder {
       terrain: String(data.terrain),
       surface_water: String(data.surface_water),
       population: String(data.population),
-    });
+    })
+    await this.planetsRepository.save(planet);
   }
 
   private collectRelationsURLs(data: any) {
     this.relationsURLs.push({
       name: data.name,
-      residents: data.residents,
-      // films: data.films,
+      residents: data.residents || [],
     });
   }
 }

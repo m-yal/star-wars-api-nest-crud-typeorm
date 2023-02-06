@@ -1,7 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { People } from 'src/modules/crud/people/people.entity';
-import { Planets } from 'src/modules/crud/planets/planets.entity';
 import { Species } from 'src/modules/crud/species/species.entity';
 import { Starships } from 'src/modules/crud/starships/starships.entity';
 import { Vehicles } from 'src/modules/crud/vehicles/vehicles.entity';
@@ -9,10 +8,9 @@ import { QueryRunner, Repository } from 'typeorm';
 
 type PeopleRelations = {
   name: string,
-  // homeworld: string,
-  // species: string[],
-  // vehicles: string[],
-  // starships: string[],
+  species: string[],
+  vehicles: string[],
+  starships: string[],
 }
 
 export default class PeopleSeeder {
@@ -20,45 +18,51 @@ export default class PeopleSeeder {
   private readonly FIRST_PAGE_URL = 'https://swapi.dev/api/people/?page=1';
   private readonly relationsURLs: PeopleRelations[] = [];
   private readonly httpService = new HttpService();
+
   private queryRunner: QueryRunner;
   private peopleRepository: Repository<People>;
 
-  constructor(queryRuner: QueryRunner) {
-    this.queryRunner = queryRuner;
-    this.peopleRepository = queryRuner.manager.getRepository(People);
+  private RELATIONS_MAP = {
+    species: Species,
+    vehicles: Vehicles,
+    starships: Starships,
+  }
+
+  constructor(queryRunner: QueryRunner) {
+    this.queryRunner = queryRunner;
+    this.peopleRepository = this.queryRunner.manager.getRepository(People);
   }
 
   public async baseDataSeed(): Promise<void> {
     await this.seedBaseDateRecursively(this.FIRST_PAGE_URL);
-    console.log("=== after base data seed of people: " + JSON.stringify(this.relationsURLs));
-    console.log("=== after base data seed of people length: " + this.relationsURLs.length);
   }
 
   public async setRelations(): Promise<void> {
-    // const peopleRepository = await this.queryRunner.manager.getRepository(People);
-    // const promises = this.relationsURLs.map(async peopleRelations => {
-    //   const people: People = await peopleRepository.findOneBy({ name: peopleRelations.name });
-    //   await this.queryRelatedEntities(people, peopleRelations);
-    //   await peopleRepository.save(people);
-    // });
-    // await Promise.all(promises);
+    const relationsFieldsNames = Object.keys(this.RELATIONS_MAP);
+    for await (const peopleRelationsUrls of this.relationsURLs) {
+      const person = await this.peopleRepository.findOne({
+        where: { name: peopleRelationsUrls.name },
+        relations: relationsFieldsNames,
+      })
+      for await (const relationFieldName of relationsFieldsNames) {
+        const relatedUnits = await this.getRelatedUnit(peopleRelationsUrls[relationFieldName], relationFieldName);
+        person[relationFieldName] = relatedUnits;
+      }
+      await this.peopleRepository.save(person);
+    }
   }
   
 
 
-
-  private async queryRelatedEntities(people: People, peopleRelations: PeopleRelations) {
-    // // people.homeworld = await this.queryRunner.manager.findOneBy(Planets, { url: peopleRelations.homeworld });
-    // const relationFeildsNames: string[] = Object.keys(this.RELATION_FIELD_ENTITY_MAP);
-    // const promises = relationFeildsNames.map(async (relationFieldName: string) => {
-    //   people[relationFieldName] = [];
-    //   const relatedUnitURLs: string[] = peopleRelations[relationFieldName] || [];
-    //   const promises = relatedUnitURLs.map(async (url: string): Promise<void> => {
-    //     return await people[relationFieldName].push(await this.queryRunner.manager.findOneBy(this.RELATION_FIELD_ENTITY_MAP[relationFieldName], { url }));
-    //   })
-    //   await Promise.all(promises);
-    // })
-    // await Promise.all(promises);
+  private async getRelatedUnit(unitUrls: string[], relationFieldname: string) {
+    const units = [];
+    const relatedUnitRepository = this.queryRunner.manager.getRepository(this.RELATIONS_MAP[relationFieldname]);
+    const unresolvedPromises = unitUrls.map(async unitUrl => {
+      const unit = await relatedUnitRepository.findOneBy({ url: unitUrl });
+      units.push(unit);
+    })
+    await Promise.all(unresolvedPromises);
+    return units;
   }
 
   private async seedBaseDateRecursively(pageURL: string): Promise<void> {
@@ -91,10 +95,9 @@ export default class PeopleSeeder {
   private collectRelationsURLs(data: any) {
     this.relationsURLs.push({
       name: data.name,
-      // homeworld: data.homeworld,
-      // species: data.species,
-      // vehicles: data.vehicles,
-      // starships: data.starhips,
+      species: data.species || [],
+      vehicles: data.vehicles || [],
+      starships: data.starships || [],
     });
   }
 }

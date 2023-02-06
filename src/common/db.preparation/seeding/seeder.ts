@@ -31,16 +31,27 @@ export class Seeder implements MigrationInterface {
         await queryRunner.query("SET FOREIGN_KEY_CHECKS = 0;")
         await queryRunner.clearTable("people");
         await queryRunner.clearTable("films");
-        await queryRunner.clearTable("films_characters_people")
-        //...
-        await queryRunner.query("SET FOREIGN_KEY_CHECKS = 1;")
+        await queryRunner.clearTable("films_characters_people");
+        await queryRunner.clearTable("films_planets_planets");
+        await queryRunner.clearTable("films_species_species");
+        await queryRunner.clearTable("films_starships_starships");
+        await queryRunner.clearTable("films_vehicles_vehicles");
+        await queryRunner.clearTable("people_species_species");
+        await queryRunner.clearTable("people_starships_starships");
+        await queryRunner.clearTable("people_vehicles_vehicles");
+        await queryRunner.clearTable("planets");
+        await queryRunner.clearTable("species");
+        await queryRunner.clearTable("starships");
+        await queryRunner.clearTable("users");
+        await queryRunner.clearTable("vehicles");
+        await queryRunner.query("SET FOREIGN_KEY_CHECKS = 1;");
     }
 
     private setupEntitySeeders(queryRuner: QueryRunner) {
         this.entitySeedersArray = [
             new FilmsSeeder(queryRuner), new PeopleSeeder(queryRuner),
-            // new PlanetsSeeder(), new SpeciesSeeder(),
-            // new StarshipsSeeder(), new VehiclesSeeder(),
+            new PlanetsSeeder(queryRuner), new SpeciesSeeder(queryRuner),
+            new StarshipsSeeder(queryRuner), new VehiclesSeeder(queryRuner),
             // new UsersSeeder(),
         ];
     }

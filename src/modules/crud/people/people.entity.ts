@@ -34,6 +34,7 @@ export class People extends BaseEntity implements IPeopleEntity {
 
 
     
+    
     @ManyToOne(() => Planets, (planets) => planets.residents, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
     homeworld: Planets;
 
