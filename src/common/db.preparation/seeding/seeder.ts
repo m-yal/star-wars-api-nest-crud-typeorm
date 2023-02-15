@@ -6,62 +6,93 @@ import { PlanetsSeeder } from "./planets.seed";
 import { SpeciesSeeder } from "./species.seed";
 import StarshipsSeeder from "./starships.seed";
 import VehiclesSeeder from "./vehicles.seed";
-import * as fs from "fs";
+import { mkdir, rm } from "fs";
+import UsersSeeder from "./users.seed";
+import { AwsS3FilesRepository } from "src/modules/files/repositories/files.aws-s3.repository";
+import { BaseUnitsSeeder } from "./base-entity-seeder";
 
 config();
 
 export class Seeder implements MigrationInterface {
-    name: string = 'Seeder1669806219723';
 
-    private entitySeedersArray;
-    private readonly IMAGES_RELATIVE_FILE_PATH = process.env.IMAGES_RELATIVE_FILE_PATH;
+    name: string = 'Seeder1669806219723'; //do not change the value
+
+    private entitySeedersArray: (BaseUnitsSeeder | UsersSeeder)[];
+    private readonly IMAGES_RELATIVE_FILE_PATH: string = process.env.IMAGES_RELATIVE_FILE_PATH;
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        this.setupEntitySeeders(queryRunner);
+        this.initEntitySeeders(queryRunner);
 
-        const baseDataSeedRequests = this.entitySeedersArray.map(async seeder => await seeder.baseDataSeed());
+        const baseDataSeedRequests: Promise<void>[] = this.entitySeedersArray.map(async seeder => seeder.baseDataSeed());
         await Promise.all(baseDataSeedRequests);
 
-        const setRelationsSeedRequests = this.entitySeedersArray.map(async seeder => await seeder.setRelations());
+        const setRelationsSeedRequests: Promise<void>[] = this.entitySeedersArray.map(async seeder => await seeder.setRelations());
         await Promise.all(setRelationsSeedRequests);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        // await this.deleteAllImageFiles(queryRunner);
-        await queryRunner.query("SET FOREIGN_KEY_CHECKS = 0;")
-        await queryRunner.clearTable("people");
-        await queryRunner.clearTable("films");
-        await queryRunner.clearTable("films_characters_people");
-        await queryRunner.clearTable("films_planets_planets");
-        await queryRunner.clearTable("films_species_species");
-        await queryRunner.clearTable("films_starships_starships");
-        await queryRunner.clearTable("films_vehicles_vehicles");
-        await queryRunner.clearTable("people_species_species");
-        await queryRunner.clearTable("people_starships_starships");
-        await queryRunner.clearTable("people_vehicles_vehicles");
-        await queryRunner.clearTable("planets");
-        await queryRunner.clearTable("species");
-        await queryRunner.clearTable("starships");
-        await queryRunner.clearTable("users");
-        await queryRunner.clearTable("vehicles");
+        await Promise.all([
+            this.deleteAllImageFiles(queryRunner),
+            this.clearAllTables(queryRunner),
+        ]);
+    }
+
+
+
+
+    private async clearAllTables(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query("SET FOREIGN_KEY_CHECKS = 0;");
+        await Promise.all([
+            queryRunner.clearTable("people"),
+            queryRunner.clearTable("films"),
+            queryRunner.clearTable("films_people_relations"),
+            queryRunner.clearTable("films_planets_relations"),
+            queryRunner.clearTable("films_starships_relations"),
+            queryRunner.clearTable("films_vehicles_relations"),
+            queryRunner.clearTable("films_species_relations"),
+            queryRunner.clearTable("people_species_relations"),
+            queryRunner.clearTable("people_vehicles_relations"),
+            queryRunner.clearTable("people_starships_relations"),
+            queryRunner.clearTable("planets"),
+            queryRunner.clearTable("species"),
+            queryRunner.clearTable("starships"),
+            queryRunner.clearTable("users"),
+            queryRunner.clearTable("vehicles"),
+            queryRunner.clearTable("files"),
+            queryRunner.clearTable("films_images_relations"),
+            queryRunner.clearTable("people_images_relations"),
+            queryRunner.clearTable("planets_images_relations"),
+            queryRunner.clearTable("species_images_relaitions"),
+            queryRunner.clearTable("starships_images_relations"),
+            queryRunner.clearTable("vehicles_images_relations"),
+        ]);
         await queryRunner.query("SET FOREIGN_KEY_CHECKS = 1;");
     }
 
-    private setupEntitySeeders(queryRuner: QueryRunner) {
+    private initEntitySeeders(queryRuner: QueryRunner): void {
         this.entitySeedersArray = [
             new FilmsSeeder(queryRuner), new PeopleSeeder(queryRuner),
             new PlanetsSeeder(queryRuner), new SpeciesSeeder(queryRuner),
             new StarshipsSeeder(queryRuner), new VehiclesSeeder(queryRuner),
-            // new UsersSeeder(),
+            new UsersSeeder(queryRuner),
         ];
     }
 
     private async deleteAllImageFiles(queryRunner: QueryRunner): Promise<void> {
         //1. delete all files in images dir (recursively delete dir)
-        fs.rm(this.IMAGES_RELATIVE_FILE_PATH, { recursive: true, force: true }, err => {
-            if (err) throw err;
-        })
+        rm(this.IMAGES_RELATIVE_FILE_PATH, { recursive: true, force: true }, this.throwErrorOrRecreateDir());
+        
         //2. delete from s3 bucket all files
-        // await new AwsS3FilesRepository().emptyBucket();
+        await new AwsS3FilesRepository().emptyBucket();
+    }
+
+    private throwErrorOrRecreateDir(): (err: Error) => void {
+        return (err: Error) => {
+            if (err) throw err;
+            mkdir(this.IMAGES_RELATIVE_FILE_PATH, {}, (err) => {
+                if (err) throw err;
+                console.log("Directory for images recreated. Relative path to it: " + this.IMAGES_RELATIVE_FILE_PATH);
+            });
+        }
     }
 }

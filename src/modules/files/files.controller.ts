@@ -19,12 +19,6 @@ export class FilesController {
         return new StreamableFile(this.fileService.get(imageName));
     }
 
-    @Post("")
-    @UploadFilesDecorators("files", undefined, multerOptions)
-    add(@UploadedFiles(ParseFiles) files: Array<Express.Multer.File>): Promise<string[]> {
-        return this.fileService.add(files);
-    }
-
     @Delete("")
     @DeleteFileDecorators()
     delete(@Query("imageName") imageName: string): Promise<true> {

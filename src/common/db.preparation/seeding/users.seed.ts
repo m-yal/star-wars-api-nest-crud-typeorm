@@ -1,12 +1,16 @@
 import { config } from 'dotenv';
 import { Users } from 'src/modules/auth/entities/users.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
 
 config();
 
 export default class UsersSeeder {
 
-    constructor(private readonly dataSource: DataSource) { }
+    private readonly usersRepository: Repository<Users>
+
+    constructor(private readonly queryRunner: QueryRunner) { 
+        this.usersRepository = this.queryRunner.manager.getRepository(Users);
+    }
 
     public async baseDataSeed(): Promise<void> {
         await this.insertBaseData();
@@ -18,16 +22,15 @@ export default class UsersSeeder {
 
 
 
-    private async insertBaseData() {
-        const usersRepository = this.dataSource.getRepository(Users);
-        await this.insertAdmins(usersRepository);
+    private async insertBaseData(): Promise<void> {
+        await this.insertAdmins();
     }
 
-    private async insertAdmins(usersRepository: Repository<Users>) {
-        const admin = usersRepository.create({
+    private async insertAdmins(): Promise<void> {
+        const admin: Users = this.usersRepository.create({
             username: process.env.ADMIN_USER_LOGIN,
             password: process.env.ADMIN_USER_PASSWORD,
         })
-        await usersRepository.save(admin);
+        await this.usersRepository.save(admin);
     }
 }

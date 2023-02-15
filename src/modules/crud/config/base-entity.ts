@@ -10,12 +10,12 @@ export abstract class BaseEntity implements IUniversalEntityUnitData {
     @Column("varchar", { unique: true })
     name: string;
 
-    @Column("varchar", { default: "unknown", unique: true })
+    @Column("varchar", { default: "unknown" })
     url?: string;
 
     @CreateDateColumn({ type: 'timestamp' })
-    created: Date;
+    created?: Date;
 
     @UpdateDateColumn({ type: 'timestamp' })
-    edited: Date;
+    edited?: Date;
 }

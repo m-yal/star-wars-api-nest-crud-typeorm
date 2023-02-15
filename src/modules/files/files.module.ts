@@ -10,6 +10,8 @@ import { Starships } from '../crud/starships/starships.entity';
 import { Films } from '../crud/films/films.entity';
 import { Planets } from '../crud/planets/planets.entity';
 import { Species } from '../crud/species/species.entity';
+import { MulterModule } from '@nestjs/platform-express';
+import { FilesController } from './files.controller';
 
 @Module({
   imports: [
@@ -18,9 +20,10 @@ import { Species } from '../crud/species/species.entity';
       Species, Starships, Vehicles,
       Files,
     ]),
-    // MulterModule.register(),
+    MulterModule.register(),
     ConfigModule,
   ],
+  controllers: [FilesController],
   providers: [
     {
       useClass: FILES_REPOSITORY_TYPES_MAP[process.env.FILES_STORAGE_TYPE],
@@ -32,7 +35,14 @@ import { Species } from '../crud/species/species.entity';
     },
   ],
   exports: [
-    FilesService,
-  ]
+    {
+      useClass: FILES_REPOSITORY_TYPES_MAP[process.env.FILES_STORAGE_TYPE],
+      provide: "SwapiImagesRepository",
+    },
+    {
+      useClass: FilesService,
+      provide: "IFilesActions",
+    },
+  ],
 })
 export class FilesModule { }

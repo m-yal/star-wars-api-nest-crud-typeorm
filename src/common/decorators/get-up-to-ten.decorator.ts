@@ -4,7 +4,7 @@ import { ApplyDecorators, UnitTypeEnum } from "src/common/types/types";
 import { Roles } from "src/modules/auth/decorators/roles.decorator";
 import { Role } from "src/modules/auth/entities/role.enum";
 import { RolesGuard } from "src/modules/auth/guards/roles.guard";
-import { DataResponseInterceptor } from "../interceptors/data-response.interceptor";
+import { DataResponseInterceptor } from "../../modules/crud/config/interceptors/data-response.interceptor";
 
 export function GetUpToTenUnitsDecorators(): ApplyDecorators {
     return applyDecorators(

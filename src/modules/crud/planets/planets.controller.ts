@@ -1,16 +1,24 @@
-import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from "@nestjs/common";
+import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UploadedFiles } from "@nestjs/common";
 import { UpToTenUnitsPage } from "src/common/types/types";
 import { PlanetsService } from "./planets.service";
 import { Planets } from "./planets.entity";
-import { GetUpToTenUnitsDecorators } from "../config/decorators/get-up-to-ten.decorator";
-import { DeleteUnitDecorators } from "../config/decorators/delete.decorator";
-import { UpdateUnitDecorators } from "../config/decorators/update.decorator";
-import { CreateUnitDecorators } from "../config/decorators/createUnit.decorator";
-import { ValidateIdPipe } from "../config/pipes/validate-id.pipe";
-import { PreparePlanetBodyPipe } from "./planets.prepare-body.pipe";
+import { GetUpToTenUnitsDecorators } from "../../../common/decorators/get-up-to-ten.decorator";
+import { DeleteUnitDecorators } from "../../../common/decorators/delete.decorator";
+import { UpdateUnitDecorators } from "../../../common/decorators/update.decorator";
+import { ValidateNamePipe } from "../config/pipes/validate-name.pipe";
+import { PreparePlanetBodyPipe } from "./prepare-body.pipe";
 import { VehicleExistsPipe } from "../vehicles/vehicles.exists.pipe";
 import { ValidatePagePipe } from "../config/pipes/validate-page.pipe";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { CreatePlanetDto } from "./create.dto";
+import { plainToInstance } from "class-transformer";
+import { CreateUnitDecorators } from "../../../common/decorators/create.decorator";
+import { PlanetExistsPipe } from "./planets.exists.pipe";
+import { UploadFilesDecorators } from "src/modules/files/decorators/upload.decorators";
+import { multerOptions } from "src/modules/files/config/multer/multer-options.config";
+import { ParseFiles } from "src/modules/files/config/pipes/parse-files.pipe";
 
+@ApiTags("Planets unit paths")
 @Controller('planets')
 export class PlanetsController {
 
@@ -19,11 +27,12 @@ export class PlanetsController {
     ) { }
     
     @Post()
-    @CreateUnitDecorators(new Planets())
+    @CreateUnitDecorators(CreatePlanetDto)
     async create(
         @Body(PreparePlanetBodyPipe) 
-        planet: Planets,
+        dto: CreatePlanetDto,
     ): Promise<Planets> {
+        const planet: Planets = plainToInstance(Planets, { ...dto })
         return this.planetsService.create(planet);
     }
 
@@ -36,23 +45,29 @@ export class PlanetsController {
         return this.planetsService.getUpToTen(page);
     }
 
-    @Put(':name')
-    @UpdateUnitDecorators(new Planets())
+    @Put()
+    @UpdateUnitDecorators(CreatePlanetDto)
     async update(
-        @Param('name', ValidateIdPipe, VehicleExistsPipe) 
-        name: string,
-        @Body(PreparePlanetBodyPipe) 
-        planet: Planets,
-    ): Promise<true> {
-        return this.planetsService.update(name, planet);
+        @Body(PlanetExistsPipe, PreparePlanetBodyPipe) 
+        dto: CreatePlanetDto,
+    ): Promise<Planets> {
+        const planet: Planets = plainToInstance(Planets, { ...dto })
+        return this.planetsService.update(planet);
     }
 
     @Delete(':name')
     @DeleteUnitDecorators()
     async remove(
-        @Param('name', ValidateIdPipe, VehicleExistsPipe) 
+        @Param('name', ValidateNamePipe) 
         name: string,
-    ): Promise<true> {
+    ): Promise<{ name: string }> {
         return this.planetsService.delete(name);
+    }
+
+    @Post('file')
+    @ApiOperation({ summary: "Uplod file for unit" })
+    @UploadFilesDecorators("files", undefined, multerOptions)
+    async uploadImages(@UploadedFiles(ParseFiles) files: Array<Express.Multer.File>, @Query("unitName") unitName: string) {
+        return this.planetsService.uploadImages(files, unitName);
     }
 }

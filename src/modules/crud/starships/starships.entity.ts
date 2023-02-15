@@ -53,7 +53,7 @@ export class Starships extends BaseEntity implements IStarshipsEntity {
     @ManyToMany(() => Films, films => films.starships, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
     films: Films[];
 
-    @OneToMany(() => Files, (files) => files.name)
-    @JoinTable()
+    @ManyToMany(() => Files)
+    @JoinTable({ name: "starships_images_relations" })
     images: Files[];
 }

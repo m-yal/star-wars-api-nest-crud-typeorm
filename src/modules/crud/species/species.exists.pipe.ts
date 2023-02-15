@@ -1,4 +1,5 @@
 import { PipeTransform, Injectable, NotFoundException } from '@nestjs/common';
+import { Species } from './species.entity';
 
 import { SpeciesService } from './species.service';
 
@@ -6,11 +7,9 @@ import { SpeciesService } from './species.service';
 export class SpeciesExistsPipe implements PipeTransform {
   constructor(private readonly speciesService: SpeciesService) {}
 
-  async transform(name: string) {
-    const exists = await this.speciesService.exists(name);
-    if (!exists) {
-      throw new NotFoundException(`Specie with name: ${name} not found`);
-    }
-    return name;
+  async transform(specie: Species) {
+    const exists = await this.speciesService.exists(specie.name);
+    if (exists) return specie;
+    throw new NotFoundException(`Specie with name: ${specie.name} not found`);
   }
 }

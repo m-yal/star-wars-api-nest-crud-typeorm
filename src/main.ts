@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, UnprocessableEntityException, ValidationError, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -15,8 +15,21 @@ async function bootstrap() {
   const document: OpenAPIObject = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("swagger", app, document);
 
-  app.useGlobalFilters(new AllExceptionFilter());
-  
+  // app.useGlobalFilters(new AllExceptionFilter());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      exceptionFactory: (validationErrors: ValidationError[] = []) => {
+        const errorMessage = validationErrors
+          .map((error) => {
+            return `${error.property} has wrong value ${error.value} ${Object.values(error.constraints).join(', ')}`;
+          })
+          .join(', ');
+
+        return new UnprocessableEntityException(errorMessage);
+      },
+    }),
+  );
   app.use(session(sessionConfig));
   
   app.use(passport.initialize());

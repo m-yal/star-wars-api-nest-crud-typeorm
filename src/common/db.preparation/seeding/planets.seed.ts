@@ -1,18 +1,15 @@
+import { Films } from "src/modules/crud/films/films.entity";
 import { People } from "src/modules/crud/people/people.entity";
 import { Planets } from "src/modules/crud/planets/planets.entity";
 import { QueryRunner, Repository } from "typeorm";
-import { BaseEntitySeeder } from "./base-entity-seeder";
+import { BaseUnitsSeeder } from "./base-entity-seeder";
+import { PlanetsRelations } from "./common.types";
 
-type PlanetsRelations = {
-  name: string,
-  residents: string[],
-}
-
-export class PlanetsSeeder extends BaseEntitySeeder {
+export class PlanetsSeeder extends BaseUnitsSeeder {
   
-  readonly FIRST_PAGE_URL = 'https://swapi.dev/api/planets/?page=1';
+  readonly FIRST_PAGE_URL: string = 'https://swapi.dev/api/planets/?page=1';
   readonly relationsURLs: PlanetsRelations[] = [];
-  readonly unitRepository: Repository<any>;
+  readonly unitRepository: Repository<Planets>;
   readonly RELATIONS_MAP = {
     "residents": People,
   }
@@ -22,8 +19,8 @@ export class PlanetsSeeder extends BaseEntitySeeder {
     this.unitRepository = this.queryRunner.manager.getRepository(Planets);
   }
 
-  async insertBaseData(data: any) {
-    const planet = this.unitRepository.create({
+  async insertBaseData(data: any): Promise<void> {
+    const planet: Planets = await this.unitRepository.create({
       name: String(data.name),
       url: String(data.url),
       rotation_period: String(data.rotation_period),
@@ -38,7 +35,7 @@ export class PlanetsSeeder extends BaseEntitySeeder {
     await this.unitRepository.save(planet);
   }
 
-  collectRelationsURLs(data: any) {
+  collectRelationsURLs(data: any): void {
     this.relationsURLs.push({
       name: data.name,
       residents: data.residents || [],

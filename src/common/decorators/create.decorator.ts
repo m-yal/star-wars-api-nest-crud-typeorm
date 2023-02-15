@@ -1,25 +1,26 @@
 import { applyDecorators, HttpStatus, UseInterceptors } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiResponse } from "@nestjs/swagger";
-import { ExecutedResponseInterseptor } from "src/common/interceptors/executed-response.interceptor";
+import { CreatedUnitResponseInterseptor } from "src/common/interceptors/created-unit-response.interceptor";
 import { ApplyDecorators, Units } from "src/common/types/types";
 import { Roles } from "src/modules/auth/decorators/roles.decorator";
 import { Role } from "src/modules/auth/entities/role.enum";
 
-export function CreateUnitDecorators(inputDto: Units): ApplyDecorators {
+export function CreateUnitDecorators(createUnitDto): ApplyDecorators {
     return applyDecorators(
         ApiBody({
+            type: createUnitDto,
             schema: {
-                default: inputDto
-            }
+                default: createUnitDto,
+            },
         }),
-        ApiOperation({ summary: "Add people to db" }),
+        ApiOperation({ summary: "Add Unit to db" }),
         Roles(Role.ADMIN),
         // UseGuards(RolesGuard),
-        UseInterceptors(ExecutedResponseInterseptor),
+        UseInterceptors(CreatedUnitResponseInterseptor),
         ApiResponse({
             status: HttpStatus.CREATED,
-            description: "Person added to db",
-            type: ExecutedResponseInterseptor
+            description: "Unit added to db",
+            type: CreatedUnitResponseInterseptor
         }),
     )
 }

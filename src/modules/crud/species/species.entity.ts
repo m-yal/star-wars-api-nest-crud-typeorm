@@ -47,7 +47,7 @@ export class Species extends BaseEntity implements ISpeciesEntity {
     @ManyToMany(() => Films, films => films.species, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
     films: Films[];
 
-    @OneToMany(() => Files, (files) => files.name)
-    @JoinTable()
+    @ManyToMany(() => Files)
+    @JoinTable({ name: "species_images_relaitions"})
     images: Files[];
 }

@@ -3,20 +3,14 @@ import { Species } from 'src/modules/crud/species/species.entity';
 import { Starships } from 'src/modules/crud/starships/starships.entity';
 import { Vehicles } from 'src/modules/crud/vehicles/vehicles.entity';
 import { QueryRunner, Repository } from 'typeorm';
-import { BaseEntitySeeder } from './base-entity-seeder';
+import { BaseUnitsSeeder } from './base-entity-seeder';
+import { PeopleRelations } from './common.types';
 
-type PeopleRelations = {
-  name: string,
-  species: string[],
-  vehicles: string[],
-  starships: string[],
-}
-
-export default class PeopleSeeder extends BaseEntitySeeder {
+export default class PeopleSeeder extends BaseUnitsSeeder {
   
-  readonly FIRST_PAGE_URL = 'https://swapi.dev/api/people/?page=1';
+  readonly FIRST_PAGE_URL: string = 'https://swapi.dev/api/people/?page=1';
   readonly relationsURLs: PeopleRelations[] = [];
-  readonly unitRepository: Repository<any>;
+  readonly unitRepository: Repository<People>;
   readonly RELATIONS_MAP = {
     species: Species,
     vehicles: Vehicles,
@@ -29,7 +23,7 @@ export default class PeopleSeeder extends BaseEntitySeeder {
   }
 
   async insertBaseData(data: any) {
-    const person = await this.unitRepository.create({
+    const person: People = await this.unitRepository.create({
       name: String(data.name),
       url: String(data.url),
       height: String(data.height),

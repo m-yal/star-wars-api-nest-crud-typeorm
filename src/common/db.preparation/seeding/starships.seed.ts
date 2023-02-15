@@ -1,14 +1,11 @@
 import { Starships } from 'src/modules/crud/starships/starships.entity';
 import { QueryRunner, Repository } from 'typeorm';
-import { BaseEntitySeeder } from './base-entity-seeder';
+import { BaseUnitsSeeder } from './base-entity-seeder';
+import { StarshipsRelations } from './common.types';
 
-type StarshipsRelations = {
-  name: string,
-}
+export default class StarshipsSeeder extends BaseUnitsSeeder {
 
-export default class StarshipsSeeder extends BaseEntitySeeder {
-
-  readonly FIRST_PAGE_URL = 'https://swapi.dev/api/starships/?page=1';
+  readonly FIRST_PAGE_URL: string = 'https://swapi.dev/api/starships/?page=1';
   readonly relationsURLs: StarshipsRelations[] = [];
   readonly unitRepository: Repository<any>;
   readonly RELATIONS_MAP = {
@@ -19,8 +16,8 @@ export default class StarshipsSeeder extends BaseEntitySeeder {
     this.unitRepository = this.queryRunner.manager.getRepository(Starships);
   }
 
-  async insertBaseData(data: any) {
-    const starhip = this.unitRepository.create({
+  async insertBaseData(data: any): Promise<void> {
+    const starhip: Starships = await this.unitRepository.create({
       name: String(data.name),
       url: String(data.url),
       model: String(data.model),
@@ -36,10 +33,10 @@ export default class StarshipsSeeder extends BaseEntitySeeder {
       MGLT: String(data.MGLT),
       starship_class: String(data.starship_class),
     })
-    await this.unitRepository.save(starhip);
+    await this.unitRepository.save(await starhip);
   }
 
-  collectRelationsURLs(data: any) {
+  collectRelationsURLs(data: any): void {
     this.relationsURLs.push({
       name: data.name,
     });

@@ -12,7 +12,7 @@ import { IFilmsEntity } from "./films.entity.interfaces";
 export class Films extends BaseEntity implements IFilmsEntity {
 
     @Column()
-    episode_id: string
+    episode_id: string;
 
     @Column("longtext")
     opening_crawl: string;
@@ -31,26 +31,26 @@ export class Films extends BaseEntity implements IFilmsEntity {
 
 
     @ManyToMany(() => People, (people) => people.films, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
-    @JoinTable()
+    @JoinTable({ name: "films_people_relations" })
     characters: People[];
 
     @ManyToMany(() => Planets, (planets) => planets.films, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
-    @JoinTable()
+    @JoinTable({ name: "films_planets_relations" })
     planets: Planets[];
 
     @ManyToMany(() => Starships, (starhips) => starhips.films, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
-    @JoinTable()
+    @JoinTable({ name: "films_starships_relations" })
     starships: Starships[];
 
     @ManyToMany(() => Vehicles, (vehicles) => vehicles.films, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
-    @JoinTable()
+    @JoinTable({ name: "films_vehicles_relations" })
     vehicles: Vehicles[];
 
     @ManyToMany(() => Species, (species) => species.films, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
-    @JoinTable()
+    @JoinTable({ name: "films_species_relations" })
     species: Species[];
 
-    @OneToMany(() => Files, (files) => files.name)
-    @JoinTable()
+    @ManyToMany(() => Files)
+    @JoinTable({ name: "films_images_relations" })
     images: Files[];
 }

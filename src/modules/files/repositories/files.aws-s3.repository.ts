@@ -1,15 +1,25 @@
-import { S3 } from 'aws-sdk';
+import { AWSError, S3 } from 'aws-sdk';
 import { Injectable } from "@nestjs/common";
 import internal from "stream";
 import { awsS3ClientConfig } from "src/common/db.configs/aws-s3.config";
 import { IAWSImagesRepository } from '../interfaces/repositories.interfaces';
 import { FileNamesTransformer } from '../files.names.transformer';
+import { config } from 'dotenv';
+import { PromiseResult } from 'aws-sdk/lib/request';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Files } from '../file.entity';
+import { Repository } from 'typeorm';
+
+config();
 
 @Injectable()
 export class AwsS3FilesRepository implements IAWSImagesRepository {
 
     private readonly AWS_PUBLIC_BUCKET_NAME = process.env.AWS_PUBLIC_BUCKET_NAME;
     private readonly fileNamesTransformer = new FileNamesTransformer();
+    private readonly s3 = this.getS3();
+
+    constructor(@InjectRepository(Files) private readonly filesRecordsReposiotry?: Repository<Files>) { }
 
     get(imageName: string): internal.Readable {
         const options = this.getAwsS3GetOrDeleteOptions(imageName);
@@ -18,31 +28,25 @@ export class AwsS3FilesRepository implements IAWSImagesRepository {
 
     async add(images: Express.Multer.File[]): Promise<string[]> {
         this.fileNamesTransformer.rename(images);
-        const s3 = this.getS3();
         const awsResponses = images.map(image => {
-            return s3.upload(this.generateUploadOptions(image)).promise();
+            return this.s3.upload(this.generateUploadOptions(image)).promise();
         });
         await Promise.all(awsResponses);
         return this.fileNamesTransformer.extractFilenames(images);
     }
 
-    async delete(imgName: string): Promise<true> {
-        const options = this.getAwsS3GetOrDeleteOptions(imgName);
-        const deleteResponses = [];
-        this.getS3().deleteObject(options).promise().then((value) => {
-            deleteResponses.push(value);
-        });
-        Promise.all(deleteResponses).then((values) => {
-            console.log("awsResponses: " + JSON.stringify(values));
-        });
+    async delete(imageName: string): Promise<true> {
+        const options = this.getAwsS3GetOrDeleteOptions(imageName);
+        await this.getS3().deleteObject(options).promise()
+        const imageRecordToRemove = await this.filesRecordsReposiotry.findOneBy({ name: imageName });
+        await this.filesRecordsReposiotry.remove(imageRecordToRemove);
         return true;
     }
 
     async fileExists(fileName: string): Promise<boolean> {
         try {
-            const s3 = this.getS3();
             const options = this.getAwsS3GetOrDeleteOptions(fileName);
-            const object = s3.headObject(options);
+            const object = this.s3.headObject(options);
             console.log("object headObject: " + JSON.stringify(object));
             return true;
         } catch (e) {
@@ -51,34 +55,51 @@ export class AwsS3FilesRepository implements IAWSImagesRepository {
     }
 
     async findByNames(fileNames: string[]): Promise<Partial<File>[]> {
-        const s3 = this.getS3();
         fileNames.map(filename => {
             const options = this.getAwsS3GetOrDeleteOptions(filename);
-            const object = s3.headObject(options);
+            const object = this.s3.headObject(options);
             console.log("object headObject: " + JSON.stringify(object));
         });
         return fileNames.map((fileName) => ({ name: fileName }));
     }
 
     // https://ncoughlin.com/posts/aws-s3-delete-files-programatically/
+    // WARNING: Can delete only up to 1,000 images from S3 storage!
     async emptyBucket() {
-        const s3 = this.getS3();
-        const listedObjects = await s3.listObjectsV2().promise();
-        if (listedObjects.Contents.length === 0) return;
-        const deleteParams = {
-            Bucket: this.AWS_PUBLIC_BUCKET_NAME,
-            Delete: { Objects: [] }
-        };
-        listedObjects.Contents.forEach(({ Key }) => deleteParams.Delete.Objects.push({ Key }));
-        await s3.deleteObjects(deleteParams, function(err, data) {
-            if (err) console.log(err, err.stack); // an error occurred
-            else console.log(data); // successful response
-        });
+        try {
+            const listOfObjectsToDelete = await this.getListOfObjectsToDelete();
+            await this.deleteAllObjectsInList(listOfObjectsToDelete);
+        } catch (error) {
+            console.log(error.message);
+        }
     }
 
 
 
 
+    private async deleteAllObjectsInList(listOfObjectsToDelete: PromiseResult<S3.ListObjectsV2Output, AWSError>) {
+        const deleteParams = {
+            Bucket: this.AWS_PUBLIC_BUCKET_NAME,
+            Delete: { Objects: [] }
+        };
+        listOfObjectsToDelete.Contents.forEach(({ Key }) => deleteParams.Delete.Objects.push({ Key }));
+        this.s3.deleteObjects(deleteParams, (err: AWSError, data: S3.DeleteObjectOutput) => {
+            if (err) console.log(err, err.stack); // an error occurred
+            else console.log(data); // successful response
+        });
+    }
+
+    private async getListOfObjectsToDelete() {
+        const listOfObjectsToDelete = await this.s3.listObjectsV2({Bucket: this.AWS_PUBLIC_BUCKET_NAME}, (err: AWSError, data: S3.ListObjectsV2Output) => {
+            if (err) {
+                console.log("err: " + JSON.stringify(err));
+                throw err;
+            }
+            
+        }).promise();
+        if (listOfObjectsToDelete.Contents.length === 0) throw new Error("No objects to delete form bucket");
+        return listOfObjectsToDelete;
+    }
 
     private generateUploadOptions(image: Express.Multer.File): S3.PutObjectRequest {
         return {
@@ -88,10 +109,10 @@ export class AwsS3FilesRepository implements IAWSImagesRepository {
         };
     }
 
-    private getAwsS3GetOrDeleteOptions(imgName: string) {
+    private getAwsS3GetOrDeleteOptions(imageName: string) {
         return {
             Bucket: this.AWS_PUBLIC_BUCKET_NAME,
-            Key: imgName
+            Key: imageName
         };
     }
 

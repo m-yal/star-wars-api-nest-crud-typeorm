@@ -1,16 +1,12 @@
 import { Planets } from 'src/modules/crud/planets/planets.entity';
 import { QueryRunner, Repository } from 'typeorm';
 import { Species } from "src/modules/crud/species/species.entity";
-import { BaseEntitySeeder } from './base-entity-seeder';
+import { BaseUnitsSeeder } from './base-entity-seeder';
+import { SpeciesRelations } from './common.types';
 
-type SpeciesRelations = {
-  name: string,
-  homeworld: string,
-}
+export class SpeciesSeeder extends BaseUnitsSeeder {
 
-export class SpeciesSeeder extends BaseEntitySeeder {
-
-  readonly FIRST_PAGE_URL = 'https://swapi.dev/api/species/?page=1';
+  readonly FIRST_PAGE_URL: string = 'https://swapi.dev/api/species/?page=1';
   readonly relationsURLs: SpeciesRelations[] = [];
   readonly unitRepository: Repository<any>;
   readonly RELATIONS_MAP = {
@@ -22,8 +18,8 @@ export class SpeciesSeeder extends BaseEntitySeeder {
     this.unitRepository = this.queryRunner.manager.getRepository(Species);
   }
 
-  async insertBaseData(data: any) {
-    const specie = this.unitRepository.create({
+  async insertBaseData(data: any): Promise<void> {
+    const specie: Species = await this.unitRepository.create({
       name: String(data.name),
       url: String(data.url),
       classification: String(data.classification),
@@ -38,7 +34,7 @@ export class SpeciesSeeder extends BaseEntitySeeder {
     await this.unitRepository.save(specie);
   }
 
-  collectRelationsURLs(data: any) {
+  collectRelationsURLs(data: any): void {
     this.relationsURLs.push({
       name: data.name,
       homeworld: data.homeworld,

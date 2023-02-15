@@ -7,6 +7,7 @@ import { BaseEntity } from "../config/base-entity";
 import { Files } from "src/modules/files/file.entity";
 import { Films } from "../films/films.entity";
 import { IPeopleEntity } from "./people.entity.interfaces";
+import { IsNumberString } from "class-validator";
 
 @Entity()
 export class People extends BaseEntity implements IPeopleEntity {
@@ -42,18 +43,18 @@ export class People extends BaseEntity implements IPeopleEntity {
     films: Films[];
 
     @ManyToMany(() => Species, species => species.people, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
-    @JoinTable()
+    @JoinTable({ name: "people_species_relations" })
     species: Species[];
 
     @ManyToMany(() => Vehicles, vehicles => vehicles.pilots, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
-    @JoinTable()
+    @JoinTable({ name: "people_vehicles_relations" })
     vehicles: Vehicles[];
 
     @ManyToMany(() => Starships, starships => starships.pilots, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
-    @JoinTable()
+    @JoinTable({ name: "people_starships_relations" })
     starships: Starships[];
 
-    @OneToMany(() => Files, (files) => files.name)
-    @JoinTable()
+    @ManyToMany(() => Files)
+    @JoinTable({ name: "people_images_relations" })
     images: Files[];
 }

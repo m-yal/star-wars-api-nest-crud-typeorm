@@ -1,58 +1,75 @@
-import { Body, Controller, DefaultValuePipe, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query } from "@nestjs/common";
+import { Body, Controller, DefaultValuePipe, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query, UploadedFiles } from "@nestjs/common";
 import { UpToTenUnitsPage } from "src/common/types/types";
 import { Species } from "./species.entity";
 import { SpeciesService } from "./species.service";
-import { CreateUnitDecorators } from "../config/decorators/createUnit.decorator";
-import { GetUpToTenUnitsDecorators } from "../config/decorators/get-up-to-ten.decorator";
-import { UpdateUnitDecorators } from "../config/decorators/update.decorator";
-import { DeleteUnitDecorators } from "../config/decorators/delete.decorator";
-import { ValidateIdPipe } from "../config/pipes/validate-id.pipe";
+import { GetUpToTenUnitsDecorators } from "../../../common/decorators/get-up-to-ten.decorator";
+import { UpdateUnitDecorators } from "../../../common/decorators/update.decorator";
+import { DeleteUnitDecorators } from "../../../common/decorators/delete.decorator";
+import { ValidateNamePipe } from "../config/pipes/validate-name.pipe";
 import { SpeciesExistsPipe } from "./species.exists.pipe";
 import { ValidatePagePipe } from "../config/pipes/validate-page.pipe";
-import { PrepareSpeicesBodyPipe } from "./species.prepare-body.pipe";
+import { PrepareSpeicesBodyPipe } from "./prepare-body.pipe";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { CreateSpeciesDto } from "./create.dto";
+import { plainToInstance } from "class-transformer";
+import { CreateUnitDecorators } from "../../../common/decorators/create.decorator";
+import { UploadFilesDecorators } from "src/modules/files/decorators/upload.decorators";
+import { multerOptions } from "src/modules/files/config/multer/multer-options.config";
+import { ParseFiles } from "src/modules/files/config/pipes/parse-files.pipe";
 
+@ApiTags("Species unit paths")
 @Controller('species')
 export class SpeciesController {
 
     constructor(
         private readonly speciesService: SpeciesService,
     ) { }
-    
+
     @Post()
-    @CreateUnitDecorators(new Species())
+    @CreateUnitDecorators(CreateSpeciesDto)
     async create(
-        @Body(PrepareSpeicesBodyPipe) 
-        specie: Species,
+        @Body(PrepareSpeicesBodyPipe)
+        dto: CreateSpeciesDto,
     ): Promise<Species> {
+        const specie: Species = plainToInstance(Species, { ...dto });
         return this.speciesService.create(specie);
     }
 
     @Get()
     @GetUpToTenUnitsDecorators()
     getPage(
-        @Query('page', ParseIntPipe, ValidatePagePipe, new DefaultValuePipe(1),) 
+        @Query('page', ParseIntPipe, ValidatePagePipe, new DefaultValuePipe(1),)
         page: number,
     ): Promise<UpToTenUnitsPage<Species>> {
         return this.speciesService.getUpToTen(page);
     }
 
-    @Put(':name')
-    @UpdateUnitDecorators(new Species())
+    @Put()
+    @UpdateUnitDecorators(CreateSpeciesDto)
     async update(
-        @Param('name', ValidateIdPipe, SpeciesExistsPipe) 
-        name: string,
-        @Body(PrepareSpeicesBodyPipe) 
-        specie: Species,
-    ): Promise<true> {
-        return this.speciesService.update(name, specie);
+        @Body(SpeciesExistsPipe, PrepareSpeicesBodyPipe)
+        dto: CreateSpeciesDto,
+    ): Promise<Species> {
+        const specie: Species = plainToInstance(Species, { ...dto });
+        return this.speciesService.update(specie);
     }
 
     @Delete(':name')
     @DeleteUnitDecorators()
     async remove(
-        @Param('name', ValidateIdPipe, SpeciesExistsPipe) 
+        @Param('name', ValidateNamePipe)
         name: string,
-    ): Promise<true> {
+    ): Promise<{ name: string }> {
         return this.speciesService.delete(name);
+    }
+
+    @Post('file')
+    @ApiOperation({ summary: "Uplod file for unit" })
+    @UploadFilesDecorators("files", undefined, multerOptions)
+    async uploadImages(
+        @UploadedFiles(ParseFiles) files: Array<Express.Multer.File>, 
+        @Query("unitName") unitName: string
+    ) {
+        return this.speciesService.uploadImages(files, unitName);
     }
 }

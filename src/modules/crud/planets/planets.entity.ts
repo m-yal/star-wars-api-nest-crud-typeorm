@@ -33,7 +33,7 @@ export class Planets extends BaseEntity implements IPlanetsEntity {
     population: string;
 
 
-    
+
     /* Relations */
     @OneToMany(() => People, (people) => people.homeworld, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
     @JoinTable()
@@ -42,7 +42,7 @@ export class Planets extends BaseEntity implements IPlanetsEntity {
     @ManyToMany(() => Films, (films) => films.planets, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
     films: Films[];
 
-    @OneToMany(() => Files, (files) => files.name)
-    @JoinTable()
+    @ManyToMany(() => Files)
+    @JoinTable({ name: "planets_images_relations" })
     images: Files[];
 }

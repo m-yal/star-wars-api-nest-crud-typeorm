@@ -1,14 +1,11 @@
 import { Vehicles } from 'src/modules/crud/vehicles/vehicles.entity';
 import { QueryRunner, Repository } from 'typeorm';
-import { BaseEntitySeeder } from './base-entity-seeder';
+import { BaseUnitsSeeder } from './base-entity-seeder';
+import { VehiclesRelations } from './common.types';
 
-type VehiclesRelations = {
-  name: string,
-}
+export default class VehiclesSeeder extends BaseUnitsSeeder {
 
-export default class VehiclesSeeder extends BaseEntitySeeder {
-
-  readonly FIRST_PAGE_URL = 'https://swapi.dev/api/vehicles/?page=1';
+  readonly FIRST_PAGE_URL: string = 'https://swapi.dev/api/vehicles/?page=1';
   readonly relationsURLs: VehiclesRelations[] = [];
   readonly unitRepository: Repository<any>;
   readonly RELATIONS_MAP = {
@@ -20,8 +17,8 @@ export default class VehiclesSeeder extends BaseEntitySeeder {
     this.unitRepository = this.queryRunner.manager.getRepository(Vehicles);
   }
 
-  async insertBaseData(data: any) {
-    const vehicle = this.unitRepository.create({
+  async insertBaseData(data: any): Promise<void> {
+    const vehicle: Vehicles = await this.unitRepository.create({
       name: String(data.name),
       url: String(data.url),
       model: String(data.model),
@@ -38,7 +35,7 @@ export default class VehiclesSeeder extends BaseEntitySeeder {
     await this.unitRepository.save(vehicle);
   }
 
-  collectRelationsURLs(data: any) {
+  collectRelationsURLs(data: any): void {
     this.relationsURLs.push({
       name: data.name,
     });

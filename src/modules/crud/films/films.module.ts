@@ -10,10 +10,15 @@ import { FilmsController } from './films.controller';
 import { Films } from './films.entity';
 import { FilmsService } from './films.service';
 import { forwardRef } from '@nestjs/common';
+import { FilesService } from 'src/modules/files/files.service';
+import { Files } from 'src/modules/files/file.entity';
+import { FILES_REPOSITORY_TYPES_MAP } from 'src/modules/files/config/constants';
+import { MulterModule } from '@nestjs/platform-express';
+import { FilmExistsPipe } from './films.exists.pipe';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Films]),
+    TypeOrmModule.forFeature([Films, Files]),
     forwardRef(() => FilesModule),
     forwardRef(() => PeopleModule),
     forwardRef(() => PlanetsModule),
@@ -22,7 +27,18 @@ import { forwardRef } from '@nestjs/common';
     forwardRef(() => VehiclesModule),
   ],
   controllers: [FilmsController],
-  providers: [FilmsService],
+  providers: [
+    FilmsService, 
+    {
+      useClass: FILES_REPOSITORY_TYPES_MAP[process.env.FILES_STORAGE_TYPE],
+      provide: "SwapiImagesRepository",
+    },
+    {
+      useClass: FilesService,
+      provide: "IFilesActions",
+    },
+    FilmExistsPipe,
+  ],
   exports: [FilmsService],
 })
 export class FilmsModule {}

@@ -5,22 +5,14 @@ import { Species } from 'src/modules/crud/species/species.entity';
 import { Starships } from 'src/modules/crud/starships/starships.entity';
 import { Vehicles } from 'src/modules/crud/vehicles/vehicles.entity';
 import { QueryRunner, Repository } from 'typeorm';
-import { BaseEntitySeeder } from './base-entity-seeder';
+import { BaseUnitsSeeder } from './base-entity-seeder';
+import { FilmsRelations } from './common.types';
 
-type FilmsRelations = {
-  name: string,
-  characters: string[],
-  planets: string[],
-  starships: string[],
-  vehicles: string[],
-  species: string[],
-}
-
-export class FilmsSeeder extends BaseEntitySeeder {
+export class FilmsSeeder extends BaseUnitsSeeder {
   
-  readonly FIRST_PAGE_URL = 'https://swapi.dev/api/films/?page=1';
+  readonly FIRST_PAGE_URL: string = 'https://swapi.dev/api/films/?page=1';
   readonly relationsURLs: FilmsRelations[] = [];
-  readonly unitRepository: Repository<any>;
+  readonly unitRepository: Repository<Films>;
   readonly RELATIONS_MAP = {
     'characters': People,
     'planets': Planets,
@@ -34,8 +26,8 @@ export class FilmsSeeder extends BaseEntitySeeder {
     this.unitRepository = this.queryRunner.manager.getRepository(Films);
   }
 
-  async insertBaseData(data: any) {
-    const film = await this.unitRepository.create({
+  async insertBaseData(data: any): Promise<void> {
+    const film: Films = await this.unitRepository.create({
       name: String(data.title),
       url: String(data.url),
       episode_id: String(data.episode_id),
@@ -47,7 +39,7 @@ export class FilmsSeeder extends BaseEntitySeeder {
     await this.unitRepository.save(film);
   }
 
-  collectRelationsURLs(data: any) {
+  collectRelationsURLs(data: any): void {
     this.relationsURLs.push({
       name: data.title,
       characters: data.characters || [],

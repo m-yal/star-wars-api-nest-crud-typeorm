@@ -1,4 +1,5 @@
 import { PipeTransform, Injectable, NotFoundException } from '@nestjs/common';
+import { Films } from './films.entity';
 
 import { FilmsService } from './films.service';
 
@@ -6,11 +7,9 @@ import { FilmsService } from './films.service';
 export class FilmExistsPipe implements PipeTransform {
   constructor(private readonly filmsService: FilmsService) {}
 
-  async transform(name: string) {
-    const exists = await this.filmsService.exists(name);
-    if (!exists) {
-      throw new NotFoundException(`Film with name: ${name} not found`);
-    }
-    return name;
+  async transform(film: Films) {
+    const exists = await this.filmsService.exists(film.name);
+    if (exists) return film;
+    throw new NotFoundException(`Film with name: ${film.name} not found`);
   }
 }

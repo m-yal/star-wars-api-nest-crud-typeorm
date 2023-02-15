@@ -1,17 +1,17 @@
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
+import { Units } from "src/common/types/types";
 import { QueryRunner, Repository } from "typeorm";
+import { UnitRelationsData } from "./common.types";
 
-export abstract class BaseEntitySeeder {
+export abstract class BaseUnitsSeeder {
     
   abstract readonly FIRST_PAGE_URL: string;
-  abstract readonly relationsURLs;
-  private readonly httpService = new HttpService();
-
-  readonly queryRunner: QueryRunner;
+  abstract readonly relationsURLs: UnitRelationsData[];
   abstract unitRepository: Repository<any>;
-
-  abstract readonly RELATIONS_MAP;
+  abstract readonly RELATIONS_MAP: { };
+  private readonly httpService: HttpService = new HttpService();
+  readonly queryRunner: QueryRunner;
 
   constructor(queryRunner: QueryRunner) {
     this.queryRunner = queryRunner;
@@ -22,54 +22,76 @@ export abstract class BaseEntitySeeder {
   }
 
   public async setRelations(): Promise<void> {
-    const relationsFieldsNames = Object.keys(this.RELATIONS_MAP);
-    for await (const unitRelationsUrls of this.relationsURLs) {
-      const unit = await this.unitRepository.findOne({
-        where: { name: unitRelationsUrls.name },
-        relations: relationsFieldsNames,
-      });
-      for await (const relationFieldName of relationsFieldsNames) {
-        const relatedUnits = await this.getRelatedUnit(unitRelationsUrls[relationFieldName], relationFieldName);
-        unit[relationFieldName] = relatedUnits;
-      }
+    const relationsFieldsNames: string[] = Object.keys(this.RELATIONS_MAP);
+    const unresolvedPromises: Promise<void>[] = this.relationsURLs.map(async (unitRelationsUrls: { name: string }) => {
+      const unit: Units = await this.getUnit(unitRelationsUrls, relationsFieldsNames);
+      await this.bindRelations(unit, relationsFieldsNames, unitRelationsUrls);
       await this.unitRepository.save(unit);
-    }
+    })
+    await Promise.all(unresolvedPromises);
   }
 
 
 
-  private async getRelatedUnit(unitUrls: string[] | string, relationFieldname: string) {
-    const relatedUnitRepository = this.queryRunner.manager.getRepository(this.RELATIONS_MAP[relationFieldname]);
+  private async getUnit(unitRelationsUrls: { name: string }, relationsFieldsNames: string[]): Promise<Units> {
+    return await this.unitRepository.findOne({
+      where: { name: unitRelationsUrls.name },
+      relations: relationsFieldsNames,
+    });
+  }
+
+  private async bindRelations(unit: Units, relationsFieldsNames: string[], unitRelationsUrls: { name: string }): Promise<void> {
+    const unresolvedPromises: Promise<void>[] = relationsFieldsNames.map(async (relationFieldName: string) => {
+      const relatedUnits: Units | Units[] = await this.getRelatedUnit(unitRelationsUrls[relationFieldName], relationFieldName);
+      unit[relationFieldName] = relatedUnits;
+    })
+    await Promise.all(unresolvedPromises);
+  }
+
+  private async getRelatedUnit(unitUrls: string[] | string, relationFieldname: string): Promise<Units | Units[]>  {
+    const relatedUnitRepository: Repository<Units> = this.queryRunner.manager.getRepository(this.RELATIONS_MAP[relationFieldname]);
     if (Array.isArray(unitUrls)) {
-      const units = [];
-      const unresolvedPromises = unitUrls.map(async unitUrl => {
-        const unit = await relatedUnitRepository.findOneBy({ url: unitUrl });
-        units.push(unit);
-      });
-      await Promise.all(unresolvedPromises);
-      return units;
+      return await this.getRelatedUnitsArray(unitUrls, relatedUnitRepository);
     } else {
-      if (unitUrls === null) {
-        return null;
-      } else {
-        return await relatedUnitRepository.findOneBy({ url: unitUrls });
-      }
+      return await this.getSingleRelatedUnit(unitUrls, relatedUnitRepository);
     }
+  }
+
+  private async getSingleRelatedUnit(unitUrls: null | string, relatedUnitRepository: Repository<Units>): Promise<null | Units> {
+    if (unitUrls === null) {
+      return null;
+    } else {
+      return await relatedUnitRepository.findOneBy({ url: unitUrls });
+    }
+  }
+
+  private async getRelatedUnitsArray(unitUrls: string[], relatedUnitRepository: Repository<Units>): Promise<Units[]> {
+    const units: Units[] = [];
+    const unresolvedPromises: Promise<void>[] = unitUrls.map(async unitUrl => {
+      const unit: Units = await relatedUnitRepository.findOneBy({ url: unitUrl });
+      units.push(unit);
+    });
+    await Promise.all(unresolvedPromises);
+    return units;
   }
 
   private async seedBaseDateRecursively(pageURL: string): Promise<void> {
     const { data } = await firstValueFrom(this.httpService.get<any>(pageURL));
-    const promises = data.results.map(async unit => {
-      await this.insertBaseData(unit);
-      this.collectRelationsURLs(unit);
-    })
-    await Promise.all(promises);
+    await this.saveRawDataAndRelationsUrls(data);
     if (data.next) {
       return this.seedBaseDateRecursively(data.next);
     }
   }
 
+  private async saveRawDataAndRelationsUrls(data: { results: any[] }) {
+    const unresolvedPromises: Promise<void>[] = data.results.map(async (unit: any) => {
+      this.insertBaseData(unit);
+      this.collectRelationsURLs(unit);
+    })
+    await Promise.all(unresolvedPromises);
+  }
+
   abstract insertBaseData(data: any): Promise<any>;
 
-  abstract collectRelationsURLs(data: any);
+  abstract collectRelationsURLs(data: any): void;
 }

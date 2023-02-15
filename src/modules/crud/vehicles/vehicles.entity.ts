@@ -46,7 +46,7 @@ export class Vehicles extends BaseEntity implements IVehiclesEntity {
     @ManyToMany(() => Films, films => films.vehicles, /*{ cascade: ["insert", "update"], onDelete: "CASCADE" }*/)
     films: Films[];
 
-    @OneToMany(() => Files, (files) => files.name)
-    @JoinTable()
+    @ManyToMany(() => Files)
+    @JoinTable({ name: "vehicles_images_relations" })
     images: Files[];
 }
