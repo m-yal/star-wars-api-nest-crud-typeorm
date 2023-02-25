@@ -1,5 +1,4 @@
 import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UploadedFiles } from "@nestjs/common";
-import { UpToTenUnitsPage } from "src/common/types/types";
 import { StarshipsService } from "./startships.service";
 import { Starships } from "./starships.entity";
 import { GetUpToTenUnitsDecorators } from "../../../common/decorators/get-up-to-ten.decorator";
@@ -13,9 +12,10 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { plainToInstance } from "class-transformer";
 import { CreateStarshipDto } from "./create.dto";
 import { CreateUnitDecorators } from "../../../common/decorators/create.decorator";
-import { UploadFilesDecorators } from "src/modules/files/decorators/upload.decorators";
-import { multerOptions } from "src/modules/files/config/multer/multer-options.config";
-import { ParseFiles } from "src/modules/files/config/pipes/parse-files.pipe";
+import { multerOptions } from "../../files/config/multer/multer-options.config";
+import { ParseFiles } from "../../files/config/pipes/parse-files.pipe";
+import { UploadFilesDecorators } from "../../files/decorators/upload.decorators";
+import { UpToTenUnitsPage } from "../../../common/types/types";
 
 @ApiTags("Starships unit paths")
 @Controller('starships')

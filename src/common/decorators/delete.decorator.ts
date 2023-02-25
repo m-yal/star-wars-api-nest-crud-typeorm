@@ -1,10 +1,10 @@
 import { applyDecorators, HttpStatus, UseInterceptors } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
-import { ApplyDecorators } from "src/common/types/types";
-import { Roles } from "src/modules/auth/decorators/roles.decorator";
-import { Role } from "src/modules/auth/entities/role.enum";
-import { RolesGuard } from "src/modules/auth/guards/roles.guard";
-import { DeletedResponseInterseptor as DeletedResponseInterceptor } from "../interceptors/deleted-unit-response.interceptor";
+import { Roles } from "../../modules/auth/decorators/roles.decorator";
+import { Role } from "../../modules/auth/entities/role.enum";
+// import { RolesGuard } from "src/modules/auth/guards/roles.guard";
+import { DeletedResponseInterceptor } from "../interceptors/deleted-unit-response.interceptor";
+import { ApplyDecorators } from "../types/types";
 
 export function DeleteUnitDecorators(): ApplyDecorators {
     return applyDecorators(

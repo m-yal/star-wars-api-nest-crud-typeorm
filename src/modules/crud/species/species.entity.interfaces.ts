@@ -1,4 +1,4 @@
-import { Files } from "src/modules/files/file.entity";
+import { Files } from "./../../files/file.entity";
 import { Films } from "../films/films.entity";
 import { People } from "../people/people.entity";
 import { Planets } from "../planets/planets.entity";

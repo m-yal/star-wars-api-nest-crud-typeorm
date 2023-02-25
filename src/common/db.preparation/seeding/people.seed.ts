@@ -1,8 +1,8 @@
-import { People } from 'src/modules/crud/people/people.entity';
-import { Species } from 'src/modules/crud/species/species.entity';
-import { Starships } from 'src/modules/crud/starships/starships.entity';
-import { Vehicles } from 'src/modules/crud/vehicles/vehicles.entity';
 import { QueryRunner, Repository } from 'typeorm';
+import { People } from '../../../modules/crud/people/people.entity';
+import { Species } from '../../../modules/crud/species/species.entity';
+import { Starships } from '../../../modules/crud/starships/starships.entity';
+import { Vehicles } from '../../../modules/crud/vehicles/vehicles.entity';
 import { BaseUnitsSeeder } from './base-entity-seeder';
 import { PeopleRelations } from './common.types';
 

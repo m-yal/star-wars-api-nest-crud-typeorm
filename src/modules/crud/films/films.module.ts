@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FilesModule } from 'src/modules/files/files.module';
 import { PeopleModule } from '../people/people.module';
 import { PlanetsModule } from '../planets/planets.module';
 import { SpeciesModule } from '../species/species.module';
@@ -10,11 +9,17 @@ import { FilmsController } from './films.controller';
 import { Films } from './films.entity';
 import { FilmsService } from './films.service';
 import { forwardRef } from '@nestjs/common';
-import { FilesService } from 'src/modules/files/files.service';
-import { Files } from 'src/modules/files/file.entity';
-import { FILES_REPOSITORY_TYPES_MAP } from 'src/modules/files/config/constants';
 import { MulterModule } from '@nestjs/platform-express';
 import { FilmExistsPipe } from './films.exists.pipe';
+import { CreatedUnitResponseInterceptor } from '../../../common/interceptors/created-unit-response.interceptor';
+import { DeletedResponseInterceptor } from '../../../common/interceptors/deleted-unit-response.interceptor';
+import { UpdatedUnitResponseInterceptor } from '../../../common/interceptors/update-unit-response.interceptor';
+import { DataResponseInterceptor } from '../config/interceptors/data-response.interceptor';
+import { FILES_REPOSITORY_TYPES_MAP } from '../../files/config/constants';
+import { Files } from '../../files/file.entity';
+import { FilesModule } from '../../files/files.module';
+import { FilesService } from '../../files/files.service';
+import { Repository } from 'typeorm';
 
 @Module({
   imports: [
@@ -37,7 +42,15 @@ import { FilmExistsPipe } from './films.exists.pipe';
       useClass: FilesService,
       provide: "IFilesActions",
     },
+    {
+      useClass: Repository<Files>,
+      provide: "FilesRecordsRepository",
+    },
     FilmExistsPipe,
+    CreatedUnitResponseInterceptor,
+    // DataResponseInterceptor,
+    UpdatedUnitResponseInterceptor,
+    DeletedResponseInterceptor,
   ],
   exports: [FilmsService],
 })

@@ -1,9 +1,9 @@
 import { applyDecorators, Header, HttpStatus, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiProduces, ApiQuery, ApiResponse } from "@nestjs/swagger";
-import { ApplyDecorators } from "src/common/types/types";
-import { Roles } from "src/modules/auth/decorators/roles.decorator";
-import { Role } from "src/modules/auth/entities/role.enum";
-import { RolesGuard } from "src/modules/auth/guards/roles.guard";
+import { ApplyDecorators } from "../../../common/types/types";
+import { Roles } from "../../auth/decorators/roles.decorator";
+import { Role } from "../../auth/entities/role.enum";
+// import { RolesGuard } from "src/modules/auth/guards/roles.guard";
 
 export function DownloadFileDecorators(): ApplyDecorators {
   return applyDecorators(

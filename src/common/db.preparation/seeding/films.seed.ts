@@ -1,10 +1,10 @@
-import { Films } from 'src/modules/crud/films/films.entity';
-import { People } from 'src/modules/crud/people/people.entity';
-import { Planets } from 'src/modules/crud/planets/planets.entity';
-import { Species } from 'src/modules/crud/species/species.entity';
-import { Starships } from 'src/modules/crud/starships/starships.entity';
-import { Vehicles } from 'src/modules/crud/vehicles/vehicles.entity';
 import { QueryRunner, Repository } from 'typeorm';
+import { Films } from '../../../modules/crud/films/films.entity';
+import { People } from '../../../modules/crud/people/people.entity';
+import { Planets } from '../../../modules/crud/planets/planets.entity';
+import { Species } from '../../../modules/crud/species/species.entity';
+import { Starships } from '../../../modules/crud/starships/starships.entity';
+import { Vehicles } from '../../../modules/crud/vehicles/vehicles.entity';
 import { BaseUnitsSeeder } from './base-entity-seeder';
 import { FilmsRelations } from './common.types';
 

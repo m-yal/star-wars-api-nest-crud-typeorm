@@ -1,7 +1,9 @@
-import { applyDecorators, UseGuards } from "@nestjs/common";
+import { applyDecorators, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiBody, ApiOperation } from "@nestjs/swagger";
-import { ApplyDecorators } from "src/common/types/types";
+import { ExecutedResponseInterseptor } from "../../../common/interceptors/executed-response.interceptor";
+import { ApplyDecorators } from "../../../common/types/types";
 import { LocalAuthGuard } from "../guards/local.auth.guard";
+import { RegisteredInterceptor } from "../interceptors/registered.interceptor";
 
 export function LoginDecorators(): ApplyDecorators {
     return applyDecorators(
@@ -15,11 +17,17 @@ export function LoginDecorators(): ApplyDecorators {
         }),
         UseGuards(LocalAuthGuard),
         ApiOperation({ summary: 'Login' }),
+        UseInterceptors(
+            ExecutedResponseInterseptor,
+        ),
     )
 }
 export function LogoutDecorators(): ApplyDecorators {
     return applyDecorators(
         ApiOperation({ summary: 'Logout, by destroying all session cookies' }),
+        UseInterceptors(
+            ExecutedResponseInterseptor,
+        )
     )
 }
 export function RegisterDecorators(): ApplyDecorators {
@@ -33,5 +41,8 @@ export function RegisterDecorators(): ApplyDecorators {
             }
         }),
         ApiOperation({ summary: 'Register new user' }),
+        UseInterceptors(
+            RegisteredInterceptor,
+        ),
     )
 }

@@ -1,4 +1,4 @@
-import { Files } from "src/modules/files/file.entity";
+import { Files } from "./../../files/file.entity";
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
 import { BaseEntity } from "../config/base-entity";
 import { Films } from "../films/films.entity";

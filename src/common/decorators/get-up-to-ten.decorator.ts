@@ -1,10 +1,11 @@
 import { applyDecorators, HttpStatus, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
-import { ApplyDecorators, UnitTypeEnum } from "src/common/types/types";
-import { Roles } from "src/modules/auth/decorators/roles.decorator";
-import { Role } from "src/modules/auth/entities/role.enum";
-import { RolesGuard } from "src/modules/auth/guards/roles.guard";
+import { Roles } from "./../../modules/auth/decorators/roles.decorator";
+// import { RolesGuard } from "src/modules/auth/guards/roles.guard";
 import { DataResponseInterceptor } from "../../modules/crud/config/interceptors/data-response.interceptor";
+import { Role } from "./../../modules/auth/entities/role.enum";
+import { ApplyDecorators } from "../types/types";
+import { GetUpToTenUnitsDto } from "../../modules/crud/config/dto/get-up-to-ten-units.dto";
 
 export function GetUpToTenUnitsDecorators(): ApplyDecorators {
     return applyDecorators(
@@ -13,10 +14,10 @@ export function GetUpToTenUnitsDecorators(): ApplyDecorators {
         ApiResponse({
             status: HttpStatus.OK,
             description: "Up to ten units sent to client",
-            type: DataResponseInterceptor
+            type: GetUpToTenUnitsDto
         }),
         ApiBadRequestResponse({
-            type: DataResponseInterceptor
+            type: GetUpToTenUnitsDto
         }),
         Roles(Role.ADMIN, Role.USER),
         // UseGuards(RolesGuard),

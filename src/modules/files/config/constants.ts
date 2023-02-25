@@ -1,5 +1,5 @@
 import { config } from "dotenv"
-import { FilesRepositoryType } from "src/common/types/types";
+import { FilesRepositoryType } from "../../../common/types/types";
 import { AwsS3FilesRepository } from "../repositories/files.aws-s3.repository";
 import { FSFilesRepository } from "../repositories/files.fs.repository";
 

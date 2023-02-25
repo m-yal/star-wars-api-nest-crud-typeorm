@@ -1,5 +1,4 @@
 import { Body, Controller, DefaultValuePipe, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query, UploadedFiles, ValidationPipe } from "@nestjs/common";
-import { UpToTenUnitsPage } from "src/common/types/types";
 import { Films } from "./films.entity";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { FilmsService } from "./films.service";
@@ -10,14 +9,13 @@ import { PrepareFilmBodyPipe } from "./prepare-body.pipe";
 import { GetUpToTenUnitsDecorators } from "../../../common/decorators/get-up-to-ten.decorator";
 import { UpdateUnitDecorators } from "../../../common/decorators/update.decorator";
 import { DeleteUnitDecorators } from "../../../common/decorators/delete.decorator";
-import { ParseFiles } from "src/modules/files/config/pipes/parse-files.pipe";
-import { multerOptions } from "src/modules/files/config/multer/multer-options.config";
-import { UploadFilesDecorators } from "src/modules/files/decorators/upload.decorators";
 import { CreateFilmDto } from "./create.dto";
 import { plainToInstance } from "class-transformer";
-import { CreatePeopleDto } from "../people/create.dto";
 import { CreateUnitDecorators } from "../../../common/decorators/create.decorator";
-import { DeletedDto } from "../config/dto/deleted.dto";
+import { UpToTenUnitsPage } from "../../../common/types/types";
+import { multerOptions } from "../../files/config/multer/multer-options.config";
+import { ParseFiles } from "../../files/config/pipes/parse-files.pipe";
+import { UploadFilesDecorators } from "../../files/decorators/upload.decorators";
 
 @ApiTags("Films unit path")
 @Controller('film')
@@ -28,7 +26,6 @@ export class FilmsController {
     ) { }
     
     @Post()
-    @ApiOperation({ summary: 'Create film' })
     @CreateUnitDecorators(CreateFilmDto)
     async create(
         @Body(PrepareFilmBodyPipe)

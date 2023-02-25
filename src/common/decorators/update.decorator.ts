@@ -1,10 +1,10 @@
 import { applyDecorators, HttpStatus, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
-import { UpdatedUnitResponseInterseptor } from "src/common/interceptors/update-unit-response.interceptor";
-import { ApplyDecorators, Units } from "src/common/types/types";
-import { Roles } from "src/modules/auth/decorators/roles.decorator";
-import { Role } from "src/modules/auth/entities/role.enum";
-import { RolesGuard } from "src/modules/auth/guards/roles.guard";
+// import { RolesGuard } from "src/modules/auth/guards/roles.guard";
+import { ApplyDecorators } from "../types/types";
+import { Roles } from "../../modules/auth/decorators/roles.decorator";
+import { Role } from "../../modules/auth/entities/role.enum";
+import { UpdatedUnitResponseInterceptor } from "../interceptors/update-unit-response.interceptor";
 
 export function UpdateUnitDecorators(inputDto): ApplyDecorators {
     return applyDecorators(
@@ -16,11 +16,11 @@ export function UpdateUnitDecorators(inputDto): ApplyDecorators {
         }),
         ApiResponse({
             status: HttpStatus.OK,
-            type: UpdatedUnitResponseInterseptor
+            type: UpdatedUnitResponseInterceptor
         }),
         Roles(Role.ADMIN),
         // UseGuards(RolesGuard),
-        UseInterceptors(UpdatedUnitResponseInterseptor),
+        UseInterceptors(UpdatedUnitResponseInterceptor),
         ApiOperation({ summary: "Update single unit under name in query params" }),
     )
 }

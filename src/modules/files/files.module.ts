@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Vehicles } from 'src/modules/crud/vehicles/vehicles.entity';
 import { FilesService } from './files.service';
 import { ConfigModule } from '@nestjs/config';
 import { FILES_REPOSITORY_TYPES_MAP } from './config/constants';
@@ -12,6 +11,7 @@ import { Planets } from '../crud/planets/planets.entity';
 import { Species } from '../crud/species/species.entity';
 import { MulterModule } from '@nestjs/platform-express';
 import { FilesController } from './files.controller';
+import { Vehicles } from '../crud/vehicles/vehicles.entity';
 
 @Module({
   imports: [

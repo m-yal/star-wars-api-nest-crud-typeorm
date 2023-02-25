@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FilesModule } from 'src/modules/files/files.module';
 import { FilmsModule } from '../films/films.module';
 import { PeopleModule } from '../people/people.module';
 import { Vehicles } from '../vehicles/vehicles.entity';
@@ -8,9 +7,12 @@ import { VehiclesController } from './vehicles.controller';
 import { VehiclesService } from './vehicles.service';
 import { forwardRef } from '@nestjs/common';
 import { VehicleExistsPipe } from './vehicles.exists.pipe';
-import { FilesService } from 'src/modules/files/files.service';
-import { FILES_REPOSITORY_TYPES_MAP } from 'src/modules/files/config/constants';
-import { Files } from 'src/modules/files/file.entity';
+import { FILES_REPOSITORY_TYPES_MAP } from '../../files/config/constants';
+import { Files } from '../../files/file.entity';
+import { FilesModule } from '../../files/files.module';
+import { FilesService } from '../../files/files.service';
+import { Repository } from 'typeorm';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([Vehicles, Files]),
@@ -29,6 +31,10 @@ import { Files } from 'src/modules/files/file.entity';
     {
       useClass: FilesService,
       provide: "IFilesActions",
+    },
+    {
+      useClass: Repository<Files>,
+      provide: "FilesRecordsRepository",
     },
   ],
   exports: [VehiclesService],

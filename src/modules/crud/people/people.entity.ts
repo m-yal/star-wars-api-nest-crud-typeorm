@@ -4,7 +4,7 @@ import { Species } from "../species/species.entity";
 import { Starships } from "../starships/starships.entity";
 import { Vehicles } from "../vehicles/vehicles.entity";
 import { BaseEntity } from "../config/base-entity";
-import { Files } from "src/modules/files/file.entity";
+import { Files } from "./../../files/file.entity";
 import { Films } from "../films/films.entity";
 import { IPeopleEntity } from "./people.entity.interfaces";
 import { IsNumberString } from "class-validator";

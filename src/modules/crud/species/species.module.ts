@@ -5,13 +5,14 @@ import { SpeciesController } from './species.controller';
 import { SpeciesService } from './species.service';
 import { forwardRef } from '@nestjs/common';
 import { FilmsModule } from '../films/films.module';
-import { FilesModule } from 'src/modules/files/files.module';
 import { PeopleModule } from '../people/people.module';
 import { PlanetsModule } from '../planets/planets.module';
-import { FilesService } from 'src/modules/files/files.service';
 import { SpeciesExistsPipe } from './species.exists.pipe';
-import { FILES_REPOSITORY_TYPES_MAP } from 'src/modules/files/config/constants';
-import { Files } from 'src/modules/files/file.entity';
+import { FILES_REPOSITORY_TYPES_MAP } from '../../files/config/constants';
+import { Files } from '../../files/file.entity';
+import { FilesModule } from '../../files/files.module';
+import { FilesService } from '../../files/files.service';
+import { Repository } from 'typeorm';
 
 @Module({
   imports: [
@@ -30,7 +31,11 @@ import { Files } from 'src/modules/files/file.entity';
     {
       useClass: FilesService,
       provide: "IFilesActions",
-    }, 
+    },
+    {
+      useClass: Repository<Files>,
+      provide: "FilesRecordsRepository",
+    },
     SpeciesExistsPipe,
   ],
   controllers: [SpeciesController],

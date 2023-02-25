@@ -1,7 +1,6 @@
 import { Inject, Injectable, NotFoundException } from "@nestjs/common";
-import { plainToInstance } from "class-transformer";
-import { Units, UpToTenUnitsPage } from "src/common/types/types";
 import { FindManyOptions, FindOneOptions, FindOptionsWhere, In, Repository } from "typeorm";
+import { Units, UpToTenUnitsPage } from "../../common/types/types";
 import { Files } from "../files/file.entity";
 import { FilesService } from "../files/files.service";
 import { TEN_UNITS_PER_PAGE } from "./config/constants";
@@ -12,10 +11,16 @@ export abstract class SwapiAbstractService<T extends Units> {
     abstract readonly relationFields: string[];
     private repository: Repository<T>;
     private filesService: FilesService;
+    private filesRecordsRepository: Repository<Files>;
 
-    constructor(repository: Repository<T>, @Inject("IFilesActions") filesService?: FilesService) {
+    constructor(
+        repository: Repository<T>, 
+        @Inject("IFilesActions") filesService?: FilesService,
+        @Inject("FilesRecordsRepository") filesRecordsRepository?: Repository<Files>,
+    ) {
         this.repository = repository;
         this.filesService = filesService;
+        this.filesRecordsRepository = filesRecordsRepository;
     }
 
     async exists(name: string): Promise<boolean> {
@@ -29,14 +34,17 @@ export abstract class SwapiAbstractService<T extends Units> {
     }
 
     async findByNames(names: string[]): Promise<T[]> {
-        console.log("findByNames: " + JSON.stringify(names));
         if (names.length === 0) return [];
         const findByNamesOptions: FindOptionsWhere<any> = {
             name: In(names),
         }
-        const units = await this.repository.findBy(findByNamesOptions);
+        let units = await this.repository.findBy(findByNamesOptions);
+        units = units.filter(unit => unit !== undefined)
         if (units.length === 0) {
-            throw new NotFoundException(`Units with names (or some of them) ${names} not found or is already binded with other entity in database`);
+            throw new NotFoundException(`Units with names "${names}" not found at all`);
+        }
+        if (units.length !== names.length) {
+            throw new NotFoundException(`Some of units with names "${names}" not found`);
         }
         return units;
     }
@@ -47,15 +55,62 @@ export abstract class SwapiAbstractService<T extends Units> {
         return savedUnit;
     }
 
-    public async uploadImages(files: Express.Multer.File[], unitName: string) {
+    public async uploadImages(files: Express.Multer.File[], unitName: string): Promise<string[]> {
         const filenames = await this.filesService.upload(files);
-        const filesRecordsRepository: Repository<Files> = this.repository.manager.getRepository(Files);
-        console.log("filenames: " + filenames);
+        const filesObjects = await this.recordFilesData(filenames);
+        const unit = await this.findUnitForBinding(unitName);
+        this.assingImagesRecords(unit, filesObjects);
+        await this.repository.save(unit);
+        return filenames;
+    }
+
+    async getUpToTen(page: number): Promise<UpToTenUnitsPage<T>> {
+        const pageIndex: number = page - 1;
+        const units = await this.repository.find(this.generateFindUpToTenUnitsOptions(pageIndex));
+        const allUnitsInRepoAmount = await this.repository.count();
+        return this.assembleGetResponseData(units, pageIndex, page, allUnitsInRepoAmount);
+    }
+
+    async findOne(name: string): Promise<T> {
+        try {
+            const findOneOptions: FindOneOptions = {
+                where: { name: name },
+                select: ['name'],
+            }
+            return await this.repository.findOneOrFail(findOneOptions);
+        } catch (error) {
+            throw new NotFoundException(`Unit with name ${name} not found`);
+        }
+    }
+
+    async update(unitUpdates: T): Promise<T> {
+        const findOneOptions: FindOneOptions = {
+            where: { name: unitUpdates.name },
+            relations: this.relationFields,
+        }
+        const originalUnit: T = await this.repository.findOne(findOneOptions);
+        if (!originalUnit) throw new NotFoundException(`Unit for update not found`);
+        this.removePresentRelations(originalUnit);
+        await this.repository.save(originalUnit);
+        const updatedUnit = this.repository.merge(originalUnit, unitUpdates);
+        return await this.repository.save(updatedUnit);
+    }
+
+    async delete(name: string): Promise<{ name: string }> {
+        const findOneOptions: FindOptionsWhere<any> = { where: { name: name }};
+        const unitToRemove: T = await this.repository.findOneOrFail(findOneOptions);
+        await this.repository.remove(unitToRemove);
+        return { name };
+    }
+
+    private async recordFilesData(filenames: string[]) {
         const filesObjects: Files[] = filenames.map(filename => {
-            return filesRecordsRepository.create({ name: filename });
+            return this.filesRecordsRepository.create({ name: filename });
         });
-        console.log("filesObjects before saving: " + JSON.stringify(filesObjects));
-        await filesRecordsRepository.save(filesObjects);
+        return await this.filesRecordsRepository.save(filesObjects);
+    }
+
+    private async findUnitForBinding(unitName: string) {
         const findByNameOptions: FindOneOptions<any> = {
             where: {
                 name: unitName,
@@ -65,62 +120,16 @@ export abstract class SwapiAbstractService<T extends Units> {
         };
         let unit
         try {
-            unit = await this.repository.findOneOrFail(findByNameOptions);
+            return await this.repository.findOneOrFail(findByNameOptions);
         } catch (error) {
             throw new NotFoundException("Unit for adding image record not found");
         }
-        console.log("unit.images: " + JSON.stringify(unit.images));
+    }
+
+    private assingImagesRecords(unit: Units, filesObjects: Files[]) {
         filesObjects.map((fileObject: File) => {
             unit.images.push(fileObject);
         });
-        console.log("unit.images: " + JSON.stringify(unit.images));
-        console.log("unit before saving: " + JSON.stringify(unit));
-        await this.repository.save(unit);
-        console.log("unit after saving: " + JSON.stringify(await this.repository.findOne(findByNameOptions)));
-        return filenames;
-    }
-
-    async getUpToTen(page: number): Promise<UpToTenUnitsPage<T>> {
-        const pageIndex: number = page - 1;
-        const units = this.repository.find(this.generateFindUpToTenUnitsOptions(pageIndex));
-        const allUnitsInRepoAmount = this.repository.count();
-        await Promise.all([units, allUnitsInRepoAmount]);
-        return this.assembleGetResponseData(await units, pageIndex, page, await allUnitsInRepoAmount);
-    }
-
-    async findOne(name: string): Promise<T> {
-        try {
-            const findOneOptions: FindOneOptions = {
-                where: { name: name },
-                select: ['name'],
-            }
-            return this.repository.findOneOrFail(findOneOptions);
-        } catch (error) {
-            throw new Error(`Unit with name ${name} not found`);
-        }
-    }
-
-    async update(unitUpdates: T): Promise<T> {
-        console.log("Inside update method");
-        const findOneOptions: FindOneOptions = {
-            where: { name: unitUpdates.name },
-            relations: this.relationFields,
-        }
-        const originalUnit: T = await this.repository.findOne(findOneOptions);
-        console.log("originalUnit: " + JSON.stringify(originalUnit));
-        this.removePresentRelations(originalUnit);
-        console.log("originalUnit after removing present relations: " + JSON.stringify(originalUnit));
-        await this.repository.save(originalUnit);
-        const updatedUnit = this.repository.merge(originalUnit, unitUpdates);
-        console.log("updatedUnit: " + JSON.stringify(updatedUnit));
-        return await this.repository.save(updatedUnit);
-    }
-
-    async delete(name: string): Promise<{ name: string }> {
-        const findOneOptions: FindOptionsWhere<any> = { name: name };
-        const unitToRemove: T = await this.repository.findOneByOrFail(findOneOptions);
-        await this.repository.remove(unitToRemove);
-        return { name };
     }
 
     private generateFindUpToTenUnitsOptions(pageIndex: number): FindManyOptions {

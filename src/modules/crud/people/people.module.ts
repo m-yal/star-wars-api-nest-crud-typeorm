@@ -4,15 +4,16 @@ import { PeopleController } from './people.controller';
 import { People } from './people.entity';
 import { PeopleService } from './people.service';
 import { forwardRef } from '@nestjs/common'; 
-import { FilesModule } from 'src/modules/files/files.module';
 import { FilmsModule } from '../films/films.module';
 import { StarshipsModule } from '../starships/starships.module';
 import { SpeciesModule } from '../species/species.module';
 import { VehiclesModule } from '../vehicles/vehicles.module';
-import { FilesService } from 'src/modules/files/files.service';
-import { Files } from 'src/modules/files/file.entity';
 import { PeopleExistsPipe } from './people.exists.pipe';
-import { FILES_REPOSITORY_TYPES_MAP } from 'src/modules/files/config/constants';
+import { FILES_REPOSITORY_TYPES_MAP } from '../../files/config/constants';
+import { Files } from '../../files/file.entity';
+import { FilesModule } from '../../files/files.module';
+import { FilesService } from '../../files/files.service';
+import { Repository } from 'typeorm';
 
 @Module({
   imports: [
@@ -34,6 +35,10 @@ import { FILES_REPOSITORY_TYPES_MAP } from 'src/modules/files/config/constants';
     {
       useClass: FilesService,
       provide: "IFilesActions",
+    },
+    {
+      useClass: Repository<Files>,
+      provide: "FilesRecordsRepository",
     },
   ],
   exports: [PeopleService],

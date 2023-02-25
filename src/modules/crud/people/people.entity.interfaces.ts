@@ -3,7 +3,7 @@ import { Species } from "../species/species.entity";
 import { Starships } from "../starships/starships.entity";
 import { Vehicles } from "../vehicles/vehicles.entity";
 import { Films } from "../films/films.entity";
-import { Files } from "src/modules/files/file.entity";
+import { Files } from "./../../files/file.entity";
 
 export interface IPeopleBaseData {
     height?: string;

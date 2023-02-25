@@ -1,5 +1,4 @@
 import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UploadedFiles, ValidationPipe } from "@nestjs/common";
-import { UpToTenUnitsPage } from "src/common/types/types";
 import { People } from "./people.entity";
 import { PeopleService } from "./people.service";
 import { DeleteUnitDecorators } from "../../../common/decorators/delete.decorator";
@@ -12,17 +11,11 @@ import { ValidatePagePipe } from "../config/pipes/validate-page.pipe";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CreatePeopleDto } from "./create.dto";
 import { plainToInstance } from "class-transformer";
-import { FilmsService } from "../films/films.service";
-import { SpeciesService } from "../species/species.service";
-import { StarshipsService } from "../starships/startships.service";
-import { VehiclesService } from "../vehicles/vehicles.service";
-import { FilesService } from "src/modules/files/files.service";
-import { Films } from "../films/films.entity";
-import { Species } from "../species/species.entity";
 import { CreateUnitDecorators } from "../../../common/decorators/create.decorator";
-import { UploadFilesDecorators } from "src/modules/files/decorators/upload.decorators";
-import { multerOptions } from "src/modules/files/config/multer/multer-options.config";
-import { ParseFiles } from "src/modules/files/config/pipes/parse-files.pipe";
+import { multerOptions } from "../../files/config/multer/multer-options.config";
+import { ParseFiles } from "../../files/config/pipes/parse-files.pipe";
+import { UploadFilesDecorators } from "../../files/decorators/upload.decorators";
+import { UpToTenUnitsPage } from "../../../common/types/types";
 
 @Controller('people')
 @ApiTags("People unit tags")

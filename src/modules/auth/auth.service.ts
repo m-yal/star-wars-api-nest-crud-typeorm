@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Users } from './entities/users.entity';
-import { IAuthService } from './interfaces/auth.controller.interface';
+import { IAuthService } from './interfaces/auth.controller.interfaces';
 import { IUsersService } from './interfaces/users.service.interface';
 
 @Injectable()

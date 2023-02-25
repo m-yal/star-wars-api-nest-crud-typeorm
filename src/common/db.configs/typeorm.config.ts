@@ -1,13 +1,13 @@
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModuleAsyncOptions, TypeOrmModuleOptions } from "@nestjs/typeorm";
-import { Users } from "src/modules/auth/entities/users.entity";
-import { Films } from "src/modules/crud/films/films.entity";
-import { People } from "src/modules/crud/people/people.entity";
-import { Planets } from "src/modules/crud/planets/planets.entity";
-import { Species } from "src/modules/crud/species/species.entity";
-import { Starships } from "src/modules/crud/starships/starships.entity";
-import { Vehicles } from "src/modules/crud/vehicles/vehicles.entity";
-import { Files } from "src/modules/files/file.entity";
+import { Users } from "../../modules/auth/entities/users.entity";
+import { Films } from "../../modules/crud/films/films.entity";
+import { People } from "../../modules/crud/people/people.entity";
+import { Planets } from "../../modules/crud/planets/planets.entity";
+import { Species } from "../../modules/crud/species/species.entity";
+import { Starships } from "../../modules/crud/starships/starships.entity";
+import { Vehicles } from "../../modules/crud/vehicles/vehicles.entity";
+import { Files } from "../../modules/files/file.entity";
 
 export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
     imports: [ConfigModule],

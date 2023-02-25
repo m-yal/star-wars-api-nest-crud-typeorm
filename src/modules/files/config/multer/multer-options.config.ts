@@ -1,6 +1,6 @@
 import { UnsupportedMediaTypeException } from "@nestjs/common";
 import { MulterOptions } from "@nestjs/platform-express/multer/interfaces/multer-options.interface";
-import { FileMymeTypeFilter, FilesRepositoryType } from "src/common/types/types";
+import { FileMymeTypeFilter } from "../../../../common/types/types";
 import { MAX_FILE_SIZE_IN_MEGABYTES } from "../constants";
 
 function getFileMimetypeFilter(...mimetypes: string[]): FileMymeTypeFilter {

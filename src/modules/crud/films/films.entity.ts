@@ -1,5 +1,5 @@
-import { Files } from "src/modules/files/file.entity";
-import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
+import { Files } from "./../../files/file.entity";
+import { Column, Entity, JoinTable, ManyToMany } from "typeorm";
 import { BaseEntity } from "../config/base-entity";
 import { People } from "../people/people.entity";
 import { Planets } from "../planets/planets.entity";

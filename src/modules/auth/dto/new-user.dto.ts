@@ -2,6 +2,6 @@ import { Role } from "../entities/role.enum";
 
 export class NewUserDto {
     msg: 'User successfully registered';
-    userName: string;
+    username: string;
     roles: Role;
 }

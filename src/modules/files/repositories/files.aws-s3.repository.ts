@@ -1,7 +1,6 @@
 import { AWSError, S3 } from 'aws-sdk';
 import { Injectable } from "@nestjs/common";
 import internal from "stream";
-import { awsS3ClientConfig } from "src/common/db.configs/aws-s3.config";
 import { IAWSImagesRepository } from '../interfaces/repositories.interfaces';
 import { FileNamesTransformer } from '../files.names.transformer';
 import { config } from 'dotenv';
@@ -9,6 +8,7 @@ import { PromiseResult } from 'aws-sdk/lib/request';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Files } from '../file.entity';
 import { Repository } from 'typeorm';
+import { awsS3ClientConfig } from '../../../common/db.configs/aws-s3.config';
 
 config();
 
@@ -38,7 +38,7 @@ export class AwsS3FilesRepository implements IAWSImagesRepository {
     async delete(imageName: string): Promise<true> {
         const options = this.getAwsS3GetOrDeleteOptions(imageName);
         await this.getS3().deleteObject(options).promise()
-        const imageRecordToRemove = await this.filesRecordsReposiotry.findOneBy({ name: imageName });
+        const imageRecordToRemove = await this.filesRecordsReposiotry.findOneByOrFail({ name: imageName });
         await this.filesRecordsReposiotry.remove(imageRecordToRemove);
         return true;
     }

@@ -1,6 +1,6 @@
 import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException, Inject } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { FilesService } from 'src/modules/files/files.service';
+import { FilesService } from '../../files/files.service';
 import { FilmsService } from '../films/films.service';
 import { PeopleService } from '../people/people.service';
 import { PlanetsService } from '../planets/planets.service';

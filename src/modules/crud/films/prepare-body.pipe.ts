@@ -1,7 +1,7 @@
 import { ArgumentMetadata, Inject, Injectable, PipeTransform } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
-import { Files } from "src/modules/files/file.entity";
-import { FilesService } from "src/modules/files/files.service";
+import { Files } from "./../../files/file.entity";
+import { FilesService } from "./../../files/files.service";
 import { Repository } from "typeorm";
 import { PeopleService } from "../people/people.service";
 import { PlanetsService } from "../planets/planets.service";

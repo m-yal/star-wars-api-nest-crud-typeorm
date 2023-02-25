@@ -1,4 +1,4 @@
-import { Units, UpToTenUnitsPage } from "src/common/types/types";
+import { Units, UpToTenUnitsPage } from "../../../common/types/types";
 
 export interface ICrudActions<T extends Units> {
     get(page: number): Promise<UpToTenUnitsPage<T>>;

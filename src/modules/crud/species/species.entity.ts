@@ -4,7 +4,7 @@ import { Planets } from "../planets/planets.entity";
 import { BaseEntity } from "../config/base-entity";
 import { Films } from "../films/films.entity";
 import { ISpeciesEntity } from "./species.entity.interfaces";
-import { Files } from "src/modules/files/file.entity";
+import { Files } from "./../../files/file.entity";
 
 @Entity()
 export class Species extends BaseEntity implements ISpeciesEntity {

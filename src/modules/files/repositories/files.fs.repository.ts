@@ -44,7 +44,7 @@ export class FSFilesRepository implements ILocalImagesRepository {
         const path: fs.PathLike = `./${process.env.IMAGES_RELATIVE_FILE_PATH}/${imageName}`;
         if (fs.existsSync(path)) {
             fs.unlinkSync(path);
-            const imageRecordToRemove = await this.filesRecordsReposiotry.findOneBy({ name: imageName });
+            const imageRecordToRemove = await this.filesRecordsReposiotry.findOneByOrFail({ name: imageName });
             await this.filesRecordsReposiotry.remove(imageRecordToRemove);
             return true;
         } else {

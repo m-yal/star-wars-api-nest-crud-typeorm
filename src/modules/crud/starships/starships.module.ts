@@ -5,12 +5,13 @@ import { StarshipsController } from './starships.controller';
 import { StarshipsService } from './startships.service';
 import { forwardRef } from '@nestjs/common';
 import { PeopleModule } from '../people/people.module';
-import { FilesModule } from 'src/modules/files/files.module';
 import { FilmsModule } from '../films/films.module';
-import { FilesService } from 'src/modules/files/files.service';
 import { StarshipExistsPipe } from './starships.exists.pipe';
-import { FILES_REPOSITORY_TYPES_MAP } from 'src/modules/files/config/constants';
-import { Files } from 'src/modules/files/file.entity';
+import { FILES_REPOSITORY_TYPES_MAP } from '../../files/config/constants';
+import { Files } from '../../files/file.entity';
+import { FilesModule } from '../../files/files.module';
+import { FilesService } from '../../files/files.service';
+import { Repository } from 'typeorm';
 
 @Module({
   imports: [
@@ -29,6 +30,10 @@ import { Files } from 'src/modules/files/file.entity';
       useClass: FilesService,
       provide: "IFilesActions",
     }, 
+    {
+      useClass: Repository<Files>,
+      provide: "FilesRecordsRepository",
+    },
     StarshipExistsPipe,
   ],
   controllers: [StarshipsController],

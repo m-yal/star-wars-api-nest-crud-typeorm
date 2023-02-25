@@ -1,6 +1,6 @@
-import { Planets } from 'src/modules/crud/planets/planets.entity';
 import { QueryRunner, Repository } from 'typeorm';
-import { Species } from "src/modules/crud/species/species.entity";
+import { Planets } from '../../../modules/crud/planets/planets.entity';
+import { Species } from '../../../modules/crud/species/species.entity';
 import { BaseUnitsSeeder } from './base-entity-seeder';
 import { SpeciesRelations } from './common.types';
 

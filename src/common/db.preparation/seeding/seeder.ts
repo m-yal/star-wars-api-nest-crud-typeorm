@@ -8,8 +8,8 @@ import StarshipsSeeder from "./starships.seed";
 import VehiclesSeeder from "./vehicles.seed";
 import { mkdir, rm } from "fs";
 import UsersSeeder from "./users.seed";
-import { AwsS3FilesRepository } from "src/modules/files/repositories/files.aws-s3.repository";
 import { BaseUnitsSeeder } from "./base-entity-seeder";
+import { AwsS3FilesRepository } from "../../../modules/files/repositories/files.aws-s3.repository";
 
 config();
 

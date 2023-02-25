@@ -1,5 +1,4 @@
 import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UploadedFiles } from "@nestjs/common";
-import { UpToTenUnitsPage } from "src/common/types/types";
 import { PlanetsService } from "./planets.service";
 import { Planets } from "./planets.entity";
 import { GetUpToTenUnitsDecorators } from "../../../common/decorators/get-up-to-ten.decorator";
@@ -7,16 +6,16 @@ import { DeleteUnitDecorators } from "../../../common/decorators/delete.decorato
 import { UpdateUnitDecorators } from "../../../common/decorators/update.decorator";
 import { ValidateNamePipe } from "../config/pipes/validate-name.pipe";
 import { PreparePlanetBodyPipe } from "./prepare-body.pipe";
-import { VehicleExistsPipe } from "../vehicles/vehicles.exists.pipe";
 import { ValidatePagePipe } from "../config/pipes/validate-page.pipe";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CreatePlanetDto } from "./create.dto";
 import { plainToInstance } from "class-transformer";
 import { CreateUnitDecorators } from "../../../common/decorators/create.decorator";
 import { PlanetExistsPipe } from "./planets.exists.pipe";
-import { UploadFilesDecorators } from "src/modules/files/decorators/upload.decorators";
-import { multerOptions } from "src/modules/files/config/multer/multer-options.config";
-import { ParseFiles } from "src/modules/files/config/pipes/parse-files.pipe";
+import { multerOptions } from "../../files/config/multer/multer-options.config";
+import { ParseFiles } from "../../files/config/pipes/parse-files.pipe";
+import { UploadFilesDecorators } from "../../files/decorators/upload.decorators";
+import { UpToTenUnitsPage } from "../../../common/types/types";
 
 @ApiTags("Planets unit paths")
 @Controller('planets')

@@ -1,6 +1,6 @@
 import { config } from 'dotenv';
-import { Users } from 'src/modules/auth/entities/users.entity';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
+import { Users } from '../../../modules/auth/entities/users.entity';
 
 config();
 
