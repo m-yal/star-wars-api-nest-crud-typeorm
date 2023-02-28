@@ -8,10 +8,13 @@ import { FileNamesTransformer } from '../files.names.transformer';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Files } from '../file.entity';
 import { Repository } from 'typeorm';
+import { config } from 'dotenv';
 
 const access = promisify(fs.access);
 const unlink = promisify(fs.unlink);
 const writeFile = promisify(fs.writeFile);
+
+config();
 
 @Injectable()
 export class FSFilesRepository implements ILocalImagesRepository {
@@ -19,7 +22,9 @@ export class FSFilesRepository implements ILocalImagesRepository {
     private readonly IMAGES_RELATIVE_FILE_PATH = process.env.IMAGES_RELATIVE_FILE_PATH;
     private readonly fileNamesTransformer = new FileNamesTransformer();
 
-    constructor(@InjectRepository(Files) private readonly filesRecordsReposiotry: Repository<Files>) {
+    constructor(
+        @InjectRepository(Files) private readonly filesRecordsReposiotry: Repository<Files>,
+    ) {
         fs.access(this.IMAGES_RELATIVE_FILE_PATH, err => {
             if (err) fs.mkdirSync(this.IMAGES_RELATIVE_FILE_PATH, { recursive: true });
         })
@@ -27,7 +32,11 @@ export class FSFilesRepository implements ILocalImagesRepository {
 
     get(imageName: string): fs.ReadStream {
         const path = join(process.cwd() + "/" + process.env.IMAGES_RELATIVE_FILE_PATH, imageName);
-        return createReadStream(path);
+        try {
+            return createReadStream(path);
+        } catch (error) {
+            throw new NotFoundException("Image in FS was not found");            
+        }
     }
 
     async add(images: Express.Multer.File[]): Promise<string[]> {
@@ -52,11 +61,11 @@ export class FSFilesRepository implements ILocalImagesRepository {
         }
     }
 
-    async fileExists(fileName: string): Promise<boolean> {
+    fileExists(fileName: string): boolean {
         try {
-            await access(join(this.IMAGES_RELATIVE_FILE_PATH, fileName));
+            fs.accessSync(join(this.IMAGES_RELATIVE_FILE_PATH, fileName));
             return true;
-        } catch (e) {
+        } catch (error) {
             return false;
         }
     }

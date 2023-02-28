@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumberString, IsOptional, IsString } from 'class-validator';
+import { CreateUnitDto } from '../config/dto/ create.unit.dto';
 
-export class CreateSpeciesDto {
+export class CreateSpeciesDto extends CreateUnitDto {
 
     @IsString()
     @IsNotEmpty()
@@ -92,5 +93,5 @@ export class CreateSpeciesDto {
         example: '[]',
         description: 'Array of images names',
     })
-    files: string[];
+    images: string[];
 }

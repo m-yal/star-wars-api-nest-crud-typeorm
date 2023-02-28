@@ -1,17 +1,21 @@
 import { faker } from "@faker-js/faker";
 import { NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
+import { MocksPair } from "../config/mocks/mock.pair";
+import { CreateFilmDto } from "./create.dto";
 import { Films } from "./films.entity";
 import { FilmExistsPipe } from "./films.exists.pipe";
 import { FilmsService } from "./films.service";
-import { RandomFilmGenerator } from "./random.film.generator";
+import { RandomMockFilmsGenerator } from "./mock.random.film.generator";
 
-const mockFilms = RandomFilmGenerator.generateSeveral(+faker.random.numeric(2));
+const mocksPair: MocksPair<Films, CreateFilmDto> = new RandomMockFilmsGenerator().generateMocksPair(+faker.random.numeric(2));
+const mockFilmsDtos: CreateFilmDto[] = mocksPair.getMockDtos();
+const mockFilms: Films[] = mocksPair.getMockUnits();
 
 describe("Films exists pipe", () => {
-    let service;
+    let service: FilmsService;
     let module: TestingModule;
-    let pipe;
+    let pipe: FilmExistsPipe;
 
     beforeEach(async () => {
         module = await Test.createTestingModule({
@@ -33,22 +37,22 @@ describe("Films exists pipe", () => {
     })
 
     it("transform method pass input film because film with the same name is present in db", async () => {
-        const film: Films = mockFilms[0];
+        const dto: CreateFilmDto = mockFilmsDtos[0];
 
-        const result: Films = await pipe.transform(film);
+        const result: CreateFilmDto = await pipe.transform(dto);
 
-        expect(result).toEqual(film);
+        expect(result).toEqual(dto);
     })
 
     it("transform method should throw NotFoundException because of absence of film with given name", async () => {
-        const film: Films = RandomFilmGenerator.generateOneWithoutRelatedUnits();
-        film.name = `Wrong name ${faker.random.word}`;
+        const dto = new RandomMockFilmsGenerator().generateOneWithRelatedUnits()
+        dto.name = `Wrong name ${faker.random.word}`;
 
         try {
-            await pipe.transform(film);
+            await pipe.transform(dto);
         } catch (error) {
             expect(error).toBeInstanceOf(NotFoundException);
-            expect(error).toEqual(new NotFoundException(`Film with name: "${film.name}" not found`));
+            expect(error).toEqual(new NotFoundException(`Film with name: "${dto.name}" not found`));
         }
     })
 

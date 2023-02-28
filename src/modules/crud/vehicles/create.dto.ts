@@ -83,5 +83,5 @@ export class CreateVehicleDto {
     example: '[]',
     description: 'Array of images names',
   })
-  files: string[];
+  images: string[];
 }

@@ -19,7 +19,9 @@ export class AwsS3FilesRepository implements IAWSImagesRepository {
     private readonly fileNamesTransformer = new FileNamesTransformer();
     private readonly s3 = this.getS3();
 
-    constructor(@InjectRepository(Files) private readonly filesRecordsReposiotry?: Repository<Files>) { }
+    constructor(
+        @InjectRepository(Files) private readonly filesRecordsReposiotry?: Repository<Files>,
+    ) { }
 
     get(imageName: string): internal.Readable {
         const options = this.getAwsS3GetOrDeleteOptions(imageName);
@@ -43,11 +45,10 @@ export class AwsS3FilesRepository implements IAWSImagesRepository {
         return true;
     }
 
-    async fileExists(fileName: string): Promise<boolean> {
+    fileExists(fileName: string): boolean {
         try {
             const options = this.getAwsS3GetOrDeleteOptions(fileName);
             const object = this.s3.headObject(options);
-            console.log("object headObject: " + JSON.stringify(object));
             return true;
         } catch (e) {
             return false;
@@ -58,7 +59,6 @@ export class AwsS3FilesRepository implements IAWSImagesRepository {
         fileNames.map(filename => {
             const options = this.getAwsS3GetOrDeleteOptions(filename);
             const object = this.s3.headObject(options);
-            console.log("object headObject: " + JSON.stringify(object));
         });
         return fileNames.map((fileName) => ({ name: fileName }));
     }

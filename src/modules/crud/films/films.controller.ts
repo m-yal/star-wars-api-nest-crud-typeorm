@@ -5,7 +5,7 @@ import { FilmsService } from "./films.service";
 import { ValidateNamePipe } from "../config/pipes/validate-name.pipe";
 import { ValidatePagePipe } from "../config/pipes/validate-page.pipe";
 import { FilmExistsPipe } from "./films.exists.pipe";
-import { PrepareFilmBodyPipe } from "./prepare-body.pipe";
+import { PrepareFilmBodyPipe } from "./prepare-film-body.pipe";
 import { GetUpToTenUnitsDecorators } from "../../../common/decorators/get-up-to-ten.decorator";
 import { UpdateUnitDecorators } from "../../../common/decorators/update.decorator";
 import { DeleteUnitDecorators } from "../../../common/decorators/delete.decorator";
@@ -31,13 +31,13 @@ export class FilmsController {
         @Body(PrepareFilmBodyPipe)
         dto: CreateFilmDto
     ): Promise<Films> {
-        const film: Films = plainToInstance(Films, { ...dto })
+        const film: Films = plainToInstance(Films, { ...dto });
         return this.filmsService.create(film);
     }
 
     @Get()
     @GetUpToTenUnitsDecorators()
-    getPage(
+    async getPage(
         @Query('page', ParseIntPipe, ValidatePagePipe, new DefaultValuePipe(1)) 
         page: number
     ): Promise<UpToTenUnitsPage<Films>> {

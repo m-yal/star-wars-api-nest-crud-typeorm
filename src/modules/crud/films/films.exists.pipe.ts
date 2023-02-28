@@ -7,7 +7,7 @@ import { FilmsService } from './films.service';
 export class FilmExistsPipe implements PipeTransform {
   constructor(private readonly filmsService: FilmsService) {}
 
-  async transform(film: Films) {
+  async transform(film: any) {
     const exists: boolean = await this.filmsService.exists(film.name);
     if (exists) return film;
     throw new NotFoundException(`Film with name: "${film.name}" not found`);

@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsNotEmpty, IsNumberString, IsString } from 'class-validator';
+import { CreateUnitDto } from '../config/dto/ create.unit.dto';
 
-export class CreateFilmDto {
+export class CreateFilmDto extends CreateUnitDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: 'A New Film', description: 'Film name' })

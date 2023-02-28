@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { FindManyOptions, FindOneOptions, FindOptionsWhere, In, Repository } from "typeorm";
 import { Units, UpToTenUnitsPage } from "../../common/types/types";
 import { Files } from "../files/file.entity";
@@ -28,7 +28,7 @@ export abstract class SwapiAbstractService<T extends Units> {
         const existsFindQueryOptions: FindOneOptions = {
             where: { name: name },
             select: ['name'],
-        }
+        };
         const exists = await this.repository.findOne(existsFindQueryOptions);
         return Boolean(exists);
     }
@@ -50,6 +50,7 @@ export abstract class SwapiAbstractService<T extends Units> {
     }
 
     async create(unit: T): Promise<T> {
+        await this.checkPresence(unit.name);
         const newUnit: T = this.repository.create(unit);
         const savedUnit: T = await this.repository.save(newUnit);
         return savedUnit;
@@ -98,9 +99,20 @@ export abstract class SwapiAbstractService<T extends Units> {
 
     async delete(name: string): Promise<{ name: string }> {
         const findOneOptions: FindOptionsWhere<any> = { where: { name: name }};
-        const unitToRemove: T = await this.repository.findOneOrFail(findOneOptions);
+        let unitToRemove: T;
+        try {
+            unitToRemove = await this.repository.findOneOrFail(findOneOptions);
+        } catch (error) {
+            throw new NotFoundException(`Unit for deletion with name "${name}" not found`)
+        }
         await this.repository.remove(unitToRemove);
         return { name };
+    }
+
+    private async checkPresence(name: string) {
+        if (await this.exists(name)) {
+            throw new BadRequestException(`Unit with name "${name}" already exists in database`)
+        }
     }
 
     private async recordFilesData(filenames: string[]) {

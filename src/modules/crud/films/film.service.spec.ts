@@ -9,13 +9,18 @@ import { faker } from '@faker-js/faker';
 import { Files } from "../../files/file.entity";
 import { UpToTenUnitsPage } from "../../../common/types/types";
 import { TEN_UNITS_PER_PAGE } from "../config/constants";
-import { RandomFilmGenerator } from "./random.film.generator";
+import { RandomMockFilmsGenerator } from "./mock.random.film.generator";
 import { MockMulterFilesGenerator } from "../config/mocks/mock.multer.files.generator";
+import { MocksPair } from "../config/mocks/mock.pair";
+import { CreateFilmDto } from "./create.dto";
+import { plainToInstance } from "class-transformer";
 
-let mockFilms = RandomFilmGenerator.generateSeveral(+faker.random.numeric(2));
+const mockFilmsPairs: MocksPair<Films, CreateFilmDto> = new RandomMockFilmsGenerator().generateMocksPair(+faker.random.numeric(2));
+const mockCreateDtos: CreateFilmDto[] = mockFilmsPairs.getMockDtos();
+const mockFilms: Films[] = mockFilmsPairs.getMockUnits();
 
-describe('Films service tests without relaitons:', () => {
-    let service;
+describe('Films service tests', () => {
+    let service: FilmsService;
     let module: TestingModule;
 
     beforeEach(async () => {
@@ -61,15 +66,7 @@ describe('Films service tests without relaitons:', () => {
     })
 
     it("exists method should return false", async () => {
-        const filmName: string = "Wrong name";
-
-        const result: boolean = await service.exists(filmName);
-
-        expect(result).toBe(false);
-    })
-
-    it("exists method should return false because of incorrect input type", async () => {
-        const filmName: number = 1;
+        const filmName: string = `Wrong name ${faker.random.word()}`;
 
         const result: boolean = await service.exists(filmName);
 
@@ -93,7 +90,7 @@ describe('Films service tests without relaitons:', () => {
     })
 
     it("findByNames should throw and excpetion with message that found 0 values", async () => {
-        const filmsNames: string[] = ["Wrong name"];
+        const filmsNames: string[] = [`Wrong name ${faker.random.word()}`];
 
         try {
             await service.findByNames(filmsNames);        
@@ -123,7 +120,7 @@ describe('Films service tests without relaitons:', () => {
     })
 
     it("create method should return created film", async () => {
-        const film: Films = RandomFilmGenerator.generateOneWithoutRelatedUnits();
+        const film: Films = new RandomMockFilmsGenerator().generateOneWithoutRelatedUnits();
 
         const result: Films = await service.create(film);
 
@@ -145,30 +142,31 @@ describe('Films service tests without relaitons:', () => {
         const nameOfFilmToFind = filmToFind.name;
         
         try {
-            const result = await service.findOne(nameOfFilmToFind);       
+            await service.findOne(nameOfFilmToFind);       
         } catch (error) {
             expect(error).toBeInstanceOf(NotFoundException);
             expect(error).toEqual(new NotFoundException(`Unit with name ${nameOfFilmToFind} not found`));
         }
     })
 
-    it("update method updated entity", async () => {
+    it("update method update entity", async () => {
         const newDirectorName = "New director name";
         const updates: DeepPartial<Films> = {
             name: mockFilms[0].name,
             director: newDirectorName
         };
-        mockFilms[0].director = newDirectorName;
-        const result = await service.update(updates);
-        expect(result).toEqual(mockFilms[0]);
+
+        const result = await service.update(plainToInstance(Films, updates));
+
+        expect(result.director).toEqual(newDirectorName);
     })
 
     it("update method should throw NotFoundExcpetion because unit for updation was not found", async () => {
         try {
-            await service.update({
+            await service.update(plainToInstance(Films, {
                 name: "WrongName777",
                 director: "New director name"
-            });
+            }));
         } catch (error) {
             expect(error).toBeInstanceOf(NotFoundException);
             expect(error).toEqual(new NotFoundException(`Unit for update not found`))

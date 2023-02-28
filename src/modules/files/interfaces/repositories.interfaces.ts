@@ -6,7 +6,7 @@ export interface ISwapiImagesRepository {
     get(imageName: string): any;
     add(images: Express.Multer.File[]): Promise<string[]>;
     delete(imgName: string): Promise<true>;
-    fileExists(fileName: string): Promise<boolean>;
+    fileExists(fileName: string): boolean;
     findByNames(fileNames: string[]): Promise<Partial<File>[]>;
 }
 

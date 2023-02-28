@@ -1,8 +1,6 @@
 import { ArgumentMetadata, Inject, Injectable, PipeTransform } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
-import { Files } from "./../../files/file.entity";
-import { FilesService } from "./../../files/files.service";
-import { Repository } from "typeorm";
+import { FilesService } from "../../files/files.service";
 import { PeopleService } from "../people/people.service";
 import { PlanetsService } from "../planets/planets.service";
 import { SpeciesService } from "../species/species.service";
@@ -23,7 +21,7 @@ export class PrepareFilmBodyPipe implements PipeTransform {
         @Inject("IFilesActions") private readonly filesService: FilesService, 
     ) {}
 
-    async transform(value: CreateFilmDto, metadata: ArgumentMetadata) {
+    async transform(value: CreateFilmDto, metadata?: ArgumentMetadata) {
         const [characters, planets, starships, species, vehicles, images] = await Promise.all([
             this.peopleService.findByNames(value.characters || []),
             this.planetsService.findByNames(value.planets || []),
