@@ -1,6 +1,6 @@
 import { Body, Controller, DefaultValuePipe, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query, UploadedFiles, ValidationPipe } from "@nestjs/common";
 import { Films } from "./films.entity";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { FilmsService } from "./films.service";
 import { ValidateNamePipe } from "../config/pipes/validate-name.pipe";
 import { ValidatePagePipe } from "../config/pipes/validate-page.pipe";

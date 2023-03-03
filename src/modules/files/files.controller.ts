@@ -21,7 +21,7 @@ export class FilesController {
 
     @Delete("")
     @DeleteFileDecorators()
-    delete(@Query("imageName") imageName: string): Promise<true> {
+    delete(@Query("imageName") imageName: string): Promise<boolean> {
         return this.fileService.delete(imageName);
     }
 }

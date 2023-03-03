@@ -11,8 +11,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
     // here, in params can be more credentials
     async validate(username: string, password: string): Promise<any> {
-        const user = await this.authService.validateUser(username, password);
-        if (!user) throw new UnauthorizedException();
-        return user; //this user is saved into session store - it is serialised
+        const userRole = await this.authService.validateUser(username, password);
+        if (userRole) return userRole;
+        throw new UnauthorizedException("Wrong password or username"); //this user is saved into session store - it is serialised
     }
 }

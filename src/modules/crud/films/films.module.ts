@@ -21,9 +21,12 @@ import { FilesModule } from '../../files/files.module';
 import { FilesService } from '../../files/files.service';
 import { Repository } from 'typeorm';
 import { PrepareFilmBodyPipe } from './prepare-film-body.pipe';
+import { FileNamesTransformer } from '../../files/files.names.transformer';
+// import { DatabaseModule } from '../../database/database.module';
 
 @Module({
   imports: [
+    // DatabaseModule,
     TypeOrmModule.forFeature([Films, Files]),
     forwardRef(() => FilesModule),
     forwardRef(() => PeopleModule),
@@ -35,6 +38,7 @@ import { PrepareFilmBodyPipe } from './prepare-film-body.pipe';
   controllers: [FilmsController],
   providers: [
     FilmsService, 
+    FileNamesTransformer,
     {
       useClass: FILES_REPOSITORY_TYPES_MAP[process.env.FILES_STORAGE_TYPE],
       provide: "SwapiImagesRepository",

@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class CreateTables1676318053227 implements MigrationInterface {
-    name = 'CreateTables1676318053227'
+export class CreateTables1677696312142 implements MigrationInterface {
+    name = 'CreateTables1677696312142'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE \`files\` (\`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(255) NOT NULL, PRIMARY KEY (\`id\`, \`name\`)) ENGINE=InnoDB`);

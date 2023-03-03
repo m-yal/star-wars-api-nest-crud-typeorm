@@ -1,7 +1,7 @@
 import { QueryRunner, Repository } from 'typeorm';
 import { Vehicles } from '../../../modules/crud/vehicles/vehicles.entity';
 import { BaseUnitsSeeder } from './base-entity-seeder';
-import { VehiclesRelations } from './common.types';
+import { VehiclesRelations } from './types';
 
 export default class VehiclesSeeder extends BaseUnitsSeeder {
 

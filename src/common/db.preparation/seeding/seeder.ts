@@ -83,7 +83,7 @@ export class Seeder implements MigrationInterface {
         rm(this.IMAGES_RELATIVE_FILE_PATH, { recursive: true, force: true }, this.throwErrorOrRecreateDir());
         
         //2. delete from s3 bucket all files
-        await new AwsS3FilesRepository().emptyBucket();
+        // await new AwsS3FilesRepository().emptyBucket();
     }
 
     private throwErrorOrRecreateDir(): (err: Error) => void {

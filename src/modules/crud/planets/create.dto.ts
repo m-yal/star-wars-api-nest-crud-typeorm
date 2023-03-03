@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumberString, IsString, } from 'class-validator';
 import { CreateUnitDto } from '../config/dto/ create.unit.dto';
 
-export class CreatePlanetDto extends CreateUnitDto {
+export class CreatePlanetDto implements CreateUnitDto {
 
   @IsString()
   @IsNotEmpty()

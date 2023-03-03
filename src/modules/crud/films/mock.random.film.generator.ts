@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { plainToInstance } from "class-transformer";
+import { release } from "os";
 import { RandomMockImagesGenerator } from "../../files/mocks/mock.random.images.generator";
 import { RandomMockUnitsGenerator } from "../config/mocks/mock.random.unit.generator";
 import { RandomMockPeopleGenerator } from "../people/mock.random.people.generator";
@@ -31,17 +32,20 @@ export class RandomMockFilmsGenerator extends RandomMockUnitsGenerator<Films, Cr
         dto.starships = dto.starships.map(starships => starships.name);
         dto.vehicles = dto.vehicles.map(vehicle => vehicle.name);
         dto.images = dto.images.map(image => image.name);
+        dto.release_date = dto.release_date.toString();
         return dto;
     }
 
     generateOneWithoutRelatedUnits(): Films {
+        const month = +faker.random.numeric(1);
+        const releaseDate = `${faker.random.numeric(4)}-${month ? month : 1}-${faker.random.numeric(1)}`;
         return plainToInstance(Films, {
-            name: faker.word.noun(),
+            name: faker.word.noun() + faker.random.word() + faker.random.word(),
             director: faker.name.fullName(),
             producer: faker.name.fullName(),
             episode_id: faker.random.numeric(),
             opening_crawl: faker.random.words(+faker.random.numeric(2)),
-            release_date: faker.date.past().toString(),
+            release_date: `${releaseDate}`,
             characters: [],
             planets: [],
             species: [],

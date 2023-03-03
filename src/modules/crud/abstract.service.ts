@@ -30,6 +30,7 @@ export abstract class SwapiAbstractService<T extends Units> {
             select: ['name'],
         };
         const exists = await this.repository.findOne(existsFindQueryOptions);
+        
         return Boolean(exists);
     }
 
@@ -160,7 +161,7 @@ export abstract class SwapiAbstractService<T extends Units> {
         return {
             units: units,
             hasNext: page * TEN_UNITS_PER_PAGE < allUnitsCount ? true : false,
-            hasPrev: pageIndex === 0 ? false : true
+            hasPrev: page * TEN_UNITS_PER_PAGE > allUnitsCount || pageIndex === 0? false : true
         }
     }
 

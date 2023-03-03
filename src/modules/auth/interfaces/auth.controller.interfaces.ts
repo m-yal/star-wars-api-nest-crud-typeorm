@@ -1,7 +1,8 @@
+import { Role } from "../entities/role.enum";
 import { Users } from "../entities/users.entity";
 
 export interface IAuthService {
-    validateUser(username: string, password: string): Promise<string[] | null>;
+    validateUser(username: string, password: string): Promise<Role | null>;
 }
 
 export interface IAuthController {

@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { Readable } from "stream";
 
-export class MockMulterFilesGenerator {
+export default class MockMulterFilesGenerator {
     static generateImages(amount: number) {
         const images = [];
         for (let i = 0; i < amount; i++) {

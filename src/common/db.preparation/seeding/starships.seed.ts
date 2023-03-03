@@ -1,7 +1,7 @@
 import { QueryRunner, Repository } from 'typeorm';
 import { Starships } from '../../../modules/crud/starships/starships.entity';
 import { BaseUnitsSeeder } from './base-entity-seeder';
-import { StarshipsRelations } from './common.types';
+import { StarshipsRelations } from './types';
 
 export default class StarshipsSeeder extends BaseUnitsSeeder {
 

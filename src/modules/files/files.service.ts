@@ -16,7 +16,7 @@ export class FilesService implements IFilesActions {
         return this.repository.add(files);
     }
 
-    async delete(fileName: string): Promise<true> {
+    async delete(fileName: string): Promise<boolean> {
         return this.repository.delete(fileName);
     }
 

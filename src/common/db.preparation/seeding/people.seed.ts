@@ -4,7 +4,7 @@ import { Species } from '../../../modules/crud/species/species.entity';
 import { Starships } from '../../../modules/crud/starships/starships.entity';
 import { Vehicles } from '../../../modules/crud/vehicles/vehicles.entity';
 import { BaseUnitsSeeder } from './base-entity-seeder';
-import { PeopleRelations } from './common.types';
+import { PeopleRelations } from './types';
 
 export default class PeopleSeeder extends BaseUnitsSeeder {
   

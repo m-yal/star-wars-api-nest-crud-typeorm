@@ -2,7 +2,7 @@ import { QueryRunner, Repository } from "typeorm";
 import { People } from "../../../modules/crud/people/people.entity";
 import { Planets } from "../../../modules/crud/planets/planets.entity";
 import { BaseUnitsSeeder } from "./base-entity-seeder";
-import { PlanetsRelations } from "./common.types";
+import { PlanetsRelations } from "./types";
 
 export class PlanetsSeeder extends BaseUnitsSeeder {
   

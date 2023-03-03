@@ -20,10 +20,10 @@ config();
 export class FSFilesRepository implements ILocalImagesRepository {
 
     private readonly IMAGES_RELATIVE_FILE_PATH = process.env.IMAGES_RELATIVE_FILE_PATH;
-    private readonly fileNamesTransformer = new FileNamesTransformer();
 
     constructor(
         @InjectRepository(Files) private readonly filesRecordsReposiotry: Repository<Files>,
+        private readonly filenamesTrasformer: FileNamesTransformer,
     ) {
         fs.access(this.IMAGES_RELATIVE_FILE_PATH, err => {
             if (err) fs.mkdirSync(this.IMAGES_RELATIVE_FILE_PATH, { recursive: true });
@@ -40,13 +40,13 @@ export class FSFilesRepository implements ILocalImagesRepository {
     }
 
     async add(images: Express.Multer.File[]): Promise<string[]> {
-        this.fileNamesTransformer.rename(images);
+        this.filenamesTrasformer.rename(images);
         const writtenFiles = images.map((file) => {
             const filePath = resolve(this.IMAGES_RELATIVE_FILE_PATH, file.filename);
             writeFile(filePath, file.buffer);
         });
         await Promise.all(writtenFiles);
-        return this.fileNamesTransformer.extractFilenames(images);
+        return this.filenamesTrasformer.extractFilenames(images);
     }
 
     async delete(imageName: string): Promise<true> {

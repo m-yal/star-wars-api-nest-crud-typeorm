@@ -16,11 +16,11 @@ config();
 export class AwsS3FilesRepository implements IAWSImagesRepository {
 
     private readonly AWS_PUBLIC_BUCKET_NAME = process.env.AWS_PUBLIC_BUCKET_NAME;
-    private readonly fileNamesTransformer = new FileNamesTransformer();
     private readonly s3 = this.getS3();
 
     constructor(
-        @InjectRepository(Files) private readonly filesRecordsReposiotry?: Repository<Files>,
+        @InjectRepository(Files) private readonly filesRecordsReposiotry: Repository<Files>,
+        private readonly filenamesTrasformer: FileNamesTransformer,
     ) { }
 
     get(imageName: string): internal.Readable {
@@ -29,12 +29,12 @@ export class AwsS3FilesRepository implements IAWSImagesRepository {
     }
 
     async add(images: Express.Multer.File[]): Promise<string[]> {
-        this.fileNamesTransformer.rename(images);
+        this.filenamesTrasformer.rename(images);
         const awsResponses = images.map(image => {
             return this.s3.upload(this.generateUploadOptions(image)).promise();
         });
         await Promise.all(awsResponses);
-        return this.fileNamesTransformer.extractFilenames(images);
+        return this.filenamesTrasformer.extractFilenames(images);
     }
 
     async delete(imageName: string): Promise<true> {

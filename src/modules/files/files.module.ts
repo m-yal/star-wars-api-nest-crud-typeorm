@@ -12,6 +12,7 @@ import { Species } from '../crud/species/species.entity';
 import { MulterModule } from '@nestjs/platform-express';
 import { FilesController } from './files.controller';
 import { Vehicles } from '../crud/vehicles/vehicles.entity';
+import { FileNamesTransformer } from './files.names.transformer';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { Vehicles } from '../crud/vehicles/vehicles.entity';
   ],
   controllers: [FilesController],
   providers: [
+    FileNamesTransformer,
     {
       useClass: FILES_REPOSITORY_TYPES_MAP[process.env.FILES_STORAGE_TYPE],
       provide: "SwapiImagesRepository",

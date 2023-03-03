@@ -1,5 +1,7 @@
+import { Injectable } from "@nestjs/common";
 import { extname } from "path";
 
+@Injectable()
 export class FileNamesTransformer {
     rename(images: Express.Multer.File[]): void {
         images.map((image: Express.Multer.File) => {

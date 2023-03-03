@@ -15,6 +15,7 @@ import { Files } from '../../files/file.entity';
 import { FilesModule } from '../../files/files.module';
 import { FilesService } from '../../files/files.service';
 import { Repository } from 'typeorm';
+import { FileNamesTransformer } from '../../files/files.names.transformer';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { Repository } from 'typeorm';
   providers: [
     PlanetsService, 
     PlanetExistsPipe, 
+    FileNamesTransformer,
     {
       useClass: FILES_REPOSITORY_TYPES_MAP[process.env.FILES_STORAGE_TYPE],
       provide: "SwapiImagesRepository",

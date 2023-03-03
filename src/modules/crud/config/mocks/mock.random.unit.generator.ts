@@ -43,7 +43,7 @@ export abstract class RandomMockUnitsGenerator<E extends BaseEntity, D extends C
         this.validateInputNumberValue(amount);
         const units: E[] = [];
         for (let i = 0; i < amount; i++) {
-            units.push(this.generateOneWithoutRelatedUnits());         
+            units.push(this.generateOneWithoutRelatedUnits());
         }
         return units;
     }

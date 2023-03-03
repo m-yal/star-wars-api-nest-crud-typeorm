@@ -12,7 +12,7 @@ export class UsersService implements IUsersService {
         try {
             return await this.repository.findOneBy(username);
         } catch (error) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException("User with given username does not exists");
         }
     }
 

@@ -6,7 +6,7 @@ import { Species } from '../../../modules/crud/species/species.entity';
 import { Starships } from '../../../modules/crud/starships/starships.entity';
 import { Vehicles } from '../../../modules/crud/vehicles/vehicles.entity';
 import { BaseUnitsSeeder } from './base-entity-seeder';
-import { FilmsRelations } from './common.types';
+import { FilmsRelations } from './types';
 
 export class FilmsSeeder extends BaseUnitsSeeder {
   
