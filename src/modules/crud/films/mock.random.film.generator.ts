@@ -54,4 +54,8 @@ export class RandomMockFilmsGenerator extends RandomMockUnitsGenerator<Films, Cr
             images: [],
         });
     }
+
+    generateOneDtoWithoutRelations(): CreateFilmDto {
+        return this.transformSingleUnitToCreateDto(this.generateOneWithoutRelatedUnits());
+    }
 }

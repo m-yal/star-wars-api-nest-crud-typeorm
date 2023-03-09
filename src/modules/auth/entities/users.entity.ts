@@ -4,12 +4,12 @@ import { Role } from "./role.enum";
 @Entity()
 export class Users {
 
-    @PrimaryColumn({nullable: false, unique: true})
+    @PrimaryColumn({ unique: true, type: "varchar" })
     username: string;
 
-    @Column({nullable: false})
+    @Column({ type: "varchar" })
     password: string;
 
-    @Column({type: "enum", enum: Role})
+    @Column({ type: "enum", enum: Role })
     roles: Role;
 }

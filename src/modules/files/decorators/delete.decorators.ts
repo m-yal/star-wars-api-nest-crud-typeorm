@@ -4,6 +4,7 @@ import { ExecutedResponseInterseptor } from '../../../common/interceptors/execut
 import { ApplyDecorators } from '../../../common/types/types';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { Role } from '../../auth/entities/role.enum';
+import { RolesGuard } from '../../auth/guards/roles.guard';
 
 export function DeleteFileDecorators(): ApplyDecorators {
   return applyDecorators(
@@ -13,7 +14,7 @@ export function DeleteFileDecorators(): ApplyDecorators {
     }),
     ApiOperation({ summary: "Remove single unit`s image under image name" }),
     Roles(Role.ADMIN),
-    // UseGuards(RolesGuard),
+    UseGuards(RolesGuard),
     UseInterceptors(ExecutedResponseInterseptor),
   )
 }

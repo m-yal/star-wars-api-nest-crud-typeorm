@@ -6,7 +6,7 @@ export interface IAuthService {
 }
 
 export interface IAuthController {
-    login(req): Promise<void>;
-    logout(req): Promise<void>;
+    login(req): Promise<true>;
+    logout(req): Promise<true>;
     addUser(password: string, userName: string, req): Promise<Users>
 }

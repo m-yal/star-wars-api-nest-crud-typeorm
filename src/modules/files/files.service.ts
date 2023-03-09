@@ -6,7 +6,7 @@ import { IFilesActions } from "./interfaces/files.controller.interface";
 @Injectable()
 export class FilesService implements IFilesActions {
 
-    constructor(@Inject("SwapiImagesRepository") private readonly repository: ISwapiImagesRepository) {}
+    constructor(@Inject("SwapiImagesRepository") private readonly repository: ISwapiImagesRepository) { }
     
     get(fileName: string): internal.Readable {
         return this.repository.get(fileName);

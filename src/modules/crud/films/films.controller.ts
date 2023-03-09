@@ -13,7 +13,7 @@ import { CreateFilmDto } from "./create.dto";
 import { plainToInstance } from "class-transformer";
 import { CreateUnitDecorators } from "../../../common/decorators/create.decorator";
 import { UpToTenUnitsPage } from "../../../common/types/types";
-import { multerOptions } from "../../files/config/multer/multer-options.config";
+import { multerInterceptorOptions } from "../../files/config/multer/multer-options.config";
 import { ParseFiles } from "../../files/config/pipes/parse-files.pipe";
 import { UploadFilesDecorators } from "../../files/decorators/upload.decorators";
 
@@ -59,7 +59,7 @@ export class FilmsController {
     @ApiOperation({ summary: 'Delete film by name' })
     @DeleteUnitDecorators()
     async remove(
-        @Param('name', ValidateNamePipe)
+        @Param('name', FilmExistsPipe)
         name: string,
     ): Promise<{ name: string }> {
         return this.filmsService.delete(name);
@@ -67,11 +67,11 @@ export class FilmsController {
 
     @Post('file')
     @ApiOperation({ summary: "Uplod file for unit" })
-    @UploadFilesDecorators("files", undefined, multerOptions)
+    @UploadFilesDecorators("files", undefined, multerInterceptorOptions)
     async uploadImages(
         @UploadedFiles(ParseFiles, ValidationPipe) files: Array<Express.Multer.File>, 
         @Query("unitName") unitName: string
     ) {
         return this.filmsService.uploadImages(files, unitName);
     }
-}
+}   

@@ -1,11 +1,11 @@
 import { applyDecorators, HttpStatus, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiOperation, ApiQuery, ApiResponse } from "@nestjs/swagger";
 import { Roles } from "./../../modules/auth/decorators/roles.decorator";
-// import { RolesGuard } from "src/modules/auth/guards/roles.guard";
 import { DataResponseInterceptor } from "../../modules/crud/config/interceptors/data-response.interceptor";
 import { Role } from "./../../modules/auth/entities/role.enum";
 import { ApplyDecorators } from "../types/types";
 import { GetUpToTenUnitsDto } from "../../modules/crud/config/dto/get-up-to-ten-units.dto";
+import { RolesGuard } from "../../modules/auth/guards/roles.guard";
 
 export function GetUpToTenUnitsDecorators(): ApplyDecorators {
     return applyDecorators(
@@ -20,7 +20,7 @@ export function GetUpToTenUnitsDecorators(): ApplyDecorators {
             type: GetUpToTenUnitsDto
         }),
         Roles(Role.ADMIN, Role.USER),
-        // UseGuards(RolesGuard),
+        UseGuards(RolesGuard),
         UseInterceptors(DataResponseInterceptor),
     )
 }

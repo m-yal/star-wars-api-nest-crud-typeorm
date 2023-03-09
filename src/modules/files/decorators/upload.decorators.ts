@@ -6,7 +6,7 @@ import { ExecutedResponseInterseptor } from "../../../common/interceptors/execut
 import { ApplyDecorators } from "../../../common/types/types";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Role } from "../../auth/entities/role.enum";
-// import { RolesGuard } from "src/modules/auth/guards/roles.guard";
+import { RolesGuard } from "../../auth/guards/roles.guard";
 
 export function UploadFilesDecorators(fieldName: string = 'files', maxCount: number, multerInterceptorOptions?: MulterOptions): ApplyDecorators {
   return applyDecorators(
@@ -14,7 +14,7 @@ export function UploadFilesDecorators(fieldName: string = 'files', maxCount: num
     ApiConsumes('multipart/form-data'),
     ApiBody(getUploadFilesBodySchema(fieldName)),
     Roles(Role.ADMIN),
-    // UseGuards(RolesGuard),
+    UseGuards(RolesGuard),
     UseInterceptors(ExecutedResponseInterseptor),
   );
 };

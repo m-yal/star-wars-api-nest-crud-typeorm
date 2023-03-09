@@ -2,7 +2,7 @@ import { Controller, Delete, Get, Inject, Post, Query, StreamableFile, UploadedF
 import { ApiTags } from '@nestjs/swagger';
 import { FilesService } from './files.service';
 import { ParseFiles } from './config/pipes/parse-files.pipe';
-import { multerOptions } from './config/multer/multer-options.config';
+import { multerInterceptorOptions } from './config/multer/multer-options.config';
 import { DownloadFileDecorators } from './decorators/download.decorators';
 import { UploadFilesDecorators } from './decorators/upload.decorators';
 import { DeleteFileDecorators } from './decorators/delete.decorators';

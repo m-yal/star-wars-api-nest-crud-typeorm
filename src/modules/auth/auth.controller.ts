@@ -14,12 +14,15 @@ export class AuthController implements IAuthController {
 
   @Post('login')
   @LoginDecorators()
-  async login(@Request() req): Promise<void> { }
+  async login(@Request() req): Promise<true> {
+    return true;
+  }
 
   @Get('logout')
   @LogoutDecorators()
-  async logout(@Request() req): Promise<void> {
+  async logout(@Request() req): Promise<true> {
     await req.session.destroy();
+    return true;
   }
 
   @Post('register')

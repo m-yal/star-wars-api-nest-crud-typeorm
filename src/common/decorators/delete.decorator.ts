@@ -1,8 +1,8 @@
-import { applyDecorators, HttpStatus, UseInterceptors } from "@nestjs/common";
+import { applyDecorators, HttpStatus, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 import { Roles } from "../../modules/auth/decorators/roles.decorator";
 import { Role } from "../../modules/auth/entities/role.enum";
-// import { RolesGuard } from "src/modules/auth/guards/roles.guard";
+import { RolesGuard } from "../../modules/auth/guards/roles.guard";
 import { DeletedResponseInterceptor } from "../interceptors/deleted-unit-response.interceptor";
 import { ApplyDecorators } from "../types/types";
 
@@ -15,7 +15,7 @@ export function DeleteUnitDecorators(): ApplyDecorators {
             type: DeletedResponseInterceptor
         }),
         Roles(Role.ADMIN),
-        // UseGuards(RolesGuard),
+        UseGuards(RolesGuard),
         UseInterceptors(DeletedResponseInterceptor),
         ApiOperation({ summary: "Remove single unit under name in query params" }),
     )

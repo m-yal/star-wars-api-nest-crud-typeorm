@@ -1,5 +1,6 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
-import { FindManyOptions, FindOneOptions, FindOptionsWhere, In, Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { FindManyOptions, FindOneOptions, FindOptionsWhere, In, QueryFailedError, Repository } from "typeorm";
 import { Units, UpToTenUnitsPage } from "../../common/types/types";
 import { Files } from "../files/file.entity";
 import { FilesService } from "../files/files.service";
@@ -15,8 +16,8 @@ export abstract class SwapiAbstractService<T extends Units> {
 
     constructor(
         repository: Repository<T>, 
-        @Inject("IFilesActions") filesService?: FilesService,
-        @Inject("FilesRecordsRepository") filesRecordsRepository?: Repository<Files>,
+        @Inject("IFilesActions") filesService: FilesService,
+        @InjectRepository(Files) filesRecordsRepository: Repository<Files>,
     ) {
         this.repository = repository;
         this.filesService = filesService;
@@ -58,9 +59,9 @@ export abstract class SwapiAbstractService<T extends Units> {
     }
 
     public async uploadImages(files: Express.Multer.File[], unitName: string): Promise<string[]> {
-        const filenames = await this.filesService.upload(files);
-        const filesObjects = await this.recordFilesData(filenames);
-        const unit = await this.findUnitForBinding(unitName);
+        const unit: T = await this.findUnitForBinding(unitName);
+        const filenames: string[] = await this.filesService.upload(files);
+        const filesObjects: Files[] = await this.recordFilesData(filenames);
         this.assingImagesRecords(unit, filesObjects);
         await this.repository.save(unit);
         return filenames;
@@ -91,24 +92,26 @@ export abstract class SwapiAbstractService<T extends Units> {
             relations: this.relationFields,
         }
         const originalUnit: T = await this.repository.findOne(findOneOptions);
-        if (!originalUnit) throw new NotFoundException(`Unit for update not found`);
-        this.removePresentRelations(originalUnit);
-        await this.repository.save(originalUnit);
-        const updatedUnit = this.repository.merge(originalUnit, unitUpdates);
-        return await this.repository.save(updatedUnit);
+        const originalUnitWithoutRelations: T = this.removePresentRelations(originalUnit);
+        await this.repository.save(originalUnitWithoutRelations);
+        const updatedUnit = this.repository.merge(originalUnitWithoutRelations, unitUpdates);
+        try {
+            return await this.repository.save(updatedUnit);
+        } catch (error) {
+            throw new BadRequestException(JSON.stringify(error.sqlMessage));
+        }
     }
 
     async delete(name: string): Promise<{ name: string }> {
         const findOneOptions: FindOptionsWhere<any> = { where: { name: name }};
-        let unitToRemove: T;
-        try {
-            unitToRemove = await this.repository.findOneOrFail(findOneOptions);
-        } catch (error) {
-            throw new NotFoundException(`Unit for deletion with name "${name}" not found`)
-        }
+        const unitToRemove: T = await this.repository.findOne(findOneOptions);
         await this.repository.remove(unitToRemove);
         return { name };
     }
+
+
+
+
 
     private async checkPresence(name: string) {
         if (await this.exists(name)) {
@@ -117,8 +120,8 @@ export abstract class SwapiAbstractService<T extends Units> {
     }
 
     private async recordFilesData(filenames: string[]) {
-        const filesObjects: Files[] = filenames.map(filename => {
-            return this.filesRecordsRepository.create({ name: filename });
+        const filesObjects: Files[] = filenames.map((name: string) => {
+            return this.filesRecordsRepository.create({ name });
         });
         return await this.filesRecordsRepository.save(filesObjects);
     }
@@ -131,15 +134,15 @@ export abstract class SwapiAbstractService<T extends Units> {
             relations: ["images"],
             relationLoadStrategy: "query",
         };
-        let unit
         try {
             return await this.repository.findOneOrFail(findByNameOptions);
         } catch (error) {
+            // await this.filesService.delete(unitName);
             throw new NotFoundException("Unit for adding image record not found");
         }
     }
 
-    private assingImagesRecords(unit: Units, filesObjects: Files[]) {
+    private assingImagesRecords(unit: T, filesObjects: Files[]) {
         filesObjects.map((fileObject: File) => {
             unit.images.push(fileObject);
         });
@@ -165,9 +168,10 @@ export abstract class SwapiAbstractService<T extends Units> {
         }
     }
 
-    private removePresentRelations(unit: Units) {
+    private removePresentRelations(unit: T): T {
         for (const relation of this.relationFields) {
             unit[relation] = [];
         }
+        return unit;
     }
 }

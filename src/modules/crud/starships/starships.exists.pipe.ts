@@ -7,8 +7,9 @@ export class StarshipExistsPipe implements PipeTransform {
   constructor(private readonly starshipsService: StarshipsService) {}
 
   async transform(starship: Starships) {
-    const exists = await this.starshipsService.exists(starship.name);
+    const starshipName = typeof starship === "string" ? starship : starship.name;
+    const exists = await this.starshipsService.exists(starshipName);
     if (exists) return starship;
-    throw new NotFoundException(`Starship with name: ${starship.name} not found`);
+    throw new NotFoundException(`Starship with name: ${starshipName} not found`);
   }
 }

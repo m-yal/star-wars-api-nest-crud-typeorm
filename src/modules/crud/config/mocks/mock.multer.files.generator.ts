@@ -1,8 +1,9 @@
 import { faker } from "@faker-js/faker";
 import { Readable } from "stream";
+import { buffer } from "stream/consumers";
 
 export default class MockMulterFilesGenerator {
-    static generateImages(amount: number) {
+    static generateImages(amount: number): Express.Multer.File[] {
         const images = [];
         for (let i = 0; i < amount; i++) {
             images.push(this.generateImage());
@@ -10,18 +11,20 @@ export default class MockMulterFilesGenerator {
         return images;
     }
 
-    static generateImage() {
+    static generateImage(): Express.Multer.File {
+        const name = `${faker.random.word()}.jpg`;
+        const buffer = Buffer.from(faker.random.words(10))
         return {
-            originalname: `${faker.random.word}.jpg`,
+            originalname: name,
             mimetype: 'image',
-            path: faker.random.words(3),
-            buffer: Buffer.from(faker.random.words(10)),
+            path: faker.random.words(3).replace(" ", ""),
+            buffer: buffer,
             fieldname: "files",
             encoding: "",
-            size: 0,
+            size: buffer.length,
             stream: new Readable(),
-            destination: "",
-            filename: `${faker.random.word}.jpg`
+            destination: "/images",
+            filename: name,
         }
     }
 }

@@ -22,7 +22,8 @@ export class FSFilesRepository implements ILocalImagesRepository {
     private readonly IMAGES_RELATIVE_FILE_PATH = process.env.IMAGES_RELATIVE_FILE_PATH;
 
     constructor(
-        @InjectRepository(Files) private readonly filesRecordsReposiotry: Repository<Files>,
+        @InjectRepository(Files)
+        private readonly filesRecordsReposiotry: Repository<Files>,
         private readonly filenamesTrasformer: FileNamesTransformer,
     ) {
         fs.access(this.IMAGES_RELATIVE_FILE_PATH, err => {

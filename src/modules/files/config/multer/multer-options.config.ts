@@ -13,7 +13,7 @@ function getFileMimetypeFilter(...mimetypes: string[]): FileMymeTypeFilter {
   };
 }
 
-export const multerOptions: MulterOptions = {
+export const multerInterceptorOptions: MulterOptions = {
   fileFilter: getFileMimetypeFilter('image'),
   limits: { fileSize: MAX_FILE_SIZE_IN_MEGABYTES },
 };

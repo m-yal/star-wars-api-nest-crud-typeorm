@@ -8,8 +8,9 @@ export class PlanetExistsPipe implements PipeTransform {
   constructor(private readonly planetsService: PlanetsService) {}
 
   async transform(planet: Planets) {
-    const exists = await this.planetsService.exists(planet.name);
+    const planetName = typeof planet === "string" ? planet : planet.name;
+    const exists = await this.planetsService.exists(planetName);
     if (exists) return planet;
-    throw new NotFoundException(`Planet with name: ${planet.name} not found`);
+    throw new NotFoundException(`Planet with name: ${planetName} not found`);
   }
 }

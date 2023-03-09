@@ -27,10 +27,11 @@ export class UsersMysqlRepository implements IUsersMysqlRepository {
     }
 
     private async insertOne(username: string, password: string, role: Role): Promise<Users> {
+        if (password === "") throw new BadRequestException(`Password field is empty`);
         const newUser: Users = this.repository.create({
             username: username,
             password: password,
-            roles: role,
+            roles: role
         });
         try {
             await this.repository.insert(newUser);

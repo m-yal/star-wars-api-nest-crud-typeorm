@@ -15,7 +15,7 @@ async function bootstrap() {
   const document: OpenAPIObject = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("swagger", app, document);
 
-  app.useGlobalFilters(new AllExceptionFilter());
+  // app.useGlobalFilters(new AllExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

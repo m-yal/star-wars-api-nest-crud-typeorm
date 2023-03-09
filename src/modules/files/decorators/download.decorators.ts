@@ -3,7 +3,7 @@ import { ApiOperation, ApiProduces, ApiQuery, ApiResponse } from "@nestjs/swagge
 import { ApplyDecorators } from "../../../common/types/types";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Role } from "../../auth/entities/role.enum";
-// import { RolesGuard } from "src/modules/auth/guards/roles.guard";
+import { RolesGuard } from "../../auth/guards/roles.guard";
 
 export function DownloadFileDecorators(): ApplyDecorators {
   return applyDecorators(
@@ -20,6 +20,6 @@ export function DownloadFileDecorators(): ApplyDecorators {
     ApiProduces('image/*'),
     Header("Content-type", "image/*"),
     Roles(Role.ADMIN, Role.USER),
-    // UseGuards(RolesGuard),
+    UseGuards(RolesGuard),
   );
 }

@@ -8,8 +8,9 @@ export class VehicleExistsPipe implements PipeTransform {
   constructor(private readonly vehiclesService: VehiclesService) {}
 
   async transform(vehicle: Vehicles) {
-    const exists = await this.vehiclesService.exists(vehicle.name);
+    const vehicleName = typeof vehicle === "string" ? vehicle : vehicle.name;
+    const exists = await this.vehiclesService.exists(vehicleName);
     if (exists) return vehicle;
-    throw new NotFoundException(`Vehicle with vehicle: ${vehicle.name} not found`);
+    throw new NotFoundException(`Vehicle with vehicle: ${vehicleName} not found`);
   }
 }
