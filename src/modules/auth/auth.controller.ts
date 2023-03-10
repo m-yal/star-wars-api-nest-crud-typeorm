@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Request, Body, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Request, Body, Inject, BadRequestException, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiTags } from "@nestjs/swagger";
 import { ExecutedDto } from '../crud/config/dto/executed.dto';
 import { IAuthController } from './interfaces/auth.controller.interfaces';
-import { NewUserDto } from './dto/new-user.dto';
+import { CredentialsDto, NewUserDto } from './dto/auth.dto';
 import { IUsersService } from './interfaces/users.service.interface';
 import { LoginDecorators, LogoutDecorators, RegisterDecorators } from './decorators/auth.controller.decorators';
 import { Users } from './entities/users.entity';
@@ -27,8 +27,8 @@ export class AuthController implements IAuthController {
 
   @Post('register')
   @RegisterDecorators()
-  async addUser(@Body('password') password: string, @Body('username') userName: string, @Request() req): Promise<Users> {
+  async addUser(@Body() body: CredentialsDto, @Request() req): Promise<Users> {
     await req.session.destroy();
-    return await this.usersService.insertOneUser(userName, password);
+    return await this.usersService.insertOneUser(body);
   }
 }

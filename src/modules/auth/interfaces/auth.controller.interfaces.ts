@@ -1,3 +1,4 @@
+import { CredentialsDto } from "../dto/auth.dto";
 import { Role } from "../entities/role.enum";
 import { Users } from "../entities/users.entity";
 
@@ -8,5 +9,5 @@ export interface IAuthService {
 export interface IAuthController {
     login(req): Promise<true>;
     logout(req): Promise<true>;
-    addUser(password: string, userName: string, req): Promise<Users>
+    addUser(body: CredentialsDto, req): Promise<Users>
 }

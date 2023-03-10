@@ -1,4 +1,4 @@
-import { applyDecorators, UseGuards, UseInterceptors, UsePipes } from "@nestjs/common";
+import { applyDecorators, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ApiBody, ApiOperation } from "@nestjs/swagger";
 import { ExecutedResponseInterseptor } from "../../../common/interceptors/executed-response.interceptor";
 import { ApplyDecorators } from "../../../common/types/types";
@@ -21,6 +21,7 @@ export function LoginDecorators(): ApplyDecorators {
         UseInterceptors(
             ExecutedResponseInterseptor,
         ),
+        UsePipes(new ValidationPipe()),
     )
 }
 export function LogoutDecorators(): ApplyDecorators {
@@ -45,5 +46,6 @@ export function RegisterDecorators(): ApplyDecorators {
         UseInterceptors(
             RegisteredInterceptor,
         ),
+        UsePipes(new ValidationPipe()),
     )
 }

@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
 import { map, Observable } from "rxjs";
-import { NewUserDto } from "../dto/new-user.dto";
+import { NewUserDto } from "../dto/auth.dto";
 import { Users } from "../entities/users.entity";
 
 @Injectable()

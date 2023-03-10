@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { CredentialsDto } from "./dto/auth.dto";
 import { Role } from "./entities/role.enum";
 import { Users } from "./entities/users.entity";
 import { IUsersMysqlRepository } from "./interfaces/users.repository.interfaces";
@@ -18,8 +19,8 @@ export class UsersMysqlRepository implements IUsersMysqlRepository {
         }
     }
 
-    async insertOneUser(username: string, password: string): Promise<Users> {
-        return this.insertOne(username, password, Role.USER);
+    async insertOneUser(body: CredentialsDto): Promise<Users> {
+        return this.insertOne(body.username, body.password, Role.USER);
     }
 
     async insertOneAdmin(username: string, password: string): Promise<Users> {
@@ -27,7 +28,6 @@ export class UsersMysqlRepository implements IUsersMysqlRepository {
     }
 
     private async insertOne(username: string, password: string, role: Role): Promise<Users> {
-        if (password === "") throw new BadRequestException(`Password field is empty`);
         const newUser: Users = this.repository.create({
             username: username,
             password: password,

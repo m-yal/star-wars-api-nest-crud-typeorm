@@ -1,4 +1,4 @@
-import { applyDecorators, HttpStatus, UseGuards, UseInterceptors } from "@nestjs/common";
+import { applyDecorators, HttpStatus, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { Roles } from "../../modules/auth/decorators/roles.decorator";
 import { Role } from "../../modules/auth/entities/role.enum";
@@ -17,6 +17,7 @@ export function CreateUnitDecorators(createUnitDto): ApplyDecorators {
         ApiOperation({ summary: "Add Unit to db" }),
         Roles(Role.ADMIN),
         UseGuards(RolesGuard),
+        UsePipes(new ValidationPipe()),
         UseInterceptors(CreatedUnitResponseInterceptor),
         ApiResponse({
             status: HttpStatus.CREATED,

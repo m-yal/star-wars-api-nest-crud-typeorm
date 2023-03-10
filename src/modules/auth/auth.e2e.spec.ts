@@ -11,6 +11,7 @@ import { Films } from "../crud/films/films.entity";
 import { sessionConfig } from "../../common/session/config";
 import * as session from 'express-session';
 import { RandomMockFilmsGenerator } from "../crud/films/mock.random.film.generator";
+import { CredentialsDto } from "./dto/auth.dto";
 
 config();
 
@@ -55,13 +56,13 @@ describe(`/film`, () => {
 
     describe("POST login", () => {
         it(`should return 201 and set session "sid" cookie`, async () => {
-            const body = generateCredentials();
+            const body: CredentialsDto = generateCredentials();
             await register(body, 201);
-            await agent.get(`/film`).query({ page: 1 }).expect(403);
+            await getPageResponse(1, 403)
 
             const response = await login(body, 201);
 
-            await agent.get(`/film`).query({ page: 1 }).expect(200);
+            await getPageResponse(1, 200)
             expect(response.header["set-cookie"][0]).toMatch("connect\.sid=");
             expect(JSON.parse(response.text)).toEqual({ executed: true });
         })
@@ -74,12 +75,12 @@ describe(`/film`, () => {
             const firstResponse = await login(body, 201);
             const firstResponseCookie = firstResponse.header["set-cookie"][0];
             expect(JSON.parse(firstResponse.text)).toEqual({ executed: true });
-            await agent.get(`/film`).query({ page: 1 }).expect(200);
+            await getPageResponse(1, 200);
 
             const secondResponse = await login(body, 201);
             const secondResponseCookie = secondResponse.header["set-cookie"][0];
             expect(secondResponseCookie).not.toEqual(firstResponseCookie);
-            await agent.get(`/film`).query({ page: 1 }).expect(200);
+            await getPageResponse(1, 200);
         })
 
         it(`should return 403 with message: "Wrong password or username"`, async () => {
@@ -117,24 +118,24 @@ describe(`/film`, () => {
             const body = generateCredentials();
             await register(body, 201);
             await login(body, 201);
-            await agent.get(`/film`).query({ page: 1 }).expect(200);
+            await getPageResponse(1, 200);
 
             await logout(200);
 
-            await agent.get(`/film`).query({ page: 1 }).expect(403);
+            await getPageResponse(1, 403);
         })
 
         it("should return 200 during 2 logouts and 403 during GET of films page", async () => {
             const body = generateCredentials();
             await register(body, 201);
             await login(body, 201);
-            await agent.get(`/film`).query({ page: 1 }).expect(200);
+            await getPageResponse(1, 200);
 
             await logout(200);
-            await agent.get(`/film`).query({ page: 1 }).expect(403);
+            await getPageResponse(1, 403);
 
             await logout(200);
-            await agent.get(`/film`).query({ page: 1 }).expect(403);
+            await getPageResponse(1, 403);
         })
     })
 
@@ -164,14 +165,16 @@ describe(`/film`, () => {
             expect(text.statusCode).toEqual(400);
         })
 
-        it(`should return 400 with message "Password field is empty"`, async () => {
-            const body = generateCredentials();
-            body.password = "";
+        it(`should return 400 with messages ["password should not be empty", 
+        "password must be longer than or equal to 6 characters", "password is not strong enough"]`, async () => {
+            const body = {
+                username: `${faker.random.word()}_username_${faker.random.word()}`,
+            };
 
             const registerResponse = await register(body, 400);
             const text = JSON.parse(registerResponse.text);
 
-            expect(text.message).toEqual(`Password field is empty`);
+            expect(text.message).toEqual(["password should not be empty", "password must be longer than or equal to 6 characters", "password must be a string"]);
             expect(text.error).toEqual(`Bad Request`);
             expect(text.statusCode).toEqual(400);
         })

@@ -1,4 +1,4 @@
-import { applyDecorators, HttpStatus, UseGuards, UseInterceptors } from "@nestjs/common";
+import { applyDecorators, HttpStatus, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 import { ApplyDecorators } from "../types/types";
 import { Roles } from "../../modules/auth/decorators/roles.decorator";
@@ -20,6 +20,7 @@ export function UpdateUnitDecorators(inputDto): ApplyDecorators {
         }),
         Roles(Role.ADMIN),
         UseGuards(RolesGuard),
+        UsePipes(new ValidationPipe()),
         UseInterceptors(UpdatedUnitResponseInterceptor),
         ApiOperation({ summary: "Update single unit under name in query params" }),
     )
