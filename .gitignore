@@ -36,7 +36,6 @@ lerna-debug.log*
 
 # Credentials
 .env
-!.env.example
 
 # Gitignore
 !.gitignore
