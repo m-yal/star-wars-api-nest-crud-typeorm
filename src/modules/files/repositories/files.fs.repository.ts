@@ -33,11 +33,10 @@ export class FSFilesRepository implements ILocalImagesRepository {
 
     get(imageName: string): fs.ReadStream {
         const path = join(process.cwd() + "/" + process.env.IMAGES_RELATIVE_FILE_PATH, imageName);
-        try {
+        if (this.fileExists(imageName)) {
             return createReadStream(path);
-        } catch (error) {
-            throw new NotFoundException("Image in FS was not found");            
         }
+        throw new NotFoundException("Image in FS was not found");            
     }
 
     async add(images: Express.Multer.File[]): Promise<string[]> {
@@ -53,9 +52,8 @@ export class FSFilesRepository implements ILocalImagesRepository {
     async delete(imageName: string): Promise<true> {
         const path: fs.PathLike = `./${process.env.IMAGES_RELATIVE_FILE_PATH}/${imageName}`;
         if (fs.existsSync(path)) {
+            await this.removeImageRecord(imageName)
             fs.unlinkSync(path);
-            const imageRecordToRemove = await this.filesRecordsReposiotry.findOneByOrFail({ name: imageName });
-            await this.filesRecordsReposiotry.remove(imageRecordToRemove);
             return true;
         } else {
             throw new NotFoundException('File for deletion not found');
@@ -78,5 +76,14 @@ export class FSFilesRepository implements ILocalImagesRepository {
         const accesses = filePaths.map((filePath) => access(filePath));
         await Promise.all(accesses);
         return fileNames.map((fileName) => ({ name: fileName }));
+    }
+
+    private async removeImageRecord(imageName: string) {
+        try {
+            const imageRecordToRemove = await this.filesRecordsReposiotry.findOneByOrFail({ name: imageName });
+            await this.filesRecordsReposiotry.remove(imageRecordToRemove);
+        } catch (error) {
+            throw new NotFoundException("File record not found");
+        }
     }
 }

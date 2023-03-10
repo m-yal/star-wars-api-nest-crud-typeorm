@@ -1,11 +1,9 @@
-import { Controller, Delete, Get, Inject, Post, Query, StreamableFile, UploadedFiles } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Query, StreamableFile } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { FilesService } from './files.service';
-import { ParseFiles } from './config/pipes/parse-files.pipe';
-import { multerInterceptorOptions } from './config/multer/multer-options.config';
 import { DownloadFileDecorators } from './decorators/download.decorators';
-import { UploadFilesDecorators } from './decorators/upload.decorators';
 import { DeleteFileDecorators } from './decorators/delete.decorators';
+import { ImageNameDto } from './dto/image.name.dto';
 
 @ApiTags("Files paths")
 @Controller('files')
@@ -13,15 +11,15 @@ export class FilesController {
 
     constructor(@Inject("IFilesActions") private readonly fileService: FilesService) { }
 
-    @Get("")
+    @Get()
     @DownloadFileDecorators()
-    get(@Query("imageName") imageName: string): StreamableFile {
-        return new StreamableFile(this.fileService.get(imageName));
+    get(@Body() body: ImageNameDto): StreamableFile {
+        return new StreamableFile(this.fileService.get(body.imageName));
     }
 
-    @Delete("")
+    @Delete()
     @DeleteFileDecorators()
-    delete(@Query("imageName") imageName: string): Promise<boolean> {
-        return this.fileService.delete(imageName);
+    delete(@Body() body: ImageNameDto): Promise<boolean> {
+        return this.fileService.delete(body.imageName);
     }
 }

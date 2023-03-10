@@ -188,6 +188,7 @@ describe(`/film`, () => {
             await login(userBody, 201);
 
             await getPageResponse(1, 200);
+            await getImage({ imageName: "wrongImageName" }, 'application/json; charset=utf-8', 404);
         })
 
         it(`"Users" forbidden operations`, async () => {
@@ -200,6 +201,7 @@ describe(`/film`, () => {
             await deleteSingleFilm(`${faker.random.word()}`, 403);
             await postSingleFilm(filmDto, 403);
             await putSingleFilm(filmDto, 403);
+            await deleteImage("randomImageName.jpg", 403);
         })
 
         it(`"Admin" allowed operations`, async () => {
@@ -210,11 +212,28 @@ describe(`/film`, () => {
             await postSingleFilm(filmDto, 201);
             await putSingleFilm(filmDto, 200);
             await deleteSingleFilm(filmDto.name, 200);
+            await getImage({ imageName: "wrongImageName" }, 'application/json; charset=utf-8', 404);
+            await deleteImage("random.image.name.jpg", 404);
         })
     })
 
 
 
+
+    async function getImage(body: object, contentType: string, expectedStatusCode: number) {
+        return await agent
+            .get(`/files`)
+            .send(body)
+            .expect(expectedStatusCode)
+            .expect('Content-Type', contentType);
+    }
+
+    async function deleteImage(imageName: string, expectedStatusCode: number) {
+        return await agent
+            .delete(`/files`)
+            .send({ imageName })
+            .expect(expectedStatusCode);
+    }
 
     async function register(body: object, expectedStatusCode: number) {
         return await agent

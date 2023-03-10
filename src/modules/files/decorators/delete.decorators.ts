@@ -1,5 +1,5 @@
-import { applyDecorators, HttpStatus, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { applyDecorators, HttpStatus, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { ExecutedResponseInterseptor } from '../../../common/interceptors/executed-response.interceptor';
 import { ApplyDecorators } from '../../../common/types/types';
 import { Roles } from '../../auth/decorators/roles.decorator';
@@ -12,9 +12,11 @@ export function DeleteFileDecorators(): ApplyDecorators {
     ApiResponse({
       status: HttpStatus.OK,
     }),
+    ApiBody({}),
     ApiOperation({ summary: "Remove single unit`s image under image name" }),
     Roles(Role.ADMIN),
     UseGuards(RolesGuard),
     UseInterceptors(ExecutedResponseInterseptor),
+    UsePipes(new ValidationPipe()),
   )
 }

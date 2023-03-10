@@ -1,5 +1,5 @@
-import { applyDecorators, Header, HttpStatus, UseGuards } from "@nestjs/common";
-import { ApiOperation, ApiProduces, ApiQuery, ApiResponse } from "@nestjs/swagger";
+import { applyDecorators, Header, HttpStatus, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
+import { ApiBody, ApiOperation, ApiProduces, ApiResponse } from "@nestjs/swagger";
 import { ApplyDecorators } from "../../../common/types/types";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Role } from "../../auth/entities/role.enum";
@@ -8,8 +8,8 @@ import { RolesGuard } from "../../auth/guards/roles.guard";
 export function DownloadFileDecorators(): ApplyDecorators {
   return applyDecorators(
     ApiOperation({ summary: "Get one image from one person" }),
-    ApiQuery({ name: "imageName", schema: { default: "" } }),
-      ApiResponse({
+    ApiBody({}),
+    ApiResponse({
       schema: {
         type: "string",
         format: "binary"
@@ -20,6 +20,7 @@ export function DownloadFileDecorators(): ApplyDecorators {
     ApiProduces('image/*'),
     Header("Content-type", "image/*"),
     Roles(Role.ADMIN, Role.USER),
+    UsePipes(new ValidationPipe()),
     UseGuards(RolesGuard),
   );
 }
