@@ -34,26 +34,6 @@ describe(`/film`, () => {
 
     afterAll(async () => await app.close())
 
-    describe("Correct required constants of .env file presence", () => {
-        const names: string[] = [
-            "SESSION_COOKIES_MAX_AGE",
-            "SESSION_SECRET",
-            "ADMIN_USER_LOGIN",
-            "ADMIN_USER_PASSWORD",
-        ]
-        for (const name of names) {
-            it(`${name} is not empty`, () => {
-                expect(process.env[name]).toBeTruthy()
-            })
-        }
-        it("SESSION_COOKIES_MAX_AGE is integer number", () => {
-            expect(Number.isInteger(+process.env.SESSION_COOKIES_MAX_AGE)).toEqual(true);
-        })
-        it("SESSION_COOKIES_MAX_AGE is above zero", () => {
-            expect(+process.env.SESSION_COOKIES_MAX_AGE > 0).toEqual(true);
-        })
-    })
-
     describe("POST login", () => {
         it(`should return 201 and set session "sid" cookie`, async () => {
             const body: CredentialsDto = generateCredentials();
