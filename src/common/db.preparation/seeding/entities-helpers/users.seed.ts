@@ -1,9 +1,10 @@
 import { config } from 'dotenv';
-import { DataSource, QueryRunner, Repository } from 'typeorm';
-import { Role } from '../../../modules/auth/entities/role.enum';
-import { Users } from '../../../modules/auth/entities/users.entity';
+import { QueryRunner, Repository } from 'typeorm';
+import { Role } from '../../../../modules/auth/entities/role.enum';
+import { Users } from '../../../../modules/auth/entities/users.entity';
 
 config();
+const { env } = process;
 
 export default class UsersSeeder {
 
@@ -29,8 +30,8 @@ export default class UsersSeeder {
 
     private async insertAdmins(): Promise<void> {
         const admin: Users = this.usersRepository.create({
-            username: process.env.ADMIN_USER_LOGIN,
-            password: process.env.ADMIN_USER_PASSWORD,
+            username: env.ADMIN_USER_LOGIN,
+            password: env.ADMIN_USER_PASSWORD,
             roles: Role.ADMIN
         })
         await this.usersRepository.save(admin);

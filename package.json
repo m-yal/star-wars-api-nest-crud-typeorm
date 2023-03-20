@@ -9,24 +9,42 @@
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm:createTable": "npm run build && npx typeorm -d dist/common/db.preparation/migration/data-source-for-migrations.js",
-    "migration:generate": "rm -r ./src/common/db.preparation/migration/migration-files && mkdir ./src/common/db.preparation/migration/migration-files && npm run typeorm:createTable -- migration:generate ./src/common/db.preparation/migration/migration-files/CreateTables",
+
+    "typeorm:createTable": "npm run build && npx typeorm -d dist/common/db.preparation/migration/data-source-for-prod-migrations.js",
+    "remove:migration:files": "rm -r ./src/common/db.preparation/migration/prod-migration-files && mkdir ./src/common/db.preparation/migration/prod-migration-files",
+    "migration:generate": "npm run remove:migration:files && npm run typeorm:createTable -- migration:generate ./src/common/db.preparation/migration/prod-migration-files/CreateTables",
     "migration:run": "npm run typeorm:createTable -- migration:run",
     "migration:revert": "npm run typeorm:createTable -- migration:revert",
-    "typeorm:seed": "npm run build && npx typeorm -d dist/common/db.preparation/seeding/data-source-for-seeding.js",
+
+    "typeorm:createTable:test": "npm run build && npx typeorm -d dist/common/db.preparation/migration/data-source-for-test-migrations.js",
+    "remove:migration:files:test": "rm -r ./src/common/db.preparation/migration/test-migration-files && mkdir ./src/common/db.preparation/migration/test-migration-files",
+    "migration:generate:test": "npm run remove:migration:files:test && npm run typeorm:createTable:test -- migration:generate ./src/common/db.preparation/migration/test-migration-files/CreateTablesTest",
+    "migration:run:test": "npm run typeorm:createTable:test -- migration:run",
+    "migration:revert:test": "npm run typeorm:createTable:test -- migration:revert",
+
+    "typeorm:seed": "npm run build && npx typeorm -d dist/common/db.preparation/seeding/data-sources/data-source-for-seeding.js",
     "seed:up": "npm run typeorm:seed -- migration:run",
     "seed:down": "npm run typeorm:seed -- migration:revert",
-    "docker:up": "npm run migration:run; npm run seed:up; npm run start:prod"
+
+    "typeorm:seed:test": "npm run build && npx typeorm -d dist/common/db.preparation/seeding/data-sources/data-source-for-test-seeding.js",
+    "seed:up:test": "npm run typeorm:seed:test -- migration:run",
+    "seed:down:test": "npm run typeorm:seed:test -- migration:revert",
+
+    "docker:up": "npm run migration:run; npm run seed:up; npm run start:prod",
+    "docker:test": "npm run migration:run:test; npm run seed:up:test; npm run test"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -35,7 +53,7 @@
       "ts"
     ],
     "rootDir": "",
-    "testRegex": ".*env\\.e2e\\.spec\\.ts$",
+    "testRegex": ".*film\\.e2e\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },

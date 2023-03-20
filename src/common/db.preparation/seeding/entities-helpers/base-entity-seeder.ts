@@ -1,8 +1,8 @@
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 import { QueryRunner, Repository } from "typeorm";
-import { Units } from "../../types/types";
-import { UnitRelationsData } from "./types";
+import { Units } from "../../../types/types";
+import { UnitRelationsData } from "../types";
 
 export abstract class BaseUnitsSeeder {
     

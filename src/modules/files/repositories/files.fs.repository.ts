@@ -8,31 +8,25 @@ import { FileNamesTransformer } from '../files.names.transformer';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Files } from '../file.entity';
 import { Repository } from 'typeorm';
-import { config } from 'dotenv';
+import { ConfigService } from '@nestjs/config';
 
 const access = promisify(fs.access);
 const unlink = promisify(fs.unlink);
 const writeFile = promisify(fs.writeFile);
 
-config();
-
 @Injectable()
 export class FSFilesRepository implements ILocalImagesRepository {
-
-    private readonly IMAGES_RELATIVE_FILE_PATH = process.env.IMAGES_RELATIVE_FILE_PATH;
 
     constructor(
         @InjectRepository(Files)
         private readonly filesRecordsReposiotry: Repository<Files>,
         private readonly filenamesTrasformer: FileNamesTransformer,
-    ) {
-        fs.access(this.IMAGES_RELATIVE_FILE_PATH, err => {
-            if (err) fs.mkdirSync(this.IMAGES_RELATIVE_FILE_PATH, { recursive: true });
-        })
-    }
+        private readonly configService: ConfigService,
+    ) { }
 
     get(imageName: string): fs.ReadStream {
-        const path = join(process.cwd() + "/" + process.env.IMAGES_RELATIVE_FILE_PATH, imageName);
+        const imageDirPath = this.configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`);
+        const path = join(process.cwd() + "/" + imageDirPath, imageName);
         if (this.fileExists(imageName)) {
             return createReadStream(path);
         }
@@ -40,9 +34,10 @@ export class FSFilesRepository implements ILocalImagesRepository {
     }
 
     async add(images: Express.Multer.File[]): Promise<string[]> {
+        const imageDirPath = this.configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`);
         this.filenamesTrasformer.rename(images);
         const writtenFiles = images.map((file) => {
-            const filePath = resolve(this.IMAGES_RELATIVE_FILE_PATH, file.filename);
+            const filePath = resolve(imageDirPath, file.filename);
             writeFile(filePath, file.buffer);
         });
         await Promise.all(writtenFiles);
@@ -50,7 +45,8 @@ export class FSFilesRepository implements ILocalImagesRepository {
     }
 
     async delete(imageName: string): Promise<true> {
-        const path: fs.PathLike = `./${process.env.IMAGES_RELATIVE_FILE_PATH}/${imageName}`;
+        const imageDirPath = this.configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`);
+        const path: fs.PathLike = `./${imageDirPath}/${imageName}`;
         if (fs.existsSync(path)) {
             await this.removeImageRecord(imageName)
             fs.unlinkSync(path);
@@ -62,7 +58,8 @@ export class FSFilesRepository implements ILocalImagesRepository {
 
     fileExists(fileName: string): boolean {
         try {
-            fs.accessSync(join(this.IMAGES_RELATIVE_FILE_PATH, fileName));
+            const imageDirPath = this.configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`);
+            fs.accessSync(join(imageDirPath, fileName));
             return true;
         } catch (error) {
             return false;
@@ -70,8 +67,9 @@ export class FSFilesRepository implements ILocalImagesRepository {
     }
 
     async findByNames(fileNames: string[]): Promise<Partial<File>[]> {
+        const imageDirPath = this.configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`);
         const filePaths = fileNames.map(fileName => {
-            return resolve(this.IMAGES_RELATIVE_FILE_PATH, fileName);
+            return resolve(imageDirPath, fileName);
         });
         const accesses = filePaths.map((filePath) => access(filePath));
         await Promise.all(accesses);

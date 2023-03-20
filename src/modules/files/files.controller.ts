@@ -4,12 +4,16 @@ import { FilesService } from './files.service';
 import { DownloadFileDecorators } from './decorators/download.decorators';
 import { DeleteFileDecorators } from './decorators/delete.decorators';
 import { ImageNameDto } from './dto/image.name.dto';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags("Files paths")
 @Controller('files')
 export class FilesController {
 
-    constructor(@Inject("IFilesActions") private readonly fileService: FilesService) { }
+    constructor(
+        @Inject("IFilesActions") private readonly fileService: FilesService,
+        private readonly configService: ConfigService,
+        ) { }
 
     @Get()
     @DownloadFileDecorators()

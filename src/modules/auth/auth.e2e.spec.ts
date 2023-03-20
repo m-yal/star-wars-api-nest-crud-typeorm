@@ -1,9 +1,7 @@
-import { HttpServer, INestApplication, NotFoundException } from "@nestjs/common"
+import { HttpServer, INestApplication } from "@nestjs/common"
 import { Test, TestingModule } from "@nestjs/testing";
 import * as request from 'supertest';
 import { faker } from "@faker-js/faker";
-import * as fs from "fs";
-import { config } from "dotenv";
 import { AppModule } from "../../app.module";
 import { CreateUnitDto } from "../crud/config/dto/ create.unit.dto";
 import { CreateFilmDto } from "../crud/films/create.dto";
@@ -12,17 +10,31 @@ import { sessionConfig } from "../../common/session/config";
 import * as session from 'express-session';
 import { RandomMockFilmsGenerator } from "../crud/films/mock.random.film.generator";
 import { CredentialsDto } from "./dto/auth.dto";
-
-config();
+import { ConfigService } from "@nestjs/config";
 
 describe(`/film`, () => {
     let app: INestApplication;
     let server: HttpServer;
     let agent: request.SuperAgentTest;
+    let configService: ConfigService;
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
+            providers: [
+                {
+                    provide: ConfigService,
+                    useValue: {
+                        get: jest.fn(key => {
+                        switch (key) {
+                            case 'ADMIN_USER_LOGIN': return 'admin123';
+                            case 'ADMIN_USER_PASSWORD': return '123123';
+                            default: return undefined;
+                        }
+                        }),
+                    },
+                },
+            ]
         }).compile();
 
         app = moduleFixture.createNestApplication();
@@ -30,6 +42,7 @@ describe(`/film`, () => {
         await app.init();
         server = app.getHttpServer();
         agent = request.agent(server);
+        configService = moduleFixture.get<ConfigService>(ConfigService);
     })
 
     afterAll(async () => await app.close())
@@ -75,7 +88,7 @@ describe(`/film`, () => {
 
         it(`should return 400 with message: "Wrong input body format. It has to be: { username: '...', password: '...'}". Because sent object only with 'username'`, async () => {
             const body = {
-                username: process.env.ADMIN_USER_LOGIN,
+                username: configService.get(`ADMIN_USER_LOGIN`),
             };
 
             const response = await login(body, 400);
@@ -121,7 +134,7 @@ describe(`/film`, () => {
 
     describe("POST register", () => {
         it(`should return 201 with message "User successfully registered" and username and role. Cookies should be cleaned`, async () => {
-            await login({ username: process.env.ADMIN_USER_LOGIN, password: process.env.ADMIN_USER_PASSWORD }, 201);
+            await login({ username: configService.get<string>(`ADMIN_USER_LOGIN`), password: configService.get<string>(`ADMIN_USER_PASSWORD`) }, 201);
             const body = generateCredentials();
 
             const registerResponse = await register(body, 201);
@@ -185,7 +198,7 @@ describe(`/film`, () => {
         })
 
         it(`"Admin" allowed operations`, async () => {
-            await login({ username: process.env.ADMIN_USER_LOGIN, password: process.env.ADMIN_USER_PASSWORD }, 201);
+            await login({ username: configService.get<string>(`ADMIN_USER_LOGIN`), password: configService.get<string>(`ADMIN_USER_PASSWORD`) }, 201);
             const filmDto = new RandomMockFilmsGenerator().generateOneDtoWithoutRelations();
 
             await getPageResponse(1, 200);

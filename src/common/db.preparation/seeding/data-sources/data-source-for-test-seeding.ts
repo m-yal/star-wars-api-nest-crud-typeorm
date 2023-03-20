@@ -1,22 +1,21 @@
 import { DataSource, DataSourceOptions } from "typeorm";
 import { config } from 'dotenv';
-import { Seeder } from "./seeder";
+import { TestSeeder } from "../test.seeder.entry.point";
 
 config();
 const { env } = process;
 
-class DataSourceForSeeding {
+class DataSourceForTestSeeding {
 
     private readonly dataSourceOptions: DataSourceOptions = {
         type: "mysql",
-        database: env.DB_NAME,
+        database: env.TEST_DB_NAME,
         port: +env.DB_PORT,
         host: env.DB_HOST,
         username: env.DB_USERNAME,
         password: env.DB_PASSWORD,
         entities: [env.ENTITIES_PROJECT_PATH],
-        // migrations: ["/dist/**/seeder{.ts,.js}"],
-        migrations: [Seeder],
+        migrations: [TestSeeder],
     }
 
     private readonly dataSource: DataSource = new DataSource(this.dataSourceOptions);
@@ -26,4 +25,4 @@ class DataSourceForSeeding {
     }
 }
 
-export default new DataSourceForSeeding().getDataSource();
+export default new DataSourceForTestSeeding().getDataSource();

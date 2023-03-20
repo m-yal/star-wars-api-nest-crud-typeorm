@@ -14,6 +14,7 @@ import { FilesModule } from '../../files/files.module';
 import { FilesService } from '../../files/files.service';
 import { Repository } from 'typeorm';
 import { FileNamesTransformer } from '../../files/files.names.transformer';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { FileNamesTransformer } from '../../files/files.names.transformer';
     forwardRef(() => FilesModule),
     forwardRef(() => PeopleModule),
     forwardRef(() => PlanetsModule),
+    ConfigModule,
   ],
   providers: [
     SpeciesService,

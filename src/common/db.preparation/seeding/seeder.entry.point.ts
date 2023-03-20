@@ -1,14 +1,14 @@
 import { config } from "dotenv";
 import { MigrationInterface, QueryRunner } from "typeorm";
-import { FilmsSeeder } from "./films.seed";
-import PeopleSeeder from "./people.seed";
-import { PlanetsSeeder } from "./planets.seed";
-import { SpeciesSeeder } from "./species.seed";
-import StarshipsSeeder from "./starships.seed";
-import VehiclesSeeder from "./vehicles.seed";
+import { FilmsSeeder } from "./entities-helpers/films.seed";
+import PeopleSeeder from "./entities-helpers/people.seed";
+import { PlanetsSeeder } from "./entities-helpers/planets.seed";
+import { SpeciesSeeder } from "./entities-helpers/species.seed";
+import StarshipsSeeder from "./entities-helpers/starships.seed";
+import VehiclesSeeder from "./entities-helpers/vehicles.seed";
 import { mkdir, rm } from "fs";
-import UsersSeeder from "./users.seed";
-import { BaseUnitsSeeder } from "./base-entity-seeder";
+import UsersSeeder from "./entities-helpers/users.seed";
+import { BaseUnitsSeeder } from "./entities-helpers/base-entity-seeder";
 import { AwsS3FilesRepository } from "../../../modules/files/repositories/files.aws-s3.repository";
 
 config();

@@ -27,6 +27,7 @@ import { FileNamesTransformer } from './files.names.transformer';
   controllers: [FilesController],
   providers: [
     FileNamesTransformer,
+    ConfigModule,
     {
       useClass: FILES_REPOSITORY_TYPES_MAP[process.env.FILES_STORAGE_TYPE],
       provide: "SwapiImagesRepository",

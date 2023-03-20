@@ -3,24 +3,23 @@ import { Injectable } from "@nestjs/common";
 import internal from "stream";
 import { IAWSImagesRepository } from '../interfaces/repositories.interfaces';
 import { FileNamesTransformer } from '../files.names.transformer';
-import { config } from 'dotenv';
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Files } from '../file.entity';
 import { Repository } from 'typeorm';
 import { awsS3ClientConfig } from '../../../common/db.configs/aws-s3.config';
-
-config();
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AwsS3FilesRepository implements IAWSImagesRepository {
 
-    private readonly AWS_PUBLIC_BUCKET_NAME = process.env.AWS_PUBLIC_BUCKET_NAME;
+    private readonly AWS_PUBLIC_BUCKET_NAME = this.configService.get<string>(`AWS_PUBLIC_BUCKET_NAME`);
     private readonly s3 = this.getS3();
 
     constructor(
         @InjectRepository(Files) private readonly filesRecordsReposiotry: Repository<Files>,
         private readonly filenamesTrasformer: FileNamesTransformer,
+        private readonly configService: ConfigService,
     ) { }
 
     get(imageName: string): internal.Readable {

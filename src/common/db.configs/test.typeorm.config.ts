@@ -1,5 +1,6 @@
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModuleAsyncOptions, TypeOrmModuleOptions } from "@nestjs/typeorm";
+import { config } from "dotenv";
 import { Users } from "../../modules/auth/entities/users.entity";
 import { Films } from "../../modules/crud/films/films.entity";
 import { People } from "../../modules/crud/people/people.entity";
@@ -9,16 +10,16 @@ import { Starships } from "../../modules/crud/starships/starships.entity";
 import { Vehicles } from "../../modules/crud/vehicles/vehicles.entity";
 import { Files } from "../../modules/files/file.entity";
 
-export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
-  imports: [ConfigModule],
-  inject: [ConfigService],
-  useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => {
+config();
+
+export const testTypeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
+  useFactory: async (): Promise<TypeOrmModuleOptions> => {
     return {
       type: 'mysql',
-      host: configService.get(`DB_HOST`),
-      username: configService.get(`DB_USERNAME`),
-      database: configService.get(`NODE_ENV`) === `test` ? configService.get(`TEST_DB_NAME`) : configService.get(`DB_NAME`),
-      password: configService.get(`DB_PASSWORD`),
+      host: process.env.DB_HOST,
+      username: process.env.DB_USERNAME,
+      database: process.env.TEST_DB_NAME,
+      password: process.env.DB_PASSWORD,
       entities: [
         People, Films, Planets, 
         Species, Starships, Vehicles,

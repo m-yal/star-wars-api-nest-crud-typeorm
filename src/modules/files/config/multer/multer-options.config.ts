@@ -1,7 +1,6 @@
 import { UnsupportedMediaTypeException } from "@nestjs/common";
 import { MulterOptions } from "@nestjs/platform-express/multer/interfaces/multer-options.interface";
 import { FileMymeTypeFilter } from "../../../../common/types/types";
-import { MAX_FILE_SIZE_IN_MEGABYTES } from "../constants";
 
 function getFileMimetypeFilter(...mimetypes: string[]): FileMymeTypeFilter {
   return (req, file: Express.Multer.File, callback: (error: Error | null, acceptFile: boolean) => void,) => {
@@ -15,5 +14,5 @@ function getFileMimetypeFilter(...mimetypes: string[]): FileMymeTypeFilter {
 
 export const multerInterceptorOptions: MulterOptions = {
   fileFilter: getFileMimetypeFilter('image'),
-  limits: { fileSize: MAX_FILE_SIZE_IN_MEGABYTES },
+  limits: { fileSize: +process.env.MAX_FILE_SIZE_IN_MEGABYTES },
 };

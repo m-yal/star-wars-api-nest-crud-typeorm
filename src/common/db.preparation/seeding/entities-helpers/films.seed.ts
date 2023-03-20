@@ -1,12 +1,12 @@
 import { QueryRunner, Repository } from 'typeorm';
-import { Films } from '../../../modules/crud/films/films.entity';
-import { People } from '../../../modules/crud/people/people.entity';
-import { Planets } from '../../../modules/crud/planets/planets.entity';
-import { Species } from '../../../modules/crud/species/species.entity';
-import { Starships } from '../../../modules/crud/starships/starships.entity';
-import { Vehicles } from '../../../modules/crud/vehicles/vehicles.entity';
+import { Films } from '../../../../modules/crud/films/films.entity';
+import { People } from '../../../../modules/crud/people/people.entity';
+import { Planets } from '../../../../modules/crud/planets/planets.entity';
+import { Species } from '../../../../modules/crud/species/species.entity';
+import { Starships } from '../../../../modules/crud/starships/starships.entity';
+import { Vehicles } from '../../../../modules/crud/vehicles/vehicles.entity';
+import { FilmsRelations } from '../types';
 import { BaseUnitsSeeder } from './base-entity-seeder';
-import { FilmsRelations } from './types';
 
 export class FilmsSeeder extends BaseUnitsSeeder {
   

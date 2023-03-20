@@ -1,7 +1,3 @@
-import { config } from "dotenv";
-
-config();
-
 describe(`.env`, () => {
     describe("Correct required constants presence", () => {
         it("all variables are not empty", () => {

@@ -3,7 +3,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import * as request from 'supertest';
 import { faker } from "@faker-js/faker";
 import * as fs from "fs";
-import { config } from "dotenv";
 import * as session from 'express-session';
 import { AppModule } from "../../app.module";
 import { sessionConfig } from "../../common/session/config";
@@ -11,24 +10,41 @@ import { CreateFilmDto } from "../crud/films/create.dto";
 import { Films } from "../crud/films/films.entity";
 import { join } from "path";
 import { RandomMockFilmsGenerator } from "../crud/films/mock.random.film.generator";
-
-config();
+import { ConfigService } from "@nestjs/config";
 
 describe(`/files`, () => {
     let app: INestApplication;
     let server: HttpServer;
     let agent: request.SuperAgentTest;
-    const { TEST_IMAGE_PATH, IMAGES_RELATIVE_FILE_PATH } = process.env;
+    let configService: ConfigService;
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
+            providers: [
+                {
+                    provide: ConfigService,
+                    useValue: {
+                        get: jest.fn(key => {
+                        switch (key) {
+                            case 'ADMIN_USER_LOGIN':
+                            return 'admin123';
+                            case 'ADMIN_USER_PASSWORD':
+                            return '123123';
+                            default:
+                            return undefined;
+                        }
+                        }),
+                    },
+                },
+            ]
         }).compile();
         app = moduleFixture.createNestApplication();
         app.use(session(sessionConfig));
         await app.init();
         server = app.getHttpServer();
         agent = request.agent(server);
+        configService = moduleFixture.get<ConfigService>(ConfigService);
         await loginAdmin();
     })
 
@@ -39,14 +55,15 @@ describe(`/files`, () => {
             it(`should return 200 with image. It should be equal to recenlty created image and test image`, async () => {
                 const unitName = (await getPageText(1, 200)).data.units[0].name;
                 const imageName = (await postSingleImage(unitName, 201)).executed[0];
+                const imagesRelativeFilepath = configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`)
 
                 const getImageResponse = await getImage({ imageName }, 'image/*', 200);
                 const resBody = getImageResponse.body;
 
                 expect(resBody).toBeDefined();
                 expect(resBody).toBeInstanceOf(Buffer);
-                expect(resBody).toEqual(fs.readFileSync(`./${IMAGES_RELATIVE_FILE_PATH}/${imageName}`));
-                expect(resBody).toEqual(fs.readFileSync(TEST_IMAGE_PATH));
+                expect(resBody).toEqual(fs.readFileSync(`./${imagesRelativeFilepath}/${imageName}`));
+                expect(resBody).toEqual(fs.readFileSync(configService.get<string>(`TEST_IMAGE_PATH`)));
                 deleteImageFromFS(imageName);
             })
 
@@ -131,8 +148,8 @@ describe(`/files`, () => {
     }
 
     function copyImage(destFileName: string) {
-        const sourceImage = join(TEST_IMAGE_PATH);
-        const destinationImage = join(IMAGES_RELATIVE_FILE_PATH, destFileName)
+        const sourceImage = join(configService.get<string>(`TEST_IMAGE_PATH`));
+        const destinationImage = join(configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`), destFileName)
 
         const readStream = fs.createReadStream(sourceImage);
         const writeStream = fs.createWriteStream(destinationImage);
@@ -142,7 +159,7 @@ describe(`/files`, () => {
     }
 
     function deleteImageFromFS(imageName: string) {
-        const path: fs.PathLike = join(IMAGES_RELATIVE_FILE_PATH, imageName) //`./${}/${imageName}`;
+        const path: fs.PathLike = join(configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`), imageName);
         fs.unlinkSync(path);
     }
 
@@ -150,7 +167,7 @@ describe(`/files`, () => {
         const response: request.Response = await agent
             .post('/film/file')
             .set('Content-Type', 'multipart/form-data')
-            .attach("files", TEST_IMAGE_PATH)
+            .attach("files", configService.get<string>(`TEST_IMAGE_PATH`))
             .query({ unitName })
             .expect(expectedStatusCode);
         return JSON.parse(response.text);
@@ -176,8 +193,8 @@ describe(`/files`, () => {
         await agent
             .post("/auth/login")
             .send({
-                username: process.env.ADMIN_USER_LOGIN,
-                password: process.env.ADMIN_USER_PASSWORD
+                username: configService.get<string>(`ADMIN_USER_LOGIN`),
+                password: configService.get<string>(`ADMIN_USER_PASSWORD`)
             })
             .expect(201);
     }

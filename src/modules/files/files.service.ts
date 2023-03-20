@@ -2,16 +2,20 @@ import { Inject, Injectable } from "@nestjs/common";
 import internal from "stream";
 import { ISwapiImagesRepository } from "./interfaces/repositories.interfaces";
 import { IFilesActions } from "./interfaces/files.controller.interface";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class FilesService implements IFilesActions {
 
-    constructor(@Inject("SwapiImagesRepository") private readonly repository: ISwapiImagesRepository) { }
-    
+    constructor(
+        @Inject("SwapiImagesRepository") private readonly repository: ISwapiImagesRepository,
+        private readonly configService: ConfigService
+    ) { }
+
     get(fileName: string): internal.Readable {
         return this.repository.get(fileName);
     }
-    
+
     async upload(files: Express.Multer.File[]): Promise<string[]> {
         return this.repository.add(files);
     }

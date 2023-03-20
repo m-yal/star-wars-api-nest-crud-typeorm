@@ -9,12 +9,10 @@ import { FilmsController } from './films.controller';
 import { Films } from './films.entity';
 import { FilmsService } from './films.service';
 import { forwardRef } from '@nestjs/common';
-import { MulterModule } from '@nestjs/platform-express';
 import { FilmExistsPipe } from './films.exists.pipe';
 import { CreatedUnitResponseInterceptor } from '../../../common/interceptors/created-unit-response.interceptor';
 import { DeletedResponseInterceptor } from '../../../common/interceptors/deleted-unit-response.interceptor';
 import { UpdatedUnitResponseInterceptor } from '../../../common/interceptors/update-unit-response.interceptor';
-import { DataResponseInterceptor } from '../config/interceptors/data-response.interceptor';
 import { FILES_REPOSITORY_TYPES_MAP } from '../../files/config/constants';
 import { Files } from '../../files/file.entity';
 import { FilesModule } from '../../files/files.module';
@@ -22,11 +20,10 @@ import { FilesService } from '../../files/files.service';
 import { Repository } from 'typeorm';
 import { PrepareFilmBodyPipe } from './prepare-film-body.pipe';
 import { FileNamesTransformer } from '../../files/files.names.transformer';
-// import { DatabaseModule } from '../../database/database.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    // DatabaseModule,
     TypeOrmModule.forFeature([Films, Files]),
     forwardRef(() => FilesModule),
     forwardRef(() => PeopleModule),
@@ -34,10 +31,11 @@ import { FileNamesTransformer } from '../../files/files.names.transformer';
     forwardRef(() => SpeciesModule),
     forwardRef(() => StarshipsModule),
     forwardRef(() => VehiclesModule),
+    ConfigModule,
   ],
   controllers: [FilmsController],
   providers: [
-    FilmsService, 
+    FilmsService,
     FileNamesTransformer,
     {
       useClass: FILES_REPOSITORY_TYPES_MAP[process.env.FILES_STORAGE_TYPE],
@@ -59,4 +57,4 @@ import { FileNamesTransformer } from '../../files/files.names.transformer';
   ],
   exports: [FilmsService],
 })
-export class FilmsModule {}
+export class FilmsModule { }

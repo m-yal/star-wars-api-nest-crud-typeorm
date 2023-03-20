@@ -7,29 +7,55 @@ import { AppModule } from "../../../app.module";
 import { faker } from "@faker-js/faker";
 import { Films } from "./films.entity";
 import { CreateUnitDto } from "../config/dto/ create.unit.dto";
-import * as fs from "fs";
-import { config } from "dotenv";
+import { existsSync } from "fs";
 import { sessionConfig } from "../../../common/session/config";
 import * as session from 'express-session';
-
-config();
+import { ConfigService } from "@nestjs/config";
+import { TypeOrmModuleOptions } from "@nestjs/typeorm/dist";
 
 describe(`/film`, () => {
     let app: INestApplication;
     const randomFilmGenerator: RandomMockFilmsGenerator = new RandomMockFilmsGenerator();
     let server: HttpServer;
     let agent: request.SuperAgentTest;
+    let configService: ConfigService;
+    let FILES_STORAGE_TYPE: string;
+    let IMAGES_RELATIVE_FILE_PATH: string;
+    let ADMIN_USER_LOGIN: string;
+    let ADMIN_USER_PASSWORD: string; 
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [AppModule],
+            imports: [
+                AppModule,
+            ],
+            providers: [
+                {
+                    provide: ConfigService,
+                    useValue: {
+                        get: jest.fn(key => {
+                            switch (key) {
+                                case `TEST_IMAGE_PATH`: return `./test/test-files/sample.jpg`;
+                                case `IMAGES_RELATIVE_FILE_PATH`: return `images`;
+                                default: return undefined;
+                            }
+                        }),
+                    },
+                },
+            ]
         }).compile();
 
         app = moduleFixture.createNestApplication();
         app.use(session(sessionConfig));
         await app.init();
+
         server = app.getHttpServer();
         agent = request.agent(server);
+        
+        configService = moduleFixture.get<ConfigService>(ConfigService);
+        console.log(`NODE_ENV : ${configService.get<string>(`NODE_ENV`)}`);
+        
+        retreiveEnvConstants();
         await loginAdmin();
     })
 
@@ -272,9 +298,9 @@ describe(`/film`, () => {
             expect(imagesNames.length).toEqual(1)
             expect(imagesNames[0]).toMatch("\.jpg")
             expect(typeof imagesNames[0]).toEqual("string");
-            if (process.env.FILES_STORAGE_TYPE === "FS") {
+            if (FILES_STORAGE_TYPE === "FS") {
                 checkFSFilesPresence(imagesNames);
-            } else if (process.env.FILES_STORAGE_TYPE === "AWS") {
+            } else if (FILES_STORAGE_TYPE === "AWS") {
                 checkAWSFilesPresence(imagesNames);
             }
 
@@ -330,8 +356,8 @@ describe(`/film`, () => {
     }
 
     function checkFSSingleFilePresence(name: string) {
-        const path = `./${process.env.IMAGES_RELATIVE_FILE_PATH}/${name}`;
-        expect(fs.existsSync(path)).toEqual(true);
+        const path = `./${IMAGES_RELATIVE_FILE_PATH}/${name}`;
+        expect(existsSync(path)).toEqual(true);
     }
 
     async function removeSeveral(images: string[]) {
@@ -341,7 +367,7 @@ describe(`/film`, () => {
     async function removeSingle(imageName: string) {
         await agent
             .delete("/files")
-            .query({ imageName })
+            .send({ imageName })
             .expect(200);
     }
 
@@ -400,11 +426,16 @@ describe(`/film`, () => {
         await agent
             .post("/auth/login")
             .send({
-                username: process.env.ADMIN_USER_LOGIN,
-                password: process.env.ADMIN_USER_PASSWORD
+                username: ADMIN_USER_LOGIN,
+                password: ADMIN_USER_PASSWORD
             })
             .expect(201);
     }
+
+    function retreiveEnvConstants() {
+        FILES_STORAGE_TYPE = configService.get<string>(`FILES_STORAGE_TYPE`);
+        IMAGES_RELATIVE_FILE_PATH = configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`);
+        ADMIN_USER_LOGIN = configService.get<string>(`ADMIN_USER_LOGIN`);
+        ADMIN_USER_PASSWORD = configService.get<string>(`ADMIN_USER_PASSWORD`);
+    }
 })
-
-
