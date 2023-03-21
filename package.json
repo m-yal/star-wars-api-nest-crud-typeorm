@@ -53,7 +53,7 @@
       "ts"
     ],
     "rootDir": "",
-    "testRegex": ".*film\\.e2e\\.spec\\.ts$",
+    "testRegex": ".*file\\.e2e\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },

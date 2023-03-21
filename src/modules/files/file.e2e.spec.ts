@@ -10,7 +10,16 @@ import { CreateFilmDto } from "../crud/films/create.dto";
 import { Films } from "../crud/films/films.entity";
 import { join } from "path";
 import { RandomMockFilmsGenerator } from "../crud/films/mock.random.film.generator";
-import { ConfigService } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { FSFilesRepository } from "./repositories/files.fs.repository";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { Files } from "./file.entity";
+import { FileNamesTransformer } from "./files.names.transformer";
+import { typeOrmAsyncConfig } from "../../common/db.configs/typeorm.config";
+import { AuthModule } from "../auth/auth.module";
+import { CrudModule } from "../crud/crud.module";
+import { FilesModule } from "./files.module";
+import { FilesController } from "./files.controller";
 
 describe(`/files`, () => {
     let app: INestApplication;
@@ -26,25 +35,24 @@ describe(`/files`, () => {
                     provide: ConfigService,
                     useValue: {
                         get: jest.fn(key => {
-                        switch (key) {
-                            case 'ADMIN_USER_LOGIN':
-                            return 'admin123';
-                            case 'ADMIN_USER_PASSWORD':
-                            return '123123';
-                            default:
-                            return undefined;
-                        }
+                            switch (key) {
+                                case 'ADMIN_USER_LOGIN': return 'admin123';
+                                case 'ADMIN_USER_PASSWORD': return '123123';
+                                default: return undefined;
+                            }
                         }),
                     },
                 },
-            ]
+            ],
         }).compile();
         app = moduleFixture.createNestApplication();
         app.use(session(sessionConfig));
         await app.init();
+
         server = app.getHttpServer();
         agent = request.agent(server);
         configService = moduleFixture.get<ConfigService>(ConfigService);
+        
         await loginAdmin();
     })
 
@@ -54,10 +62,10 @@ describe(`/files`, () => {
         describe(`GET`, () => {
             it(`should return 200 with image. It should be equal to recenlty created image and test image`, async () => {
                 const unitName = (await getPageText(1, 200)).data.units[0].name;
-                const imageName = (await postSingleImage(unitName, 201)).executed[0];
+                const imageName: string = (await postSingleImage(unitName, 201)).executed[0];
                 const imagesRelativeFilepath = configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`)
 
-                const getImageResponse = await getImage({ imageName }, 'image/*', 200);
+                const getImageResponse = await getImage(imageName, 'image/*', 200);
                 const resBody = getImageResponse.body;
 
                 expect(resBody).toBeDefined();
@@ -70,18 +78,10 @@ describe(`/files`, () => {
             it(`should return 404 with message "Image in FS was not found"`, async () => {
                 const wrongImageName: string = `${faker.random.word()}-${faker.random.word()}-${faker.random.word()}`;
 
-                const getImageResponse = await getImage({ imageName: wrongImageName }, 'application/json; charset=utf-8', 404);
+                const getImageResponse = await getImage(wrongImageName, 'application/json; charset=utf-8', 404);
                 const text = JSON.parse(getImageResponse.text);
 
                 expect(text.message).toEqual("Image in FS was not found");
-            })
-
-            it(`should return 400 with messages: ["imageName should not be empty", "imageName must be a string"]`, async () => {
-                const getImageResponse = await getImage({}, 'application/json; charset=utf-8', 400);
-
-                const text = JSON.parse(getImageResponse.text);
-
-                expect(text.message).toEqual(["imageName should not be empty", "imageName must be a string"]);
             })
         })
 
@@ -132,10 +132,10 @@ describe(`/files`, () => {
 
 
 
-    async function getImage(body: object, contentType: string, expectedStatusCode: number) {
+    async function getImage(imageName: string, contentType: string, expectedStatusCode: number) {
         return await agent
             .get(`/files`)
-            .send(body)
+            .query({ imageName })
             .expect(expectedStatusCode)
             .expect('Content-Type', contentType);
     }

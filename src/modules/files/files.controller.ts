@@ -12,13 +12,12 @@ export class FilesController {
 
     constructor(
         @Inject("IFilesActions") private readonly fileService: FilesService,
-        private readonly configService: ConfigService,
-        ) { }
+    ) { }
 
     @Get()
     @DownloadFileDecorators()
-    get(@Body() body: ImageNameDto): StreamableFile {
-        return new StreamableFile(this.fileService.get(body.imageName));
+    get(@Query(`imageName`) imageName: string): StreamableFile {
+        return new StreamableFile(this.fileService.get(imageName));
     }
 
     @Delete()

@@ -25,8 +25,8 @@ export class FSFilesRepository implements ILocalImagesRepository {
     ) { }
 
     get(imageName: string): fs.ReadStream {
-        const imageDirPath = this.configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`);
-        const path = join(process.cwd() + "/" + imageDirPath, imageName);
+        const imageDirPath: string = this.configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`);
+        const path = join(imageDirPath, imageName);
         if (this.fileExists(imageName)) {
             return createReadStream(path);
         }

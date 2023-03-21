@@ -8,11 +8,16 @@ import { RolesGuard } from '../../auth/guards/roles.guard';
 
 export function DeleteFileDecorators(): ApplyDecorators {
   return applyDecorators(
-    ApiQuery({ name: "imageName", schema: { default: "" } }),
     ApiResponse({
       status: HttpStatus.OK,
     }),
-    ApiBody({}),
+    ApiBody({
+      schema: {
+        default: {
+          imageName: ""
+        }
+      }
+    }),
     ApiOperation({ summary: "Remove single unit`s image under image name" }),
     Roles(Role.ADMIN),
     UseGuards(RolesGuard),
