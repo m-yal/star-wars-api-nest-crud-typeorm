@@ -24,10 +24,10 @@ export class FSFilesRepository implements ILocalImagesRepository {
         private readonly configService: ConfigService,
     ) { }
 
-    get(imageName: string): fs.ReadStream {
+    async get(imageName: string): Promise<fs.ReadStream> {
         const imageDirPath: string = this.configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`);
         const path = join(imageDirPath, imageName);
-        if (this.fileExists(imageName)) {
+        if (await this.fileExists(imageName)) {
             return createReadStream(path);
         }
         throw new NotFoundException("Image in FS was not found");            
@@ -56,7 +56,7 @@ export class FSFilesRepository implements ILocalImagesRepository {
         }
     }
 
-    fileExists(fileName: string): boolean {
+    async fileExists(fileName: string): Promise<boolean> {
         try {
             const imageDirPath = this.configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`);
             fs.accessSync(join(imageDirPath, fileName));

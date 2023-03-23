@@ -53,7 +53,7 @@
       "ts"
     ],
     "rootDir": "",
-    "testRegex": ".*file\\.e2e\\.spec\\.ts$",
+    "testRegex": ".*files\\.aws-s3\\.repository\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },

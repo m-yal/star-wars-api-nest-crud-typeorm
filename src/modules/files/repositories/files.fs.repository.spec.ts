@@ -49,11 +49,11 @@ describe("Files FS repository", () => {
         expect(repository).toBeDefined();
     })
 
-    it("get method throws NotFoundException for wrong input image name", () => {
+    it("get method throws NotFoundException for wrong input image name", async () => {
         const imageName: string = "wrongName.jpg";
 
         try {
-            repository.get(imageName);
+            await repository.get(imageName);
         } catch (error) {
             expect(error).toBeInstanceOf(NotFoundException);
             expect(error).toEqual(new NotFoundException("Image in FS was not found"));
@@ -76,7 +76,7 @@ describe("Files FS repository", () => {
         copyImage(filename);
 
         try {
-            expect(repository.fileExists(filename)).toEqual(true);
+            expect(await repository.fileExists(filename)).toEqual(true);
         } finally {
             deleteImageFromFS(filename);
         }
@@ -85,7 +85,7 @@ describe("Files FS repository", () => {
     it("fileExists method returns false", async () => {
         const filename = "test1.jpg";
 
-        expect(repository.fileExists(filename)).toEqual(false);
+        expect(await repository.fileExists(filename)).toEqual(false);
     })
 
 

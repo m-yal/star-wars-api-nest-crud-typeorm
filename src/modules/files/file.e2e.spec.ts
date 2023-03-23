@@ -8,24 +8,18 @@ import { AppModule } from "../../app.module";
 import { sessionConfig } from "../../common/session/config";
 import { CreateFilmDto } from "../crud/films/create.dto";
 import { Films } from "../crud/films/films.entity";
-import { join } from "path";
 import { RandomMockFilmsGenerator } from "../crud/films/mock.random.film.generator";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { FSFilesRepository } from "./repositories/files.fs.repository";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { Files } from "./file.entity";
-import { FileNamesTransformer } from "./files.names.transformer";
-import { typeOrmAsyncConfig } from "../../common/db.configs/typeorm.config";
-import { AuthModule } from "../auth/auth.module";
-import { CrudModule } from "../crud/crud.module";
-import { FilesModule } from "./files.module";
-import { FilesController } from "./files.controller";
+import { ConfigService } from "@nestjs/config";
+
 
 describe(`/files`, () => {
     let app: INestApplication;
     let server: HttpServer;
     let agent: request.SuperAgentTest;
     let configService: ConfigService;
+    let TEST_IMAGE_PATH: string;
+    let ADMIN_USER_LOGIN: string;
+    let ADMIN_USER_PASSWORD: string;
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -52,7 +46,10 @@ describe(`/files`, () => {
         server = app.getHttpServer();
         agent = request.agent(server);
         configService = moduleFixture.get<ConfigService>(ConfigService);
-        
+        TEST_IMAGE_PATH = configService.get<string>(`TEST_IMAGE_PATH`);
+        ADMIN_USER_LOGIN = configService.get<string>(`ADMIN_USER_LOGIN`);
+        ADMIN_USER_PASSWORD = configService.get<string>(`ADMIN_USER_PASSWORD`);
+
         await loginAdmin();
     })
 
@@ -63,16 +60,16 @@ describe(`/files`, () => {
             it(`should return 200 with image. It should be equal to recenlty created image and test image`, async () => {
                 const unitName = (await getPageText(1, 200)).data.units[0].name;
                 const imageName: string = (await postSingleImage(unitName, 201)).executed[0];
-                const imagesRelativeFilepath = configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`)
 
                 const getImageResponse = await getImage(imageName, 'image/*', 200);
-                const resBody = getImageResponse.body;
+                
+                const resBody: Buffer = getImageResponse.body;
 
                 expect(resBody).toBeDefined();
                 expect(resBody).toBeInstanceOf(Buffer);
-                expect(resBody).toEqual(fs.readFileSync(`./${imagesRelativeFilepath}/${imageName}`));
-                expect(resBody).toEqual(fs.readFileSync(configService.get<string>(`TEST_IMAGE_PATH`)));
-                deleteImageFromFS(imageName);
+                expect(resBody).toEqual(fs.readFileSync(TEST_IMAGE_PATH));
+
+                await deleteImageFromAws(imageName, 200);
             })
 
             it(`should return 404 with message "Image in FS was not found"`, async () => {
@@ -90,7 +87,7 @@ describe(`/files`, () => {
                 const unitName = (await getPageText(1, 200)).data.units[0].name;
                 const imageName = (await postSingleImage(unitName, 201)).executed[0];
 
-                const resBody = await deleteImage(imageName, 200);
+                const resBody = await deleteImageFromAws(imageName, 200);
 
                 expect(JSON.parse(resBody.text)).toEqual({ "executed": true });
             })
@@ -102,7 +99,7 @@ describe(`/files`, () => {
                 const unitImages = (await getPageText(1, 200)).data.units[0].images;
                 expect(unitImages[0].name).toEqual(postedImageName);
 
-                await deleteImage(postedImageName, 200);
+                await deleteImageFromAws(postedImageName, 200);
                 
                 const unitAfterImageDeletion = (await getPageText(1, 200)).data.units[0];
                 expect(unitAfterImageDeletion.name).toEqual(postedFilmName);
@@ -112,23 +109,14 @@ describe(`/files`, () => {
             it(`should return 404 with message: "File for deletion not found"`, async () => {
                 const wrongImageName: string = `${faker.random.word()}-${faker.random.word()}-${faker.random.word()}`;
 
-                const resBody = await deleteImage(wrongImageName, 404);
+                const resBody = await deleteImageFromAws(wrongImageName, 404);
                 const text = JSON.parse(resBody.text);
                 
                 expect(text.message).toEqual("File for deletion not found");
             })
-
-            it(`should return 404 with message: "File record not found"`, async () => {
-                const notExistsingInDBImageName = "sample.jpg";
-                const imageName = copyImage(notExistsingInDBImageName);
-
-                const resBody = await deleteImage(imageName, 404);
-
-                expect(JSON.parse(resBody.text).message).toEqual("File record not found");
-                deleteImageFromFS(notExistsingInDBImageName);
-            })
         })
     })
+
 
 
 
@@ -140,27 +128,11 @@ describe(`/files`, () => {
             .expect('Content-Type', contentType);
     }
 
-    async function deleteImage(imageName: string, expectedStatusCode: number) {
+    async function deleteImageFromAws(imageName: string, expectedStatusCode: number) {
         return await agent
             .delete(`/files`)
             .send({ imageName })
             .expect(expectedStatusCode);
-    }
-
-    function copyImage(destFileName: string) {
-        const sourceImage = join(configService.get<string>(`TEST_IMAGE_PATH`));
-        const destinationImage = join(configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`), destFileName)
-
-        const readStream = fs.createReadStream(sourceImage);
-        const writeStream = fs.createWriteStream(destinationImage);
-        readStream.pipe(writeStream);
-
-        return destFileName;
-    }
-
-    function deleteImageFromFS(imageName: string) {
-        const path: fs.PathLike = join(configService.get<string>(`IMAGES_RELATIVE_FILE_PATH`), imageName);
-        fs.unlinkSync(path);
     }
 
     async function postSingleImage(unitName: string, expectedStatusCode: number) {
@@ -193,8 +165,8 @@ describe(`/files`, () => {
         await agent
             .post("/auth/login")
             .send({
-                username: configService.get<string>(`ADMIN_USER_LOGIN`),
-                password: configService.get<string>(`ADMIN_USER_PASSWORD`)
+                username: ADMIN_USER_LOGIN,
+                password: ADMIN_USER_PASSWORD
             })
             .expect(201);
     }

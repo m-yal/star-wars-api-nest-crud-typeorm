@@ -1,5 +1,5 @@
 import { AWSError, S3 } from 'aws-sdk';
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import internal from "stream";
 import { IAWSImagesRepository } from '../interfaces/repositories.interfaces';
 import { FileNamesTransformer } from '../files.names.transformer';
@@ -22,9 +22,12 @@ export class AwsS3FilesRepository implements IAWSImagesRepository {
         private readonly configService: ConfigService,
     ) { }
 
-    get(imageName: string): internal.Readable {
-        const options = this.getAwsS3GetOrDeleteOptions(imageName);
-        return this.getS3().getObject(options).createReadStream();
+    async get(imageName: string): Promise<internal.Readable> {
+        if (await this.fileExists(imageName)) {
+            const options = this.getAwsS3GetOrDeleteOptions(imageName);
+            return this.getS3().getObject(options).createReadStream();
+        }
+        throw new NotFoundException("Image in FS was not found");
     }
 
     async add(images: Express.Multer.File[]): Promise<string[]> {
@@ -38,18 +41,22 @@ export class AwsS3FilesRepository implements IAWSImagesRepository {
 
     async delete(imageName: string): Promise<true> {
         const options = this.getAwsS3GetOrDeleteOptions(imageName);
-        await this.getS3().deleteObject(options).promise()
-        const imageRecordToRemove = await this.filesRecordsReposiotry.findOneByOrFail({ name: imageName });
-        await this.filesRecordsReposiotry.remove(imageRecordToRemove);
-        return true;
+        try {
+            await this.getS3().deleteObject(options).promise();
+            const imageRecordToRemove = await this.filesRecordsReposiotry.findOneByOrFail({ name: imageName });
+            await this.filesRecordsReposiotry.remove(imageRecordToRemove);
+            return true;
+        } catch (error) {
+            throw new NotFoundException("File for deletion not found");
+        }
     }
 
-    fileExists(fileName: string): boolean {
+    async fileExists(fileName: string): Promise<boolean> {
         try {
             const options = this.getAwsS3GetOrDeleteOptions(fileName);
-            const object = this.s3.headObject(options);
+            await this.s3.headObject(options).promise();
             return true;
-        } catch (e) {
+        } catch (error) {
             return false;
         }
     }

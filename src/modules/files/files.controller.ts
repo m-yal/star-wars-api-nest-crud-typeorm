@@ -16,8 +16,8 @@ export class FilesController {
 
     @Get()
     @DownloadFileDecorators()
-    get(@Query(`imageName`) imageName: string): StreamableFile {
-        return new StreamableFile(this.fileService.get(imageName));
+    async get(@Query(`imageName`) imageName: string): Promise<StreamableFile> {
+        return new StreamableFile(await this.fileService.get(imageName));
     }
 
     @Delete()

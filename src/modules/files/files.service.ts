@@ -12,8 +12,8 @@ export class FilesService implements IFilesActions {
         private readonly configService: ConfigService
     ) { }
 
-    get(fileName: string): internal.Readable {
-        return this.repository.get(fileName);
+    async get(fileName: string): Promise<internal.Readable> {
+        return await this.repository.get(fileName);
     }
 
     async upload(files: Express.Multer.File[]): Promise<string[]> {
@@ -25,7 +25,7 @@ export class FilesService implements IFilesActions {
     }
 
     async fileExists(fileName: string): Promise<boolean> {
-        return this.repository.fileExists(fileName);
+        return await this.repository.fileExists(fileName);
     }
 
     async findByNames(fileNames: string[]): Promise<Partial<File>[]> {
