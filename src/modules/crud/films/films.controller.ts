@@ -4,7 +4,7 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { FilmsService } from "./films.service";
 import { ValidatePagePipe } from "../config/pipes/validate-page.pipe";
 import { FilmExistsPipe } from "./films.exists.pipe";
-import { PrepareFilmBodyPipe } from "./prepare-film-body.pipe";
+import { PrepareFilmBodyPipe } from "./prepare.film.body.pipe";
 import { GetUpToTenUnitsDecorators } from "../../../common/decorators/get-up-to-ten.decorator";
 import { UpdateUnitDecorators } from "../../../common/decorators/update.decorator";
 import { DeleteUnitDecorators } from "../../../common/decorators/delete.decorator";

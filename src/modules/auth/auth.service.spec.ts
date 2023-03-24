@@ -1,9 +1,6 @@
 import { faker } from "@faker-js/faker";
-import { UnauthorizedException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { AuthService } from "./auth.service";
-import { Role } from "./entities/role.enum";
-import { Users } from "./entities/users.entity";
 import { MockUsersService } from "./mocks/mock.users.service";
 
 describe("Auth service", () => {

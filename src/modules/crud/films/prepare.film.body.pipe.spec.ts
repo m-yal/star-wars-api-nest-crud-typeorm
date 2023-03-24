@@ -10,7 +10,7 @@ import { VehiclesService } from "../vehicles/vehicles.service";
 import { CreateFilmDto } from "./create.dto";
 import { Films } from "./films.entity";
 import { RandomMockFilmsGenerator } from "./mock.random.film.generator";
-import { PrepareFilmBodyPipe } from "./prepare-film-body.pipe";
+import { PrepareFilmBodyPipe } from "./prepare.film.body.pipe";
 
 const mocksPair: MocksPair<Films, CreateFilmDto> = new RandomMockFilmsGenerator().generateMocksPair(+faker.random.numeric(2));
 const mockFilmDto: CreateFilmDto = mocksPair.getMockDtos()[0];

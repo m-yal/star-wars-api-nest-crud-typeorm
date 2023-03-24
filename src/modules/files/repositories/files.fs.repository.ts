@@ -6,7 +6,7 @@ import { promisify } from 'util';
 import { ILocalImagesRepository } from '../interfaces/repositories.interfaces';
 import { FileNamesTransformer } from '../files.names.transformer';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Files } from '../file.entity';
+import { Files } from '../entities/file.entity';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 

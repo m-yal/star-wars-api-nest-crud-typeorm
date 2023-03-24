@@ -2,7 +2,7 @@ import { BadRequestException, Inject, Injectable, NotFoundException } from "@nes
 import { InjectRepository } from "@nestjs/typeorm";
 import { FindManyOptions, FindOneOptions, FindOptionsWhere, In, QueryFailedError, Repository } from "typeorm";
 import { Units, UpToTenUnitsPage } from "../../common/types/types";
-import { Files } from "../files/file.entity";
+import { Files } from "../files/entities/file.entity";
 import { FilesService } from "../files/files.service";
 import { TEN_UNITS_PER_PAGE } from "./config/constants";
 
@@ -91,7 +91,7 @@ export abstract class SwapiAbstractService<T extends Units> {
             where: { name: unitUpdates.name },
             relations: this.relationFields,
         }
-        const originalUnit: T = await this.repository.findOne(findOneOptions);
+        const originalUnit: T = await this.repository.findOneOrFail(findOneOptions);
         const originalUnitWithoutRelations: T = this.removePresentRelations(originalUnit);
         await this.repository.save(originalUnitWithoutRelations);
         const updatedUnit = this.repository.merge(originalUnitWithoutRelations, unitUpdates);
@@ -164,7 +164,7 @@ export abstract class SwapiAbstractService<T extends Units> {
         return {
             units: units,
             hasNext: page * TEN_UNITS_PER_PAGE < allUnitsCount ? true : false,
-            hasPrev: page * TEN_UNITS_PER_PAGE > allUnitsCount || pageIndex === 0? false : true
+            hasPrev: pageIndex > 0 ? true : false
         }
     }
 

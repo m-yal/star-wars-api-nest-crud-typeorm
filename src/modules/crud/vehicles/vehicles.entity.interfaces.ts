@@ -1,4 +1,4 @@
-import { Files } from "./../../files/file.entity";
+import { Files } from "../../files/entities/file.entity";
 import { Films } from "../films/films.entity";
 import { People } from "../people/people.entity";
 

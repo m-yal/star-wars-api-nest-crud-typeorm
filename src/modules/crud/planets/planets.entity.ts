@@ -1,7 +1,7 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
 import { People } from "../people/people.entity";
 import { BaseEntity } from "../config/base-entity";
-import { Files } from "./../../files/file.entity";
+import { Files } from "../../files/entities/file.entity";
 import { Films } from "../films/films.entity";
 import { IPlanetsEntity } from "./planets.entity.interfaces";
 

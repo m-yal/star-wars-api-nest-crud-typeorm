@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FilesService } from './files.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FILES_REPOSITORY_TYPES_MAP } from './config/constants';
-import { Files } from './file.entity';
+import { Files } from './entities/file.entity';
 import { People } from '../crud/people/people.entity';
 import { Starships } from '../crud/starships/starships.entity';
 import { Films } from '../crud/films/films.entity';

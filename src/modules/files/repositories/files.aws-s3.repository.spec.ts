@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { Files } from "../file.entity";
+import { Files } from "../entities/file.entity";
 import { PathLike, unlinkSync, writeFileSync, readFileSync } from 'fs';
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { NotFoundException } from "@nestjs/common";

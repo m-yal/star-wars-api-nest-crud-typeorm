@@ -5,7 +5,7 @@ import { IAWSImagesRepository } from '../interfaces/repositories.interfaces';
 import { FileNamesTransformer } from '../files.names.transformer';
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Files } from '../file.entity';
+import { Files } from '../entities/file.entity';
 import { Repository } from 'typeorm';
 import { awsS3ClientConfig } from '../../../common/db.configs/aws-s3.config';
 import { ConfigService } from '@nestjs/config';

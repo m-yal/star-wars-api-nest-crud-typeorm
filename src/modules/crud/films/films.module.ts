@@ -14,11 +14,11 @@ import { CreatedUnitResponseInterceptor } from '../../../common/interceptors/cre
 import { DeletedResponseInterceptor } from '../../../common/interceptors/deleted-unit-response.interceptor';
 import { UpdatedUnitResponseInterceptor } from '../../../common/interceptors/update-unit-response.interceptor';
 import { FILES_REPOSITORY_TYPES_MAP } from '../../files/config/constants';
-import { Files } from '../../files/file.entity';
+import { Files } from '../../files/entities/file.entity';
 import { FilesModule } from '../../files/files.module';
 import { FilesService } from '../../files/files.service';
 import { Repository } from 'typeorm';
-import { PrepareFilmBodyPipe } from './prepare-film-body.pipe';
+import { PrepareFilmBodyPipe } from './prepare.film.body.pipe';
 import { FileNamesTransformer } from '../../files/files.names.transformer';
 import { ConfigModule } from '@nestjs/config';
 

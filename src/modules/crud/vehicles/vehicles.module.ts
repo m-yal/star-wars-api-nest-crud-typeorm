@@ -8,7 +8,7 @@ import { VehiclesService } from './vehicles.service';
 import { forwardRef } from '@nestjs/common';
 import { VehicleExistsPipe } from './vehicles.exists.pipe';
 import { FILES_REPOSITORY_TYPES_MAP } from '../../files/config/constants';
-import { Files } from '../../files/file.entity';
+import { Files } from '../../files/entities/file.entity';
 import { FilesModule } from '../../files/files.module';
 import { FilesService } from '../../files/files.service';
 import { Repository } from 'typeorm';

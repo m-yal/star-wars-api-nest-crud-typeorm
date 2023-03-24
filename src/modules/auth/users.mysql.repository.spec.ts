@@ -2,6 +2,7 @@ import { faker } from "@faker-js/faker";
 import { BadRequestException, UnauthorizedException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing"
 import { getRepositoryToken } from "@nestjs/typeorm";
+import { CredentialsDto } from "./dto/auth.dto";
 import { Role } from "./entities/role.enum";
 import { Users } from "./entities/users.entity";
 import { UsersMysqlRepository } from "./users.mysql.repository";
@@ -52,27 +53,30 @@ describe("Users MySql repository", () => {
     })
 
     it("insertOneUser should return user", async () => {
-        const username = `newUserName${faker.random.word()}`;
-        const password = `newPassword${faker.random.word()}`;
-        
-        const result = await repository.insertOneUser(username, password);
+        const credentials: CredentialsDto = {
+            username: `newUserName${faker.random.word()}`,
+            password: `newPassword${faker.random.word()}`
+        }
+        const result = await repository.insertOneUser(credentials);
 
         expect(result).toEqual({
-            username: username,
-            password: password,
+            username: credentials.username,
+            password: credentials.password,
             roles: Role.USER,
         })
     })
 
     it("insertOneUser should throw BadRequestExcpetion", async () => {
-        const username = MockUsersRepository.mockUsers[0].username;
-        const password = "random password";
+        const credentials: CredentialsDto = {
+            username: MockUsersRepository.mockUsers[0].username,
+            password: `random_password_${faker.random.word()}`
+        }
         
         try {
-            await repository.insertOneUser(username, password);
+            await repository.insertOneUser(credentials);
         } catch (error) {
             expect(error).toBeInstanceOf(BadRequestException);
-            expect(error).toEqual(new BadRequestException(`User with username "${username}" already exists`));
+            expect(error).toEqual(new BadRequestException(`User with username "${credentials.username}" already exists`));
         }
     })
 

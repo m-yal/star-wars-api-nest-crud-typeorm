@@ -1,5 +1,11 @@
+import { config } from "dotenv";
+
+config();
+
 describe(`.env`, () => {
+
     describe("Correct required constants presence", () => {
+    
         it("all variables are not empty", () => {
             const variables: string[] = [
                 "API_PORT", "DB_HOST", "DB_NAME", "TEST_DB_NAME",
@@ -17,15 +23,18 @@ describe(`.env`, () => {
                 expect(value).not.toEqual("");
             }
         })
+    
         it("FILES_STORAGE_TYPE .env variable should be 'FS' or 'AWS'", () => {
             const fileStorageType = process.env.FILES_STORAGE_TYPE;
             expect((fileStorageType === "FS" || fileStorageType === "AWS")).toEqual(true);
         })
+    
         it(`API_PORT should be numeric and between inclusively 1025 and 65535`, () => {
             const apiPort = +process.env.API_PORT;
             expect(apiPort).toBeLessThanOrEqual(65535);
             expect(apiPort).toBeGreaterThanOrEqual(1025);
         })
+    
         it(`values should be integer: API_PORT, DB_PORT, SESSION_COOKIES_MAX_AGE`, () => {
             const variables = ["API_PORT", "DB_PORT", "SESSION_COOKIES_MAX_AGE"];
             for (const variable of variables) {
@@ -39,5 +48,3 @@ describe(`.env`, () => {
         })
     })
 })
-
-

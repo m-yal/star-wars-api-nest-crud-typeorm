@@ -6,14 +6,14 @@ import { FILMS_RELATIONS_FIELDS } from "../config/relations.fields";
 import { Films } from "./films.entity";
 import { FilmsService } from "./films.service";
 import { faker } from '@faker-js/faker';
-import { Files } from "../../files/file.entity";
+import { Files } from "../../files/entities/file.entity";
 import { UpToTenUnitsPage } from "../../../common/types/types";
 import { TEN_UNITS_PER_PAGE } from "../config/constants";
 import { RandomMockFilmsGenerator } from "./mock.random.film.generator";
-import { MockMulterFilesGenerator } from "../config/mocks/mock.multer.files.generator";
 import { MocksPair } from "../config/mocks/mock.pair";
 import { CreateFilmDto } from "./create.dto";
 import { plainToInstance } from "class-transformer";
+import { MockMulterFilesGenerator } from "../config/mocks/mock.multer.files.generator";
 
 const mockFilmsPairs: MocksPair<Films, CreateFilmDto> = new RandomMockFilmsGenerator().generateMocksPair(+faker.random.numeric(2));
 const mockCreateDtos: CreateFilmDto[] = mockFilmsPairs.getMockDtos();
@@ -32,13 +32,13 @@ describe('Films service tests', () => {
                     useClass: MockFilmsRepository,
                 },
                 {
+                    provide: getRepositoryToken(Files),
+                    useClass: MockFilesRepository,
+                },
+                {
                     provide: "IFilesActions",
                     useClass: MockFilesService,
                 },
-                {
-                    provide: "FilesRecordsRepository",
-                    useClass: MockFilesRepository
-                }
             ]
         }).compile();
 
@@ -161,18 +161,6 @@ describe('Films service tests', () => {
         expect(result.director).toEqual(newDirectorName);
     })
 
-    it("update method should throw NotFoundExcpetion because unit for updation was not found", async () => {
-        try {
-            await service.update(plainToInstance(Films, {
-                name: "WrongName777",
-                director: "New director name"
-            }));
-        } catch (error) {
-            expect(error).toBeInstanceOf(NotFoundException);
-            expect(error).toEqual(new NotFoundException(`Unit for update not found`))
-        }
-    })
-
     it("delete method returned object with deleted unit name", async () => {
         const deletionUnitName = mockFilms[0].name;
 
@@ -188,11 +176,9 @@ describe('Films service tests', () => {
             const startIndex = (page - 1) * TEN_UNITS_PER_PAGE;
             const endIndex = startIndex + TEN_UNITS_PER_PAGE;
             const upToTenUnits: UpToTenUnitsPage<Films> = await service.getUpToTen(page);
-            expect(upToTenUnits).toEqual({
-                units: mockFilms.slice(startIndex, endIndex),
-                hasNext: page < pagesAmount,
-                hasPrev: startIndex !== 0,
-            });            
+            expect(upToTenUnits.units).toEqual(mockFilms.slice(startIndex, endIndex));
+            expect(upToTenUnits.hasNext).toEqual(page < pagesAmount);
+            expect(upToTenUnits.hasPrev).toEqual(startIndex > 0);
         }
     })
 

@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 import { Readable } from "stream";
 import { buffer } from "stream/consumers";
 
-export default class MockMulterFilesGenerator {
+export class MockMulterFilesGenerator {
     static generateImages(amount: number): Express.Multer.File[] {
         const images = [];
         for (let i = 0; i < amount; i++) {

@@ -9,7 +9,6 @@ export class FilesService implements IFilesActions {
 
     constructor(
         @Inject("SwapiImagesRepository") private readonly repository: ISwapiImagesRepository,
-        private readonly configService: ConfigService
     ) { }
 
     async get(fileName: string): Promise<internal.Readable> {

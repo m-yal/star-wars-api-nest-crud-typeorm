@@ -7,7 +7,7 @@ import { Planets } from "../../modules/crud/planets/planets.entity";
 import { Species } from "../../modules/crud/species/species.entity";
 import { Starships } from "../../modules/crud/starships/starships.entity";
 import { Vehicles } from "../../modules/crud/vehicles/vehicles.entity";
-import { Files } from "../../modules/files/file.entity";
+import { Files } from "../../modules/files/entities/file.entity";
 
 export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
   imports: [ConfigModule],

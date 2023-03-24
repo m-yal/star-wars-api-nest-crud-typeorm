@@ -1,4 +1,4 @@
-import { Files } from "./../../files/file.entity";
+import { Files } from "../../files/entities/file.entity";
 import { Column, Entity, JoinTable, ManyToMany } from "typeorm";
 import { BaseEntity } from "../config/base-entity";
 import { People } from "../people/people.entity";

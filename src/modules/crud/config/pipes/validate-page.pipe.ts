@@ -7,7 +7,7 @@ export class ValidatePagePipe implements PipeTransform {
             return value;
         }
         if (value <= 0) {
-            throw new BadRequestException("Page value is below or equals to 0");
+            throw new BadRequestException("Page value incorrect");
         }
     }
 }

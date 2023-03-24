@@ -53,7 +53,6 @@ describe(`/film`, () => {
         agent = request.agent(server);
         
         configService = moduleFixture.get<ConfigService>(ConfigService);
-        console.log(`NODE_ENV : ${configService.get<string>(`NODE_ENV`)}`);
         
         retreiveEnvConstants();
         await loginAdmin();
@@ -301,7 +300,7 @@ describe(`/film`, () => {
             if (FILES_STORAGE_TYPE === "FS") {
                 checkFSFilesPresence(imagesNames);
             } else if (FILES_STORAGE_TYPE === "AWS") {
-                checkAWSFilesPresence(imagesNames);
+                await checkAWSFilesPresence(imagesNames);
             }
 
             await removeSeveral(imagesNames);
@@ -338,14 +337,15 @@ describe(`/film`, () => {
     }
 
     async function checkAWSSingleFilePresence(imageName: string) {
+        let response;
         try {
-            const response = await agent
+            response = await agent
                 .get("/files")
                 .query({ imageName })
-                .expect(200)
-            if (!response) throw new NotFoundException();
+                .expect(200);
+            expect(response).toBeDefined();
         } catch (error) {
-            throw new NotFoundException()
+            expect(response).toBeDefined();
         }
     }
 

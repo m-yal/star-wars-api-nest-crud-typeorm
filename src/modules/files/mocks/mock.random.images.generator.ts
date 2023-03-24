@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { plainToInstance } from "class-transformer";
-import { Files } from "../file.entity";
+import { Files } from "../entities/file.entity";
 
 export class RandomMockImagesGenerator {
 

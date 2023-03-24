@@ -6,7 +6,7 @@ import { faker } from '@faker-js/faker';
 import { UpToTenUnitsPage } from "../../../common/types/types";
 import { RandomMockFilmsGenerator } from "./mock.random.film.generator";
 import { FilmsController } from "./films.controller";
-import { PrepareFilmBodyPipe } from "./prepare-film-body.pipe";
+import { PrepareFilmBodyPipe } from "./prepare.film.body.pipe";
 import { PeopleService } from "../people/people.service";
 import { PlanetsService } from "../planets/planets.service";
 import { StarshipsService } from "../starships/startships.service";
@@ -15,7 +15,7 @@ import { VehiclesService } from "../vehicles/vehicles.service";
 import { plainToInstance } from "class-transformer";
 import { CreateFilmDto } from "./create.dto";
 import { MocksPair } from "../config/mocks/mock.pair";
-import MockMulterFilesGenerator from "../config/mocks/mock.multer.files.generator";
+import { MockMulterFilesGenerator } from "../config/mocks/mock.multer.files.generator";
 
 const mocksPair: MocksPair<Films, CreateFilmDto> = new RandomMockFilmsGenerator().generateMocksPair(+faker.random.numeric(2));
 const mockFilmsDtos: CreateFilmDto[] = mocksPair.getMockDtos();

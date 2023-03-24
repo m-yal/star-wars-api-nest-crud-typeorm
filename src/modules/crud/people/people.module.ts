@@ -10,7 +10,7 @@ import { SpeciesModule } from '../species/species.module';
 import { VehiclesModule } from '../vehicles/vehicles.module';
 import { PeopleExistsPipe } from './people.exists.pipe';
 import { FILES_REPOSITORY_TYPES_MAP } from '../../files/config/constants';
-import { Files } from '../../files/file.entity';
+import { Files } from '../../files/entities/file.entity';
 import { FilesModule } from '../../files/files.module';
 import { FilesService } from '../../files/files.service';
 import { Repository } from 'typeorm';

@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { Test, TestingModule } from "@nestjs/testing"
-import MockMulterFilesGenerator from "../crud/config/mocks/mock.multer.files.generator";
+import { MockMulterFilesGenerator } from "../crud/config/mocks/mock.multer.files.generator";
 import { FileNamesTransformer } from "./files.names.transformer";
 
 describe("File names transformer", () => {

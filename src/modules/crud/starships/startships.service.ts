@@ -5,7 +5,7 @@ import { Repository } from "typeorm";
 import { SwapiAbstractService } from "../abstract.service";
 import { STARSHIPS_RELATIONS_FIELDS } from "../config/relations.fields";
 import { Starships } from "./starships.entity";
-import { Files } from "../../files/file.entity";
+import { Files } from "../../files/entities/file.entity";
 
 @Injectable({})
 export class StarshipsService extends SwapiAbstractService<Starships> {
