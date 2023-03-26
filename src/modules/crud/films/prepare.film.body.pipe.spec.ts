@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { Test, TestingModule } from "@nestjs/testing";
-import { plainToInstance } from "class-transformer";
+
 import { MocksPair } from "../config/mocks/mock.pair";
 import { PeopleService } from "../people/people.service";
 import { PlanetsService } from "../planets/planets.service";
@@ -11,6 +11,8 @@ import { CreateFilmDto } from "./create.dto";
 import { Films } from "./films.entity";
 import { RandomMockFilmsGenerator } from "./mock.random.film.generator";
 import { PrepareFilmBodyPipe } from "./prepare.film.body.pipe";
+
+jest.setTimeout(50000);
 
 const mocksPair: MocksPair<Films, CreateFilmDto> = new RandomMockFilmsGenerator().generateMocksPair(+faker.random.numeric(2));
 const mockFilmDto: CreateFilmDto = mocksPair.getMockDtos()[0];

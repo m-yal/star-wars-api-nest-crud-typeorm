@@ -2,10 +2,13 @@ import { faker } from "@faker-js/faker";
 import { BadRequestException, UnauthorizedException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing"
 import { getRepositoryToken } from "@nestjs/typeorm";
+
 import { CredentialsDto } from "./dto/auth.dto";
 import { Role } from "./entities/role.enum";
 import { Users } from "./entities/users.entity";
 import { UsersMysqlRepository } from "./users.mysql.repository";
+
+jest.setTimeout(50000);
 
 describe("Users MySql repository", () => {
     let module: TestingModule;

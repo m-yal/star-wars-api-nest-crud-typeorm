@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import internal from "stream";
+
 import { ISwapiImagesRepository } from "./interfaces/repositories.interfaces";
 import { IFilesActions } from "./interfaces/files.controller.interface";
-import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class FilesService implements IFilesActions {

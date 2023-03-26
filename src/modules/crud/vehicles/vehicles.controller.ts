@@ -1,4 +1,7 @@
+import { plainToInstance } from "class-transformer";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UploadedFiles } from "@nestjs/common";
+
 import { VehiclesService } from "./vehicles.service";
 import { Vehicles } from "./vehicles.entity";
 import { GetUpToTenUnitsDecorators } from "../../../common/decorators/get-up-to-ten.decorator";
@@ -8,8 +11,6 @@ import { ValidateNamePipe } from "../config/pipes/validate-name.pipe";
 import { ValidatePagePipe } from "../config/pipes/validate-page.pipe";
 import { VehicleExistsPipe } from "./vehicles.exists.pipe";
 import { PrepareVehiclesBodyPipe } from "./prepare-body.pipe";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { plainToInstance } from "class-transformer";
 import { CreateVehicleDto } from "./create.dto";
 import { CreateUnitDecorators } from "../../../common/decorators/create.decorator";
 import { multerInterceptorOptions } from "../../files/config/multer/multer-options.config";

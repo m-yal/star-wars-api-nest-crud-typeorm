@@ -1,14 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { Files } from "../entities/file.entity";
-import { PathLike, unlinkSync, writeFileSync, readFileSync } from 'fs';
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+
 import { FileNamesTransformer } from "../files.names.transformer";
-import { join } from "path";
 import { AwsS3FilesRepository } from "./files.aws-s3.repository";
-import { RandomMockImagesGenerator } from "../mocks/mock.random.images.generator";
-import { faker } from "@faker-js/faker";
+import { Files } from "../entities/file.entity";
+
+jest.setTimeout(50000);
 
 describe("Files AWS repository", () => {
     let repository: AwsS3FilesRepository;

@@ -1,4 +1,5 @@
 import { QueryRunner, Repository } from 'typeorm';
+
 import { Starships } from '../../../../modules/crud/starships/starships.entity';
 import { StarshipsRelations } from '../types';
 import { BaseUnitsSeeder } from './base-entity-seeder';

@@ -1,6 +1,5 @@
 import { faker } from "@faker-js/faker";
 import { Readable } from "stream";
-import { buffer } from "stream/consumers";
 
 export class MockMulterFilesGenerator {
     static generateImages(amount: number): Express.Multer.File[] {

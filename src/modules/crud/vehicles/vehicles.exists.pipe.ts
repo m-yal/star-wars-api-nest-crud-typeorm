@@ -1,6 +1,6 @@
 import { PipeTransform, Injectable, NotFoundException } from '@nestjs/common';
-import { Vehicles } from './vehicles.entity';
 
+import { Vehicles } from './vehicles.entity';
 import { VehiclesService } from './vehicles.service';
 
 @Injectable()

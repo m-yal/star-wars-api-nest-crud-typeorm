@@ -1,4 +1,5 @@
 import { QueryRunner, Repository } from 'typeorm';
+
 import { Vehicles } from '../../../../modules/crud/vehicles/vehicles.entity';
 import { VehiclesRelations } from '../types';
 import { BaseUnitsSeeder } from './base-entity-seeder';

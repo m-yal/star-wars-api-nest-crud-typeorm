@@ -1,8 +1,9 @@
+import { faker } from "@faker-js/faker";
+import { plainToInstance } from "class-transformer";
+
 import { RandomMockUnitsGenerator } from "../config/mocks/mock.random.unit.generator";
 import { CreateStarshipDto } from "./create.dto";
 import { Starships } from "./starships.entity";
-import { faker } from "@faker-js/faker";
-import { plainToInstance } from "class-transformer";
 import { RandomMockFilmsGenerator } from "../films/mock.random.film.generator";
 import { RandomMockImagesGenerator } from "../../files/mocks/mock.random.images.generator";
 import { RandomMockPeopleGenerator } from "../people/mock.random.people.generator";

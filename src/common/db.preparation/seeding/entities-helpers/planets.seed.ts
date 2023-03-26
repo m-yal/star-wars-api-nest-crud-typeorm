@@ -1,4 +1,5 @@
 import { QueryRunner, Repository } from "typeorm";
+
 import { People } from "../../../../modules/crud/people/people.entity";
 import { Planets } from "../../../../modules/crud/planets/planets.entity";
 import { PlanetsRelations } from "../types";

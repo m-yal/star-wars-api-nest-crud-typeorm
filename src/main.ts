@@ -1,13 +1,13 @@
-import { INestApplication, UnprocessableEntityException, ValidationError, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
-import { AppModule } from './app.module';
-import { AllExceptionFilter } from './common/filters/global.filter';
+import { OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import { ConfigService } from '@nestjs/config';
+
+import { AppModule } from './app.module';
 import { sessionConfig } from './common/session/config';
 import { SwapiSwaggerDocumentBuilder } from './common/swagger/config';
-import { ConfigService } from '@nestjs/config';
 import { swapiValidationPipe } from './common/pipes/validation.pipe';
 
 async function bootstrap() {
@@ -19,7 +19,6 @@ async function bootstrap() {
   const document: OpenAPIObject = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("swagger", app, document);
 
-  // app.useGlobalFilters(new AllExceptionFilter());
   app.useGlobalPipes(swapiValidationPipe);
   app.use(session(sessionConfig));
 

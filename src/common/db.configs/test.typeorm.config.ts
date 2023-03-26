@@ -1,6 +1,7 @@
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModuleAsyncOptions, TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { config } from "dotenv";
+
 import { Users } from "../../modules/auth/entities/users.entity";
 import { Films } from "../../modules/crud/films/films.entity";
 import { People } from "../../modules/crud/people/people.entity";

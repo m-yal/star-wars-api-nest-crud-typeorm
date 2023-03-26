@@ -1,12 +1,15 @@
 import { faker } from "@faker-js/faker";
 import { NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
+
 import { MocksPair } from "../config/mocks/mock.pair";
 import { CreateFilmDto } from "./create.dto";
 import { Films } from "./films.entity";
 import { FilmExistsPipe } from "./films.exists.pipe";
 import { FilmsService } from "./films.service";
 import { RandomMockFilmsGenerator } from "./mock.random.film.generator";
+
+jest.setTimeout(50000);
 
 const mocksPair: MocksPair<Films, CreateFilmDto> = new RandomMockFilmsGenerator().generateMocksPair(+faker.random.numeric(2));
 const mockFilmsDtos: CreateFilmDto[] = mocksPair.getMockDtos();

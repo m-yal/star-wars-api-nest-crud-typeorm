@@ -1,6 +1,7 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { FindManyOptions, FindOneOptions, FindOptionsWhere, In, QueryFailedError, Repository } from "typeorm";
+import { FindManyOptions, FindOneOptions, FindOptionsWhere, In, Repository } from "typeorm";
+
 import { Units, UpToTenUnitsPage } from "../../common/types/types";
 import { Files } from "../files/entities/file.entity";
 import { FilesService } from "../files/files.service";

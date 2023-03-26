@@ -1,22 +1,21 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import { forwardRef } from '@nestjs/common';
+import { Repository } from 'typeorm';
+
 import { PlanetsController } from './planets.controller';
 import { PlanetsService } from './planets.service';
-import { forwardRef } from '@nestjs/common';
 import { PeopleModule } from '../people/people.module';
 import { FilmsModule } from '../films/films.module';
 import { Planets } from './planets.entity';
-import { VehicleExistsPipe } from '../vehicles/vehicles.exists.pipe';
-import { VehiclesService } from '../vehicles/vehicles.service';
 import { Vehicles } from '../vehicles/vehicles.entity';
 import { PlanetExistsPipe } from './planets.exists.pipe';
 import { FILES_REPOSITORY_TYPES_MAP } from '../../files/config/constants';
 import { Files } from '../../files/entities/file.entity';
 import { FilesModule } from '../../files/files.module';
 import { FilesService } from '../../files/files.service';
-import { Repository } from 'typeorm';
 import { FileNamesTransformer } from '../../files/files.names.transformer';
-import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [

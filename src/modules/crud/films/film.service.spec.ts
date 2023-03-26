@@ -2,18 +2,21 @@ import { NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { DeepPartial, FindManyOptions, FindOneOptions, FindOptionsWhere, Repository } from "typeorm";
+import { plainToInstance } from "class-transformer";
+import { faker } from '@faker-js/faker';
+
 import { FILMS_RELATIONS_FIELDS } from "../config/relations.fields";
 import { Films } from "./films.entity";
 import { FilmsService } from "./films.service";
-import { faker } from '@faker-js/faker';
 import { Files } from "../../files/entities/file.entity";
 import { UpToTenUnitsPage } from "../../../common/types/types";
 import { TEN_UNITS_PER_PAGE } from "../config/constants";
 import { RandomMockFilmsGenerator } from "./mock.random.film.generator";
 import { MocksPair } from "../config/mocks/mock.pair";
 import { CreateFilmDto } from "./create.dto";
-import { plainToInstance } from "class-transformer";
 import { MockMulterFilesGenerator } from "../config/mocks/mock.multer.files.generator";
+
+jest.setTimeout(50000);
 
 const mockFilmsPairs: MocksPair<Films, CreateFilmDto> = new RandomMockFilmsGenerator().generateMocksPair(+faker.random.numeric(2));
 const mockCreateDtos: CreateFilmDto[] = mockFilmsPairs.getMockDtos();

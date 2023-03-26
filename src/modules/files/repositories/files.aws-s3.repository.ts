@@ -1,14 +1,15 @@
 import { AWSError, S3 } from 'aws-sdk';
 import { Injectable, NotFoundException } from "@nestjs/common";
 import internal from "stream";
-import { IAWSImagesRepository } from '../interfaces/repositories.interfaces';
-import { FileNamesTransformer } from '../files.names.transformer';
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Files } from '../entities/file.entity';
 import { Repository } from 'typeorm';
-import { awsS3ClientConfig } from '../../../common/db.configs/aws-s3.config';
 import { ConfigService } from '@nestjs/config';
+
+import { IAWSImagesRepository } from '../interfaces/repositories.interfaces';
+import { FileNamesTransformer } from '../files.names.transformer';
+import { Files } from '../entities/file.entity';
+import { awsS3ClientConfig } from '../../../common/db.configs/aws-s3.config';
 
 @Injectable()
 export class AwsS3FilesRepository implements IAWSImagesRepository {

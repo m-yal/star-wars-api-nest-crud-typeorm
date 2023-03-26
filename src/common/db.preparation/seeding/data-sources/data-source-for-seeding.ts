@@ -1,5 +1,6 @@
 import { DataSource, DataSourceOptions } from "typeorm";
 import { config } from 'dotenv';
+
 import { Seeder } from "../seeder.entry.point";
 
 config();

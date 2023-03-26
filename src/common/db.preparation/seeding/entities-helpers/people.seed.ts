@@ -1,4 +1,5 @@
 import { QueryRunner, Repository } from 'typeorm';
+
 import { People } from '../../../../modules/crud/people/people.entity';
 import { Species } from '../../../../modules/crud/species/species.entity';
 import { Starships } from '../../../../modules/crud/starships/starships.entity';

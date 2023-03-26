@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import internal from 'stream';
 
-
 export interface ISwapiImagesRepository {
     get(imageName: string): Promise<any>;
     add(images: Express.Multer.File[]): Promise<string[]>;

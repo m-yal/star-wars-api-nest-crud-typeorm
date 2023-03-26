@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+
 import { PeopleModule } from '../people/people.module';
 import { PlanetsModule } from '../planets/planets.module';
 import { SpeciesModule } from '../species/species.module';
@@ -20,7 +22,6 @@ import { FilesService } from '../../files/files.service';
 import { Repository } from 'typeorm';
 import { PrepareFilmBodyPipe } from './prepare.film.body.pipe';
 import { FileNamesTransformer } from '../../files/files.names.transformer';
-import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [

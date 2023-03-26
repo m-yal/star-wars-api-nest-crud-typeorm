@@ -1,4 +1,5 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
+
 import { People } from "../people/people.entity";
 import { BaseEntity } from "../config/base-entity";
 import { Files } from "../../files/entities/file.entity";

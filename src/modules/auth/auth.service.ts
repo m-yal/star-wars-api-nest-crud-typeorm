@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+
 import { Role } from './entities/role.enum';
 import { Users } from './entities/users.entity';
 import { IAuthService } from './interfaces/auth.controller.interfaces';

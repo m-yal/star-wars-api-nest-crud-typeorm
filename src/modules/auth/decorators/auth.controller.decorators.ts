@@ -1,10 +1,10 @@
 import { applyDecorators, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ApiBody, ApiOperation } from "@nestjs/swagger";
+
 import { ExecutedResponseInterseptor } from "../../../common/interceptors/executed-response.interceptor";
 import { ApplyDecorators } from "../../../common/types/types";
 import { LocalAuthGuard } from "../guards/local.auth.guard";
 import { RegisteredInterceptor } from "../interceptors/registered.interceptor";
-import { LoginBodyValidationPipe } from "../login.body.validation.pipe";
 
 export function LoginDecorators(): ApplyDecorators {
     return applyDecorators(

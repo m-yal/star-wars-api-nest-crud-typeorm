@@ -1,4 +1,5 @@
-import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+
 import { CredentialsDto } from './dto/auth.dto';
 import { Users } from './entities/users.entity';
 import { IUsersMysqlRepository } from './interfaces/users.repository.interfaces';

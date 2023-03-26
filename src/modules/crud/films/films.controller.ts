@@ -1,6 +1,8 @@
-import { Body, Controller, DefaultValuePipe, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, Query, UploadedFiles, ValidationPipe } from "@nestjs/common";
-import { Films } from "./films.entity";
+import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UploadedFiles, ValidationPipe } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { plainToInstance } from "class-transformer";
+
+import { Films } from "./films.entity";
 import { FilmsService } from "./films.service";
 import { ValidatePagePipe } from "../config/pipes/validate-page.pipe";
 import { FilmExistsPipe } from "./films.exists.pipe";
@@ -9,7 +11,6 @@ import { GetUpToTenUnitsDecorators } from "../../../common/decorators/get-up-to-
 import { UpdateUnitDecorators } from "../../../common/decorators/update.decorator";
 import { DeleteUnitDecorators } from "../../../common/decorators/delete.decorator";
 import { CreateFilmDto } from "./create.dto";
-import { plainToInstance } from "class-transformer";
 import { CreateUnitDecorators } from "../../../common/decorators/create.decorator";
 import { UpToTenUnitsPage } from "../../../common/types/types";
 import { multerInterceptorOptions } from "../../files/config/multer/multer-options.config";

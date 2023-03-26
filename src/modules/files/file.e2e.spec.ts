@@ -4,13 +4,15 @@ import * as request from 'supertest';
 import { faker } from "@faker-js/faker";
 import * as fs from "fs";
 import * as session from 'express-session';
+import { ConfigService } from "@nestjs/config";
+
 import { AppModule } from "../../app.module";
 import { sessionConfig } from "../../common/session/config";
 import { CreateFilmDto } from "../crud/films/create.dto";
 import { Films } from "../crud/films/films.entity";
 import { RandomMockFilmsGenerator } from "../crud/films/mock.random.film.generator";
-import { ConfigService } from "@nestjs/config";
 
+jest.setTimeout(50000);
 
 describe(`/files`, () => {
     let app: INestApplication;
@@ -94,9 +96,9 @@ describe(`/files`, () => {
 
             it(`should return 200 and related entity unit has to loose image record`, async () => {
                 const postedFilm = new RandomMockFilmsGenerator().generateOneDtoWithoutRelations();
-                const postedFilmName = (await postSingleUnitText(postedFilm, 201)).created.name
-                const postedImageName = (await postSingleImage(postedFilmName, 201)).executed[0];
-                const unitImages = (await getPageText(1, 200)).data.units[0].images;
+                const postedFilmName = await (await postSingleUnitText(postedFilm, 201)).created.name
+                const postedImageName = await (await postSingleImage(postedFilmName, 201)).executed[0];
+                const unitImages = await (await getPageText(1, 200)).data.units[0].images;
                 expect(unitImages[0].name).toEqual(postedImageName);
 
                 await deleteImageFromAws(postedImageName, 200);

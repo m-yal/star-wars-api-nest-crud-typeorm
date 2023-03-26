@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsString, IsStrongPassword, Length } from "class-validator";
+import { IsNotEmpty, IsString, Length } from "class-validator";
+
 import { Role } from "../entities/role.enum";
 
 export class NewUserDto {

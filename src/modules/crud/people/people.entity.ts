@@ -1,4 +1,5 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from "typeorm";
+
 import { Planets } from "../planets/planets.entity";
 import { Species } from "../species/species.entity";
 import { Starships } from "../starships/starships.entity";
@@ -7,7 +8,6 @@ import { BaseEntity } from "../config/base-entity";
 import { Files } from "../../files/entities/file.entity";
 import { Films } from "../films/films.entity";
 import { IPeopleEntity } from "./people.entity.interfaces";
-import { IsNumberString } from "class-validator";
 
 @Entity()
 export class People extends BaseEntity implements IPeopleEntity {

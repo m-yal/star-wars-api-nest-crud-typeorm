@@ -1,4 +1,5 @@
-import { PipeTransform, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { PipeTransform, Injectable, NotFoundException } from '@nestjs/common';
+
 import { FilmsService } from './films.service';
 
 @Injectable()

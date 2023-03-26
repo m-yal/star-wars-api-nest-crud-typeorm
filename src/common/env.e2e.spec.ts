@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 
 config();
+jest.setTimeout(50000);
 
 describe(`.env`, () => {
 

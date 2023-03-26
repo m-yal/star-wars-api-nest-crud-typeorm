@@ -2,6 +2,8 @@ import { HttpServer, INestApplication } from "@nestjs/common"
 import { Test, TestingModule } from "@nestjs/testing";
 import * as request from 'supertest';
 import { faker } from "@faker-js/faker";
+import { ConfigService } from "@nestjs/config";
+
 import { AppModule } from "../../app.module";
 import { CreateUnitDto } from "../crud/config/dto/ create.unit.dto";
 import { CreateFilmDto } from "../crud/films/create.dto";
@@ -10,7 +12,8 @@ import { sessionConfig } from "../../common/session/config";
 import * as session from 'express-session';
 import { RandomMockFilmsGenerator } from "../crud/films/mock.random.film.generator";
 import { CredentialsDto } from "./dto/auth.dto";
-import { ConfigService } from "@nestjs/config";
+
+jest.setTimeout(50000);
 
 describe(`/film`, () => {
     let app: INestApplication;

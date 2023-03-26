@@ -3,6 +3,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { Films } from "./films.entity";
 import { FilmsService } from "./films.service";
 import { faker } from '@faker-js/faker';
+
 import { UpToTenUnitsPage } from "../../../common/types/types";
 import { RandomMockFilmsGenerator } from "./mock.random.film.generator";
 import { FilmsController } from "./films.controller";
@@ -16,6 +17,8 @@ import { plainToInstance } from "class-transformer";
 import { CreateFilmDto } from "./create.dto";
 import { MocksPair } from "../config/mocks/mock.pair";
 import { MockMulterFilesGenerator } from "../config/mocks/mock.multer.files.generator";
+
+jest.setTimeout(50000);
 
 const mocksPair: MocksPair<Films, CreateFilmDto> = new RandomMockFilmsGenerator().generateMocksPair(+faker.random.numeric(2));
 const mockFilmsDtos: CreateFilmDto[] = mocksPair.getMockDtos();

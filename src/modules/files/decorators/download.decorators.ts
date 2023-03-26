@@ -1,6 +1,6 @@
 import { applyDecorators, Header, HttpStatus, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
-import { ApiBody, ApiOperation, ApiProduces, ApiQuery, ApiResponse } from "@nestjs/swagger";
-import { string } from "joi";
+import { ApiOperation, ApiProduces, ApiResponse } from "@nestjs/swagger";
+
 import { ApplyDecorators } from "../../../common/types/types";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Role } from "../../auth/entities/role.enum";

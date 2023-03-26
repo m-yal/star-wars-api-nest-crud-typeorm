@@ -1,5 +1,6 @@
 import { applyDecorators, HttpStatus, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+
 import { ExecutedResponseInterseptor } from '../../../common/interceptors/executed-response.interceptor';
 import { ApplyDecorators } from '../../../common/types/types';
 import { Roles } from '../../auth/decorators/roles.decorator';

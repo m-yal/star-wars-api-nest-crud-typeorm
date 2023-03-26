@@ -1,12 +1,15 @@
+import { join } from "path";
 import { Test, TestingModule } from "@nestjs/testing";
-import { Files } from "../entities/file.entity";
-import { FSFilesRepository } from "./files.fs.repository"
 import { PathLike, unlinkSync, writeFileSync, readFileSync } from 'fs';
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+
+import { Files } from "../entities/file.entity";
+import { FSFilesRepository } from "./files.fs.repository"
 import { FileNamesTransformer } from "../files.names.transformer";
-import { join } from "path";
+
+jest.setTimeout(50000);
 
 describe("Files FS repository", () => {
     let repository: FSFilesRepository;

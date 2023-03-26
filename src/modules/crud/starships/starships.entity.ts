@@ -1,4 +1,5 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany } from "typeorm";
+
 import { People } from "../people/people.entity";
 import { BaseEntity } from "../config/base-entity";
 import { Films } from "../films/films.entity";

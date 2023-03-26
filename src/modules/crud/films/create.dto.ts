@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNotEmpty, IsNumberString, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumberString, IsString } from 'class-validator';
+
 import { CreateUnitDto } from '../config/dto/ create.unit.dto';
 
 export class CreateFilmDto implements CreateUnitDto {

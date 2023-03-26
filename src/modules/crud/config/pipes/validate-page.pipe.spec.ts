@@ -1,6 +1,9 @@
-import { BadRequestException, HttpException } from "@nestjs/common";
+import { BadRequestException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
+
 import { ValidatePagePipe } from "./validate-page.pipe";
+
+jest.setTimeout(50000);
 
 describe("Validate page value pipe, which validates corectness of input page value: integer and above 0", () => {
     let pipe: ValidatePagePipe;

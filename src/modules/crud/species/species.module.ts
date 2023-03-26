@@ -1,9 +1,12 @@
+import { ConfigModule } from '@nestjs/config';
+import { Repository } from 'typeorm';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { forwardRef } from '@nestjs/common';
+
 import { Species } from '../species/species.entity';
 import { SpeciesController } from './species.controller';
 import { SpeciesService } from './species.service';
-import { forwardRef } from '@nestjs/common';
 import { FilmsModule } from '../films/films.module';
 import { PeopleModule } from '../people/people.module';
 import { PlanetsModule } from '../planets/planets.module';
@@ -12,9 +15,7 @@ import { FILES_REPOSITORY_TYPES_MAP } from '../../files/config/constants';
 import { Files } from '../../files/entities/file.entity';
 import { FilesModule } from '../../files/files.module';
 import { FilesService } from '../../files/files.service';
-import { Repository } from 'typeorm';
 import { FileNamesTransformer } from '../../files/files.names.transformer';
-import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [

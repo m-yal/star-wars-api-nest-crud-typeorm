@@ -1,7 +1,9 @@
+import { MulterModule } from '@nestjs/platform-express';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FilesService } from './files.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+
+import { FilesService } from './files.service';
 import { FILES_REPOSITORY_TYPES_MAP } from './config/constants';
 import { Files } from './entities/file.entity';
 import { People } from '../crud/people/people.entity';
@@ -9,7 +11,6 @@ import { Starships } from '../crud/starships/starships.entity';
 import { Films } from '../crud/films/films.entity';
 import { Planets } from '../crud/planets/planets.entity';
 import { Species } from '../crud/species/species.entity';
-import { MulterModule } from '@nestjs/platform-express';
 import { FilesController } from './files.controller';
 import { Vehicles } from '../crud/vehicles/vehicles.entity';
 import { FileNamesTransformer } from './files.names.transformer';

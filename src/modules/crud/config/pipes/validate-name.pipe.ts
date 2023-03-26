@@ -1,4 +1,4 @@
-import { PipeTransform, Injectable, ArgumentMetadata, HttpException, HttpCode, HttpStatus, BadRequestException } from '@nestjs/common';
+import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class ValidateNamePipe implements PipeTransform {

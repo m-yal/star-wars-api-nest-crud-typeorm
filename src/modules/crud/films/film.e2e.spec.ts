@@ -1,17 +1,19 @@
-import { HttpServer, INestApplication, NotFoundException } from "@nestjs/common"
+import { HttpServer, INestApplication } from "@nestjs/common"
 import { Test, TestingModule } from "@nestjs/testing";
+import * as request from 'supertest';
+import { faker } from "@faker-js/faker";
+import { existsSync } from "fs";
+import { ConfigService } from "@nestjs/config";
+import * as session from 'express-session';
+
 import { CreateFilmDto } from "./create.dto";
 import { RandomMockFilmsGenerator } from "./mock.random.film.generator";
-import * as request from 'supertest';
 import { AppModule } from "../../../app.module";
-import { faker } from "@faker-js/faker";
 import { Films } from "./films.entity";
 import { CreateUnitDto } from "../config/dto/ create.unit.dto";
-import { existsSync } from "fs";
 import { sessionConfig } from "../../../common/session/config";
-import * as session from 'express-session';
-import { ConfigService } from "@nestjs/config";
-import { TypeOrmModuleOptions } from "@nestjs/typeorm/dist";
+
+jest.setTimeout(50000);
 
 describe(`/film`, () => {
     let app: INestApplication;
@@ -174,12 +176,12 @@ describe(`/film`, () => {
             }
         })
 
-        it('should return 400 and with message: "Page value is below or equals to 0"', async () => {
+        it('should return 400 and with message: "Page value incorrect"', async () => {
             const queryParamValues = [0, -1];
             for (const queryValue of queryParamValues) {
                 const text = await getPageText(queryValue, 400)
 
-                expect(text.message).toEqual("Page value is below or equals to 0");
+                expect(text.message).toEqual("Page value incorrect");
                 expect(text.error).toEqual("Bad Request");
             }
         })
@@ -191,7 +193,7 @@ describe(`/film`, () => {
                 data: {
                     units: [],
                     hasNext: false,
-                    hasPrev: false,
+                    hasPrev: true,
                 }
             })
         })

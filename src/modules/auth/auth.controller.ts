@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Request, Body, Inject, BadRequestException, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Request, Body, Inject } from '@nestjs/common';
 import { ApiTags } from "@nestjs/swagger";
-import { ExecutedDto } from '../crud/config/dto/executed.dto';
+
 import { IAuthController } from './interfaces/auth.controller.interfaces';
-import { CredentialsDto, NewUserDto } from './dto/auth.dto';
+import { CredentialsDto } from './dto/auth.dto';
 import { IUsersService } from './interfaces/users.service.interface';
 import { LoginDecorators, LogoutDecorators, RegisterDecorators } from './decorators/auth.controller.decorators';
 import { Users } from './entities/users.entity';

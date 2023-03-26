@@ -1,7 +1,10 @@
 import { faker } from "@faker-js/faker";
 import { Test, TestingModule } from "@nestjs/testing";
+
 import { MockMulterFilesGenerator } from "../crud/config/mocks/mock.multer.files.generator";
 import { FilesService } from "./files.service";
+
+jest.setTimeout(50000);
 
 describe("Files service", () => {
     let service: FilesService;

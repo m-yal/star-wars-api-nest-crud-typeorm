@@ -1,12 +1,11 @@
-import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException, Inject } from '@nestjs/common';
+import { PipeTransform, Injectable, ArgumentMetadata, Inject } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { ValidationError, Validator } from 'class-validator';
+
 import { FilesService } from '../../files/files.service';
 import { FilmsService } from '../films/films.service';
 import { SpeciesService } from '../species/species.service';
 import { StarshipsService } from '../starships/startships.service';
 import { VehiclesService } from '../vehicles/vehicles.service';
-import { CreatePeopleDto } from './create.dto';
 import { People } from './people.entity';
 
 @Injectable()

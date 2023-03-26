@@ -1,7 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { FilesService } from "./../../files/files.service";
 import { Repository } from "typeorm";
+
+import { FilesService } from "./../../files/files.service";
 import { SwapiAbstractService } from "../abstract.service";
 import { SPECIES_RELATIONS_FIELDS } from "../config/relations.fields";
 import { Species } from "./species.entity";

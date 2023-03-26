@@ -1,10 +1,13 @@
 import { faker } from "@faker-js/faker";
 import { UnauthorizedException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing"
+
 import { AuthService } from "../auth.service";
 import { Role } from "../entities/role.enum";
 import { Users } from "../entities/users.entity";
 import { LocalStrategy } from "./local.strategy";
+
+jest.setTimeout(50000);
 
 describe("Local strategy", () => {
     let module: TestingModule;

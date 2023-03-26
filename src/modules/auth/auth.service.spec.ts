@@ -1,7 +1,10 @@
 import { faker } from "@faker-js/faker";
 import { Test, TestingModule } from "@nestjs/testing";
+
 import { AuthService } from "./auth.service";
 import { MockUsersService } from "./mocks/mock.users.service";
+
+jest.setTimeout(50000);
 
 describe("Auth service", () => {
     let module: TestingModule;

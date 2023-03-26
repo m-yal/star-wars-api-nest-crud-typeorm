@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { plainToInstance } from "class-transformer";
-import { release } from "os";
+
 import { RandomMockImagesGenerator } from "../../files/mocks/mock.random.images.generator";
 import { RandomMockUnitsGenerator } from "../config/mocks/mock.random.unit.generator";
 import { RandomMockPeopleGenerator } from "../people/mock.random.people.generator";
