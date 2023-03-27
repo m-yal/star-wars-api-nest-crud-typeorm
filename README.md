@@ -39,12 +39,12 @@ $  npm run build
 
 5. Launch migration for creating tables:
 ```bash
-$ npm run migration:run
+$ npm run migration:run; npm run migration:run:test
 ```
 
 6. Launch seeding db by [swapi.dev](swapi.dev) data
 ```bash
-$ npm run seed:up
+$ npm run seed:up; npm run seed:up:test
 ```
 
 ## Running the app
@@ -62,12 +62,6 @@ $ npm run start:prod
 ```bash
 # unit tests
 $ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
 
 
