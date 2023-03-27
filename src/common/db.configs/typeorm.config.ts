@@ -16,9 +16,10 @@ export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => {
     return {
       type: 'mysql',
-      host: configService.get(`DB_HOST`),
-      username: configService.get(`DB_USERNAME`),
+      host: configService.get(`NODE_ENV`) === `test` ? configService.get(`TEST_DB_HOST`) : configService.get(`DB_HOST`),
       database: configService.get(`NODE_ENV`) === `test` ? configService.get(`TEST_DB_NAME`) : configService.get(`DB_NAME`),
+      port: configService.get(`NODE_ENV`) === `test` ? configService.get(`TEST_DB_PORT`) : configService.get(`DB_PORT`),
+      username: configService.get(`DB_USERNAME`),
       password: configService.get(`DB_PASSWORD`),
       entities: [
         People, Films, Planets, 

@@ -3,7 +3,7 @@ version: '2'
 services:
   api:
     container_name: api
-    command: bash -c "npm run migration:run && npm run seed:up && npm run start:prod"
+    command: bash -c "npm run migration:run && npm run seed:up && npm run migration:run:test && npm run seed:up:test && npm run start:prod"
     depends_on:
       db:
         condition: service_healthy
@@ -22,11 +22,29 @@ services:
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "0.0.0.0", "--silent"]
       interval: 30s
-      retries: 30
+      retries: 100
       start_period: 10s
     environment:
       - MYSQL_ROOT_PASSWORD=$DB_PASSWORD
       - MYSQL_DATABASE=$DB_NAME
+      - MYSQL_ROOT_HOST=%
+    env_file:
+      - .env
+    command: '--default-authentication-plugin=mysql_native_password'
+  test_db:
+    container_name: test_db 
+    image: mysql
+    ports: 
+      - $DB_PORT:$TEST_DB_PORT
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "0.0.0.0", "--silent"]
+      interval: 30s
+      retries: 100
+      start_period: 10s
+    environment:
+      - MYSQL_ROOT_PASSWORD=$DB_PASSWORD
+      - MYSQL_DATABASE=$TEST_DB_NAME
       - MYSQL_ROOT_HOST=%
     env_file:
       - .env
