@@ -13,9 +13,14 @@ Star Wars data API written on [Nest](https://github.com/nestjs/nest) and MySQL. 
 $ cp .env.example .env
 ```
 
-4. Execute docker-compose.yml. Command below executes deployment and running: migrations, seeding and starting server
+4. Execute docker-compose.yml for Docker desktop.
 ```bash
 $ docker-compose up
+```
+for docker engine:
+```bash
+$ sudo dockerd
+$ docker compose up
 ```
 
 ## Installation without Docker
