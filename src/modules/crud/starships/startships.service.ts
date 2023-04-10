@@ -16,7 +16,7 @@ export class StarshipsService extends SwapiAbstractService<Starships> {
     constructor(
         @InjectRepository(Starships) starshipsRepository: Repository<Starships>,
         @Inject("IFilesActions") filesService: FilesService,
-        @Inject("FilesRecordsRepository") filesRecordsRepository: Repository<Files>,
+        @InjectRepository(Files) filesRecordsRepository: Repository<Files>,
         ) {
         super(starshipsRepository, filesService, filesRecordsRepository);
     }

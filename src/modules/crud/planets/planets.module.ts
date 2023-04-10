@@ -38,10 +38,6 @@ import { FileNamesTransformer } from '../../files/files.names.transformer';
       useClass: FilesService,
       provide: "IFilesActions",
     },
-    {
-      useClass: Repository<Files>,
-      provide: "FilesRecordsRepository",
-    },
   ],
   exports: [PlanetsService],
 })
