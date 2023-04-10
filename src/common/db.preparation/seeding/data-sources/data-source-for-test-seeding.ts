@@ -11,7 +11,7 @@ class DataSourceForTestSeeding {
     private readonly dataSourceOptions: DataSourceOptions = {
         type: "mysql",
         database: env.TEST_DB_NAME,
-        port: +env.DB_PORT,
+        port: +env.TEST_DB_PORT,
         host: env.DB_HOST,
         username: env.DB_USERNAME,
         password: env.DB_PASSWORD,
