@@ -16,7 +16,7 @@ export class PeopleService extends SwapiAbstractService<People> {
     constructor(
         @InjectRepository(People) peopleRepository: Repository<People>, 
         @Inject("IFilesActions") filesService: FilesService,
-        @Inject("FilesRecordsRepository") filesRecordsRepository: Repository<Files>,
+        @InjectRepository(Files) filesRecordsRepository: Repository<Files>,
     ) {
         super(peopleRepository, filesService, filesRecordsRepository);
     }

@@ -17,8 +17,8 @@ export abstract class SwapiAbstractService<T extends Units> {
 
     constructor(
         repository: Repository<T>, 
-        @Inject("IFilesActions") filesService: FilesService,
-        @InjectRepository(Files) filesRecordsRepository: Repository<Files>,
+        filesService: FilesService,
+        filesRecordsRepository: Repository<Files>,
     ) {
         this.repository = repository;
         this.filesService = filesService;
@@ -60,11 +60,11 @@ export abstract class SwapiAbstractService<T extends Units> {
     }
 
     public async uploadImages(files: Express.Multer.File[], unitName: string): Promise<string[]> {
-        const unit: T = await this.findUnitForBinding(unitName);
+        const swapiUnit: T = await this.findUnitForBinding(unitName);
         const filenames: string[] = await this.filesService.upload(files);
         const filesObjects: Files[] = await this.recordFilesData(filenames);
-        this.assingImagesRecords(unit, filesObjects);
-        await this.repository.save(unit);
+        this.assingImagesRecords(swapiUnit, filesObjects);
+        await this.repository.save(swapiUnit);
         return filenames;
     }
 
@@ -121,10 +121,20 @@ export abstract class SwapiAbstractService<T extends Units> {
     }
 
     private async recordFilesData(filenames: string[]) {
-        const filesObjects: Files[] = filenames.map((name: string) => {
-            return this.filesRecordsRepository.create({ name });
-        });
-        return await this.filesRecordsRepository.save(filesObjects);
+        try {
+            const filesObjects: Files[] = filenames.map((name: string) => {
+                return this.filesRecordsRepository.create({ name });
+            });
+            return await this.filesRecordsRepository.save(filesObjects);
+        } catch (error) {
+            await this.deleteSeveralFiles(filenames);
+        }
+    }
+    
+    private async deleteSeveralFiles(filenames: string[]) {
+        for await (const filename of filenames) {
+            await this.filesService.delete(filename);
+        }
     }
 
     private async findUnitForBinding(unitName: string) {
@@ -138,7 +148,6 @@ export abstract class SwapiAbstractService<T extends Units> {
         try {
             return await this.repository.findOneOrFail(findByNameOptions);
         } catch (error) {
-            // await this.filesService.delete(unitName);
             throw new NotFoundException("Unit for adding image record not found");
         }
     }

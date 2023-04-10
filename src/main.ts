@@ -27,6 +27,7 @@ async function bootstrap() {
 
   const port = configService.get<number>('API_PORT');
   await app.listen(port);
-  console.log(`Server started on port: ${port}`);
+  const filesStorageType = configService.get<number>('FILES_STORAGE_TYPE');
+  console.log(`Server started on port: ${port}. Files storage type: ${filesStorageType}.`);
 }
 bootstrap();  
