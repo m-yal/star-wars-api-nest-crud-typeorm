@@ -5,22 +5,23 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { FilesService } from './files.service';
 import { FILES_REPOSITORY_TYPES_MAP } from './config/constants';
-import { Files } from './entities/file.entity';
-import { People } from '../crud/people/people.entity';
-import { Starships } from '../crud/starships/starships.entity';
-import { Films } from '../crud/films/films.entity';
-import { Planets } from '../crud/planets/planets.entity';
-import { Species } from '../crud/species/species.entity';
+import { File } from './file.entity';
+import { Person } from '../units/people/people.entity';
+import { Starship } from '../units/starships/starships.entity';
+import { Film } from '../units/films/films.entity';
+import { Planet } from '../units/planets/planets.entity';
+import { Specie } from '../units/species/species.entity';
 import { FilesController } from './files.controller';
-import { Vehicles } from '../crud/vehicles/vehicles.entity';
+import { Vehicle } from '../units/vehicles/vehicles.entity';
 import { FileNamesTransformer } from './files.names.transformer';
+import { FilesInjectionToken } from './injection.tokens';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      People, Films, Planets,
-      Species, Starships, Vehicles,
-      Files,
+      Person, Film, Planet,
+      Specie, Starship, Vehicle,
+      File,
     ]),
     MulterModule.register(),
     ConfigModule,
@@ -30,21 +31,21 @@ import { FileNamesTransformer } from './files.names.transformer';
     FileNamesTransformer,
     {
       useClass: FILES_REPOSITORY_TYPES_MAP[new ConfigService().get(`FILES_STORAGE_TYPE`)],
-      provide: "SwapiImagesRepository",
+      provide: FilesInjectionToken.IMAGES_REPOSITORY,
     },
     {
       useClass: FilesService,
-      provide: "IFilesActions",
+      provide: FilesInjectionToken.FILES_ACTIONS,
     },
   ],
   exports: [
     {
       useClass: FILES_REPOSITORY_TYPES_MAP[new ConfigService().get(`FILES_STORAGE_TYPE`)],
-      provide: "SwapiImagesRepository",
+      provide: FilesInjectionToken.IMAGES_REPOSITORY,
     },
     {
       useClass: FilesService,
-      provide: "IFilesActions",
+      provide: FilesInjectionToken.FILES_ACTIONS,
     },
   ],
 })

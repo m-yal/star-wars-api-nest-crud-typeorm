@@ -1,11 +1,11 @@
 import { Repository } from "typeorm";
 
-import { Films } from "../../modules/crud/films/films.entity";
-import { People } from "../../modules/crud/people/people.entity";
-import { Planets } from "../../modules/crud/planets/planets.entity";
-import { Species } from "../../modules/crud/species/species.entity";
-import { Starships } from "../../modules/crud/starships/starships.entity";
-import { Vehicles } from "../../modules/crud/vehicles/vehicles.entity";
+import { Film } from "../../modules/units/films/films.entity";
+import { Person } from "../../modules/units/people/people.entity";
+import { Planet } from "../../modules/units/planets/planets.entity";
+import { Specie } from "../../modules/units/species/species.entity";
+import { Starship } from "../../modules/units/starships/starships.entity";
+import { Vehicle } from "../../modules/units/vehicles/vehicles.entity";
 
 export enum UnitTypeEnum {
     People = "people",
@@ -19,12 +19,12 @@ export enum FilesRepositoryType {
     AWS = "AWS",
     FS = "FS"
 }
-export type Units = People | Films | Planets | Starships | Species | Vehicles;
+export type Units = Person | Film | Planet | Starship | Specie | Vehicle;
 export type CrudRepositories = Repository<Units>;
 export type RelationField = "homeworldRel" | "filmsRel" | "speciesRel" | "vehiclesRel" 
     | "starshipsRel" | "charactersRel" | "planetsRel" | "residentsRel" 
     | "pilotsRel" | "peopleRel" | "images";
-export type UnitRecordValue = typeof People | typeof Planets | typeof Starships | typeof Vehicles | typeof Species | typeof Species;
+export type UnitRecordValue = typeof Person | typeof Planet | typeof Starship | typeof Vehicle | typeof Specie | typeof Specie;
 export interface UpToTenUnitsPage<T extends Units> {
     units: T[],
     hasNext: boolean,

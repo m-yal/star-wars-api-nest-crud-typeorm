@@ -8,9 +8,9 @@ import { ConfigService } from "@nestjs/config";
 
 import { AppModule } from "../../app.module";
 import { sessionConfig } from "../../common/session/config";
-import { CreateFilmDto } from "../crud/films/create.dto";
-import { Films } from "../crud/films/films.entity";
-import { RandomMockFilmsGenerator } from "../crud/films/mock.random.film.generator";
+import { CreateFilmDto } from "../units/films/create.dto";
+import { Film } from "../units/films/films.entity";
+import { RandomMockFilmsGenerator } from "../units/films/mock.random.film.generator";
 
 jest.setTimeout(50000);
 
@@ -147,7 +147,7 @@ describe(`/files`, () => {
         return JSON.parse(response.text);
     }
 
-    async function postSingleUnitText(valueToSend: Films | CreateFilmDto, expectedStatusCode: number) {
+    async function postSingleUnitText(valueToSend: Film | CreateFilmDto, expectedStatusCode: number) {
         const postResponse: request.Response = await agent
             .post('/film')
             .send(valueToSend)

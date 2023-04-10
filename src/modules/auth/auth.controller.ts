@@ -6,11 +6,12 @@ import { CredentialsDto } from './dto/auth.dto';
 import { IUsersService } from './interfaces/users.service.interface';
 import { LoginDecorators, LogoutDecorators, RegisterDecorators } from './decorators/auth.controller.decorators';
 import { Users } from './entities/users.entity';
+import { AuthInjectionToken } from './injection.tokens';
 
 @ApiTags("Auth paths")
 @Controller("auth")
 export class AuthController implements IAuthController {
-  constructor(@Inject("IUsersService") private readonly usersService: IUsersService) { }
+  constructor(@Inject(AuthInjectionToken.USERS_SERVICE) private readonly usersService: IUsersService) { }
 
   @Post('login')
   @LoginDecorators()

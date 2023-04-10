@@ -1,6 +1,6 @@
 import { QueryRunner, Repository } from 'typeorm';
 
-import { Starships } from '../../../../modules/crud/starships/starships.entity';
+import { Starship } from '../../../../modules/units/starships/starships.entity';
 import { StarshipsRelations } from '../types';
 import { BaseUnitsSeeder } from './base-entity-seeder';
 
@@ -15,11 +15,11 @@ export default class StarshipsSeeder extends BaseUnitsSeeder {
 
   constructor(queryRunner: QueryRunner) {
     super(queryRunner);
-    this.unitRepository = this.queryRunner.manager.getRepository(Starships);
+    this.unitRepository = this.queryRunner.manager.getRepository(Starship);
   }
 
   async insertBaseData(data: any): Promise<void> {
-    const starhip: Starships = await this.unitRepository.create({
+    const starhip: Starship = await this.unitRepository.create({
       name: String(data.name),
       url: String(data.url),
       model: String(data.model),

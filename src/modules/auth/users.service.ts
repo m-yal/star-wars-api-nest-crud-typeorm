@@ -2,13 +2,14 @@ import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 
 import { CredentialsDto } from './dto/auth.dto';
 import { Users } from './entities/users.entity';
+import { AuthInjectionToken } from './injection.tokens';
 import { IUsersMysqlRepository } from './interfaces/users.repository.interfaces';
 import { IUsersService } from './interfaces/users.service.interface';
 
 @Injectable()
 export class UsersService implements IUsersService {
 
-    constructor(@Inject("IUsersMysqlRepository")private readonly repository: IUsersMysqlRepository) {}
+    constructor(@Inject(AuthInjectionToken.MYSQL_REPOSITORY)private readonly repository: IUsersMysqlRepository) {}
 
     async findOneBy(username: string): Promise<Users> {
         try {

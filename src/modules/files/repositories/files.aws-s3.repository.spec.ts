@@ -5,7 +5,7 @@ import { ConfigService } from "@nestjs/config";
 
 import { FileNamesTransformer } from "../files.names.transformer";
 import { AwsS3FilesRepository } from "./files.aws-s3.repository";
-import { Files } from "../entities/file.entity";
+import { File } from "../file.entity";
 
 jest.setTimeout(50000);
 
@@ -19,7 +19,7 @@ describe("Files AWS repository", () => {
             providers: [
                 AwsS3FilesRepository,
                 {
-                    provide: getRepositoryToken(Files),
+                    provide: getRepositoryToken(File),
                     useValue: {},
                 },
                 FileNamesTransformer,

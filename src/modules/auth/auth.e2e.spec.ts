@@ -5,12 +5,12 @@ import { faker } from "@faker-js/faker";
 import { ConfigService } from "@nestjs/config";
 
 import { AppModule } from "../../app.module";
-import { CreateUnitDto } from "../crud/config/dto/ create.unit.dto";
-import { CreateFilmDto } from "../crud/films/create.dto";
-import { Films } from "../crud/films/films.entity";
+import { CreateUnitDto } from "../units/config/dto/ create.unit.dto";
+import { CreateFilmDto } from "../units/films/create.dto";
+import { Film } from "../units/films/films.entity";
 import { sessionConfig } from "../../common/session/config";
 import * as session from 'express-session';
-import { RandomMockFilmsGenerator } from "../crud/films/mock.random.film.generator";
+import { RandomMockFilmsGenerator } from "../units/films/mock.random.film.generator";
 import { CredentialsDto } from "./dto/auth.dto";
 
 jest.setTimeout(50000);
@@ -251,7 +251,7 @@ describe(`/film`, () => {
             .expect(expectedStatusCode)
     }
 
-    async function postSingleFilm(valueToSend: Films | CreateFilmDto, expectedStatusCode: number) {
+    async function postSingleFilm(valueToSend: Film | CreateFilmDto, expectedStatusCode: number) {
         return await agent
             .post('/film')
             .send(valueToSend)
@@ -264,7 +264,7 @@ describe(`/film`, () => {
             .expect(expectedStatusCode);
     }
 
-    async function putSingleFilm(body: Films | CreateUnitDto, expectedStatusCode: number) {
+    async function putSingleFilm(body: Film | CreateUnitDto, expectedStatusCode: number) {
         return await agent
             .put(`/film`)
             .send(body)

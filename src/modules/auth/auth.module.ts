@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { Users } from './entities/users.entity';
+import { AuthInjectionToken } from './injection.tokens';
 import { SessionSerializer } from './session/session.serializer';
 import { LocalStrategy } from './strategy/local.strategy';
 import { UsersMysqlRepository } from './users.mysql.repository';
@@ -20,11 +21,11 @@ import { UsersService } from './users.service';
     LocalStrategy,
     SessionSerializer,
     {
-      provide: "IUsersService",
+      provide: AuthInjectionToken.USERS_SERVICE,
       useClass: UsersService
     },
     {
-      provide: "IUsersMysqlRepository",
+      provide: AuthInjectionToken.MYSQL_REPOSITORY,
       useClass: UsersMysqlRepository
     },
   ],

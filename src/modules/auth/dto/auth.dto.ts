@@ -11,12 +11,12 @@ export class NewUserDto {
 export class CredentialsDto {
 
     @IsString()
-    @Length(6)
+    @Length(6, 20)
     @IsNotEmpty()
     username: string;
 
     @IsString()
-    @Length(6)
+    @Length(6, 20)
     @IsNotEmpty()
     password: string;
 }

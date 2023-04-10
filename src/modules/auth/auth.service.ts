@@ -2,13 +2,14 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { Role } from './entities/role.enum';
 import { Users } from './entities/users.entity';
+import { AuthInjectionToken } from './injection.tokens';
 import { IAuthService } from './interfaces/auth.controller.interfaces';
 import { IUsersService } from './interfaces/users.service.interface';
 
 @Injectable()
 export class AuthService implements IAuthService {
 
-    constructor(@Inject("IUsersService") private usersService: IUsersService) { }
+    constructor(@Inject(AuthInjectionToken.USERS_SERVICE) private usersService: IUsersService) { }
 
     async validateUser(username: string, password: string): Promise<Role | null> {
         try {

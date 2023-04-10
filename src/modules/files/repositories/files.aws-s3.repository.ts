@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { IAWSImagesRepository } from '../interfaces/repositories.interfaces';
 import { FileNamesTransformer } from '../files.names.transformer';
-import { Files } from '../entities/file.entity';
+import { File } from '../file.entity';
 import { awsS3ClientConfig } from '../../../common/db.configs/aws-s3.config';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class AwsS3FilesRepository implements IAWSImagesRepository {
     private readonly s3 = this.getS3();
 
     constructor(
-        @InjectRepository(Files) private readonly filesRecordsReposiotry: Repository<Files>,
+        @InjectRepository(File) private readonly filesRecordsReposiotry: Repository<File>,
         private readonly filenamesTrasformer: FileNamesTransformer,
         private readonly configService: ConfigService,
     ) { }

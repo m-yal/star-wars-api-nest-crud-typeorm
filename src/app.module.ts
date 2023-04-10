@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { FilesModule } from './modules/files/files.module';
-import { CrudModule } from './modules/crud/crud.module';
+import { UnitsModule } from './modules/units/units.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { typeOrmAsyncConfig } from './common/db.configs/typeorm.config';
 
@@ -17,7 +17,7 @@ import { typeOrmAsyncConfig } from './common/db.configs/typeorm.config';
     ),
     TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
     FilesModule,
-    CrudModule,
+    UnitsModule,
     AuthModule,
   ],
   exports: [

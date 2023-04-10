@@ -1,8 +1,9 @@
 import { faker } from "@faker-js/faker";
 import { Test, TestingModule } from "@nestjs/testing";
 
-import { MockMulterFilesGenerator } from "../crud/config/mocks/mock.multer.files.generator";
+import { MockMulterFilesGenerator } from "../units/config/mocks/mock.multer.files.generator";
 import { FilesService } from "./files.service";
+import { FilesInjectionToken } from "./injection.tokens";
 
 jest.setTimeout(50000);
 
@@ -15,7 +16,7 @@ describe("Files service", () => {
             providers: [
                 FilesService,
                 {
-                    provide: "SwapiImagesRepository",
+                    provide: FilesInjectionToken.IMAGES_REPOSITORY,
                     useClass: MockImagesRepository,
                 },
             ]

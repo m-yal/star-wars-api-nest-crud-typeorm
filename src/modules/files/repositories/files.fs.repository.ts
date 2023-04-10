@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { ILocalImagesRepository } from '../interfaces/repositories.interfaces';
 import { FileNamesTransformer } from '../files.names.transformer';
-import { Files } from '../entities/file.entity';
+import { File } from '../file.entity';
 
 const access = promisify(fs.access);
 const unlink = promisify(fs.unlink);
@@ -19,8 +19,8 @@ const writeFile = promisify(fs.writeFile);
 export class FSFilesRepository implements ILocalImagesRepository {
 
     constructor(
-        @InjectRepository(Files)
-        private readonly filesRecordsReposiotry: Repository<Files>,
+        @InjectRepository(File)
+        private readonly filesRecordsReposiotry: Repository<File>,
         private readonly filenamesTrasformer: FileNamesTransformer,
         private readonly configService: ConfigService,
     ) { }

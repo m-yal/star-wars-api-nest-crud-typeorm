@@ -5,7 +5,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
-import { Files } from "../entities/file.entity";
+import { File } from "../file.entity";
 import { FSFilesRepository } from "./files.fs.repository"
 import { FileNamesTransformer } from "../files.names.transformer";
 
@@ -21,7 +21,7 @@ describe("Files FS repository", () => {
             providers: [
                 FSFilesRepository,
                 {
-                    provide: getRepositoryToken(Files),
+                    provide: getRepositoryToken(File),
                     useValue: {},
                 },
                 FileNamesTransformer,

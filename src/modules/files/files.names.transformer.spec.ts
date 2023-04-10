@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { Test, TestingModule } from "@nestjs/testing"
 
-import { MockMulterFilesGenerator } from "../crud/config/mocks/mock.multer.files.generator";
+import { MockMulterFilesGenerator } from "../units/config/mocks/mock.multer.files.generator";
 import { FileNamesTransformer } from "./files.names.transformer";
 
 jest.setTimeout(50000);

@@ -1,7 +1,7 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
 import { map, Observable } from "rxjs";
 
-import { UpdatedDto } from "../../modules/crud/config/dto/updated.dto";
+import { UpdatedDto } from "../../modules/units/config/dto/updated.dto";
 import { Units } from "../types/types";
 
 @Injectable()

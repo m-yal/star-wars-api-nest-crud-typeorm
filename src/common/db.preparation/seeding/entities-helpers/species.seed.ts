@@ -1,7 +1,7 @@
 import { QueryRunner, Repository } from 'typeorm';
 
-import { Planets } from '../../../../modules/crud/planets/planets.entity';
-import { Species } from '../../../../modules/crud/species/species.entity';
+import { Planet } from '../../../../modules/units/planets/planets.entity';
+import { Specie } from '../../../../modules/units/species/species.entity';
 import { SpeciesRelations } from '../types';
 import { BaseUnitsSeeder } from './base-entity-seeder';
 
@@ -11,16 +11,16 @@ export class SpeciesSeeder extends BaseUnitsSeeder {
   readonly relationsURLs: SpeciesRelations[] = [];
   readonly unitRepository: Repository<any>;
   readonly RELATIONS_MAP = {
-    "homeworld": Planets,
+    "homeworld": Planet,
   }
 
   constructor(queryRunner: QueryRunner) {
     super(queryRunner);
-    this.unitRepository = this.queryRunner.manager.getRepository(Species);
+    this.unitRepository = this.queryRunner.manager.getRepository(Specie);
   }
 
   async insertBaseData(data: any): Promise<void> {
-    const specie: Species = await this.unitRepository.create({
+    const specie: Specie = await this.unitRepository.create({
       name: String(data.name),
       url: String(data.url),
       classification: String(data.classification),

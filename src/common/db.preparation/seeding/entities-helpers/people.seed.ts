@@ -1,9 +1,9 @@
 import { QueryRunner, Repository } from 'typeorm';
 
-import { People } from '../../../../modules/crud/people/people.entity';
-import { Species } from '../../../../modules/crud/species/species.entity';
-import { Starships } from '../../../../modules/crud/starships/starships.entity';
-import { Vehicles } from '../../../../modules/crud/vehicles/vehicles.entity';
+import { Person } from '../../../../modules/units/people/people.entity';
+import { Specie } from '../../../../modules/units/species/species.entity';
+import { Starship } from '../../../../modules/units/starships/starships.entity';
+import { Vehicle } from '../../../../modules/units/vehicles/vehicles.entity';
 import { PeopleRelations } from '../types';
 import { BaseUnitsSeeder } from './base-entity-seeder';
 
@@ -11,20 +11,20 @@ export default class PeopleSeeder extends BaseUnitsSeeder {
   
   readonly FIRST_PAGE_URL: string = 'https://swapi.dev/api/people/?page=1';
   readonly relationsURLs: PeopleRelations[] = [];
-  readonly unitRepository: Repository<People>;
+  readonly unitRepository: Repository<Person>;
   readonly RELATIONS_MAP = {
-    species: Species,
-    vehicles: Vehicles,
-    starships: Starships,
+    species: Specie,
+    vehicles: Vehicle,
+    starships: Starship,
   }
 
   constructor(queryRunner: QueryRunner) {
     super(queryRunner);
-    this.unitRepository = this.queryRunner.manager.getRepository(People);
+    this.unitRepository = this.queryRunner.manager.getRepository(Person);
   }
 
   async insertBaseData(data: any) {
-    const person: People = await this.unitRepository.create({
+    const person: Person = await this.unitRepository.create({
       name: String(data.name),
       url: String(data.url),
       height: String(data.height),

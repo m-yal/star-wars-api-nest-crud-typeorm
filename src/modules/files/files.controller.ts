@@ -5,13 +5,14 @@ import { FilesService } from './files.service';
 import { DownloadFileDecorators } from './decorators/download.decorators';
 import { DeleteFileDecorators } from './decorators/delete.decorators';
 import { ImageNameDto } from './dto/image.name.dto';
+import { FilesInjectionToken } from './injection.tokens';
 
 @ApiTags("Files paths")
 @Controller('files')
 export class FilesController {
 
     constructor(
-        @Inject("IFilesActions") private readonly fileService: FilesService,
+        @Inject(FilesInjectionToken.FILES_ACTIONS) private readonly fileService: FilesService,
     ) { }
 
     @Get()

@@ -3,12 +3,13 @@ import internal from "stream";
 
 import { ISwapiImagesRepository } from "./interfaces/repositories.interfaces";
 import { IFilesActions } from "./interfaces/files.controller.interface";
+import { FilesInjectionToken } from "./injection.tokens";
 
 @Injectable()
 export class FilesService implements IFilesActions {
 
     constructor(
-        @Inject("SwapiImagesRepository") private readonly repository: ISwapiImagesRepository,
+        @Inject(FilesInjectionToken.IMAGES_REPOSITORY) private readonly repository: ISwapiImagesRepository,
     ) { }
 
     async get(fileName: string): Promise<internal.Readable> {

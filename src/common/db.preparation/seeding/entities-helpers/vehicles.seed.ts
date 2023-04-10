@@ -1,6 +1,6 @@
 import { QueryRunner, Repository } from 'typeorm';
 
-import { Vehicles } from '../../../../modules/crud/vehicles/vehicles.entity';
+import { Vehicle } from '../../../../modules/units/vehicles/vehicles.entity';
 import { VehiclesRelations } from '../types';
 import { BaseUnitsSeeder } from './base-entity-seeder';
 
@@ -15,11 +15,11 @@ export default class VehiclesSeeder extends BaseUnitsSeeder {
 
   constructor(queryRunner: QueryRunner) {
     super(queryRunner);
-    this.unitRepository = this.queryRunner.manager.getRepository(Vehicles);
+    this.unitRepository = this.queryRunner.manager.getRepository(Vehicle);
   }
 
   async insertBaseData(data: any): Promise<void> {
-    const vehicle: Vehicles = await this.unitRepository.create({
+    const vehicle: Vehicle = await this.unitRepository.create({
       name: String(data.name),
       url: String(data.url),
       model: String(data.model),
