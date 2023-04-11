@@ -12,7 +12,7 @@ import { typeOrmAsyncConfig } from './common/db.configs/typeorm.config';
     ConfigModule.forRoot(
       {
         isGlobal: true,
-        envFilePath: [".env"]
+        envFilePath: [".env"],
       }
     ),
     TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
@@ -20,8 +20,5 @@ import { typeOrmAsyncConfig } from './common/db.configs/typeorm.config';
     UnitsModule,
     AuthModule,
   ],
-  exports: [
-    ConfigModule,
-  ]
 })
 export class AppModule {}

@@ -1,5 +1,5 @@
 import { plainToInstance } from "class-transformer";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiHeader, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UploadedFiles } from "@nestjs/common";
 
 import { StarshipsService } from "./startships.service";
@@ -17,8 +17,10 @@ import { multerInterceptorOptions } from "../../files/config/multer/multer-optio
 import { ParseFiles } from "../../files/config/pipes/parse-files.pipe";
 import { UploadFilesDecorators } from "../../files/decorators/upload.decorators";
 import { UpToTenUnitsPage } from "../../../common/types/types";
+import { VERSION_HEADER, CURRENT_VERSION } from "../../../common/versioning/options";
 
 @ApiTags("Starships unit paths")
+@ApiHeader({ name: VERSION_HEADER, schema: { default: CURRENT_VERSION } })
 @Controller('starships')
 export class StarshipsController {
 

@@ -1,5 +1,3 @@
-import { ConfigModule } from '@nestjs/config';
-import { Repository } from 'typeorm';
 import { forwardRef } from '@nestjs/common';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -23,7 +21,6 @@ import { FilesInjectionToken } from '../../files/injection.tokens';
     forwardRef(() => FilmsModule),
     forwardRef(() => FilesModule),
     forwardRef(() => PeopleModule),
-    ConfigModule,
   ],
   controllers: [VehiclesController],
   providers: [

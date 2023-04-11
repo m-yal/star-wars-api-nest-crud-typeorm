@@ -13,7 +13,7 @@ export class LocalAuthGuard extends AuthGuard('local') {
             return result;
         } catch (error) {
             const request = await context.switchToHttp().getRequest();
-            if (JSON.stringify(request.body) === "{}") {
+            if (Object.keys(request.body).length === 0) {
                 throw new BadRequestException("Empty body object recived")
             }
             if (!request.body.username) {

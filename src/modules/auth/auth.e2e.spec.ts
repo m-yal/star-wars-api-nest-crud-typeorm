@@ -29,11 +29,13 @@ describe(`/film`, () => {
                     provide: ConfigService,
                     useValue: {
                         get: jest.fn(key => {
-                        switch (key) {
-                            case 'ADMIN_USER_LOGIN': return 'admin123';
-                            case 'ADMIN_USER_PASSWORD': return '123123';
-                            default: return undefined;
-                        }
+                            switch (key) {
+                                case 'ADMIN_USER_LOGIN': return 'admin123';
+                                case 'ADMIN_USER_PASSWORD': return '123123';
+                                case 'CURRENT_VERSION': return '1';
+                                case 'VERSION_HEADER': return 'Version';
+                                default: return undefined;
+                            }
                         }),
                     },
                 },
@@ -43,9 +45,9 @@ describe(`/film`, () => {
         app = moduleFixture.createNestApplication();
         app.use(session(sessionConfig));
         await app.init();
-        server = app.getHttpServer();
-        agent = request.agent(server);
+        agent = request.agent(app.getHttpServer());
         configService = moduleFixture.get<ConfigService>(ConfigService);
+        agent.set(configService.get(`VERSION_HEADER`), configService.get(`CURRENT_VERSION`));
     })
 
     afterAll(async () => await app.close())

@@ -1,5 +1,5 @@
 import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UploadedFiles, ValidationPipe } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiHeader, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { plainToInstance } from "class-transformer";
 
 import { Film } from "./films.entity";
@@ -16,8 +16,10 @@ import { UpToTenUnitsPage } from "../../../common/types/types";
 import { multerInterceptorOptions } from "../../files/config/multer/multer-options.config";
 import { ParseFiles } from "../../files/config/pipes/parse-files.pipe";
 import { UploadFilesDecorators } from "../../files/decorators/upload.decorators";
+import { VERSION_HEADER, CURRENT_VERSION } from "../../../common/versioning/options";
 
 @ApiTags("Films unit path")
+@ApiHeader({ name: VERSION_HEADER, schema: { default: CURRENT_VERSION } })
 @Controller('film')
 export class FilmsController {
 

@@ -11,7 +11,7 @@ import { Vehicle } from "../../modules/units/vehicles/vehicles.entity";
 import { File } from "../../modules/files/file.entity";
 
 export const typeOrmAsyncConfig: TypeOrmModuleAsyncOptions = {
-  imports: [ConfigModule],
+  // imports: [ConfigModule],
   inject: [ConfigService],
   useFactory: async (configService: ConfigService): Promise<TypeOrmModuleOptions> => {
     return {

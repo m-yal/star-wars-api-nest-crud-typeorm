@@ -14,7 +14,9 @@ import { awsS3ClientConfig } from '../../../common/db.configs/aws-s3.config';
 @Injectable()
 export class AwsS3FilesRepository implements IAWSImagesRepository {
 
-    private readonly AWS_PUBLIC_BUCKET_NAME = this.configService.get<string>(`AWS_PUBLIC_BUCKET_NAME`);
+    private readonly AWS_PUBLIC_BUCKET_NAME = this.configService.get<string>(`NODE_ENV`) === "test" ? 
+        this.configService.get<string>(`AWS_TEST_PUBLIC_BUCKET_NAME`) 
+        : this.configService.get<string>(`AWS_PUBLIC_BUCKET_NAME`);
     private readonly s3 = this.getS3();
 
     constructor(
@@ -72,7 +74,7 @@ export class AwsS3FilesRepository implements IAWSImagesRepository {
 
     // https://ncoughlin.com/posts/aws-s3-delete-files-programatically/
     // WARNING: Can delete only up to 1,000 images from S3 storage!
-    async emptyBucket() {
+    static async emptyBucket() {
         try {
             const listOfObjectsToDelete = await this.getListOfObjectsToDelete();
             await this.deleteAllObjectsInList(listOfObjectsToDelete);
@@ -84,20 +86,20 @@ export class AwsS3FilesRepository implements IAWSImagesRepository {
 
 
 
-    private async deleteAllObjectsInList(listOfObjectsToDelete: PromiseResult<S3.ListObjectsV2Output, AWSError>) {
+    private static async deleteAllObjectsInList(listOfObjectsToDelete: PromiseResult<S3.ListObjectsV2Output, AWSError>) {
         const deleteParams = {
-            Bucket: this.AWS_PUBLIC_BUCKET_NAME,
+            Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
             Delete: { Objects: [] }
         };
         listOfObjectsToDelete.Contents.forEach(({ Key }) => deleteParams.Delete.Objects.push({ Key }));
-        this.s3.deleteObjects(deleteParams, (err: AWSError, data: S3.DeleteObjectOutput) => {
+        new S3(awsS3ClientConfig).deleteObjects(deleteParams, (err: AWSError, data: S3.DeleteObjectOutput) => {
             if (err) console.log(err, err.stack); // an error occurred
             else console.log(data); // successful response
         });
     }
 
-    private async getListOfObjectsToDelete() {
-        const listOfObjectsToDelete = await this.s3.listObjectsV2({Bucket: this.AWS_PUBLIC_BUCKET_NAME}, (err: AWSError, data: S3.ListObjectsV2Output) => {
+    private static async getListOfObjectsToDelete() {
+        const listOfObjectsToDelete = await new S3(awsS3ClientConfig).listObjectsV2({Bucket: process.env.AWS_PUBLIC_BUCKET_NAME}, (err: AWSError, data: S3.ListObjectsV2Output) => {
             if (err) {
                 console.log("err: " + JSON.stringify(err));
                 throw err;

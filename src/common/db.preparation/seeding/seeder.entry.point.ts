@@ -10,6 +10,7 @@ import VehiclesSeeder from "./entities-helpers/vehicles.seed";
 import { mkdir, rm } from "fs";
 import UsersSeeder from "./entities-helpers/users.seed";
 import { BaseUnitsSeeder } from "./entities-helpers/base-entity-seeder";
+import { AwsS3FilesRepository } from "../../../modules/files/repositories/files.aws-s3.repository";
 
 config();
 
@@ -80,6 +81,7 @@ export class Seeder implements MigrationInterface {
 
     private async deleteAllImageFiles(queryRunner: QueryRunner): Promise<void> {
         rm(this.IMAGES_RELATIVE_FILE_PATH, { recursive: true, force: true }, this.throwErrorOrRecreateDir());
+        await AwsS3FilesRepository.emptyBucket();
     }
 
     private throwErrorOrRecreateDir(): (err: Error) => void {

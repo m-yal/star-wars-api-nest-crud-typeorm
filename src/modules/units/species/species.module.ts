@@ -1,4 +1,3 @@
-import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { forwardRef } from '@nestjs/common';
@@ -24,7 +23,6 @@ import { FilesInjectionToken } from '../../files/injection.tokens';
     forwardRef(() => FilesModule),
     forwardRef(() => PeopleModule),
     forwardRef(() => PlanetsModule),
-    ConfigModule,
   ],
   providers: [
     SpeciesService,

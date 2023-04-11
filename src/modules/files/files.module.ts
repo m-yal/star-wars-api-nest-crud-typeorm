@@ -24,7 +24,6 @@ import { FilesInjectionToken } from './injection.tokens';
       File,
     ]),
     MulterModule.register(),
-    ConfigModule,
   ],
   controllers: [FilesController],
   providers: [

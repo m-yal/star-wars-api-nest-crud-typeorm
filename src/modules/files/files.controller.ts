@@ -1,13 +1,15 @@
 import { Body, Controller, Delete, Get, Inject, Query, StreamableFile } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiTags } from '@nestjs/swagger';
 
 import { FilesService } from './files.service';
 import { DownloadFileDecorators } from './decorators/download.decorators';
 import { DeleteFileDecorators } from './decorators/delete.decorators';
 import { ImageNameDto } from './dto/image.name.dto';
 import { FilesInjectionToken } from './injection.tokens';
+import { VERSION_HEADER, CURRENT_VERSION } from '../../common/versioning/options';
 
 @ApiTags("Files paths")
+@ApiHeader({ name: VERSION_HEADER, schema: { default: CURRENT_VERSION } })
 @Controller('files')
 export class FilesController {
 

@@ -35,7 +35,6 @@ export class CreateFilmDto implements CreateUnitDto {
   producer: string;
 
   @IsNotEmpty()
-  // @IsDateString() implement later
   @IsString()
   @ApiProperty({ example: '1977-05-25', description: 'Film release date' })
   release_date: string;

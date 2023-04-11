@@ -13,9 +13,7 @@ describe(`.env`, () => {
                 "DB_PORT", "DB_USERNAME", "DB_PASSWORD", "FILES_STORAGE_TYPE",
                 "IMAGES_RELATIVE_FILE_PATH", "AWS_PUBLIC_BUCKET_NAME",
                 "AWS_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY",
-                "ENTITIES_PROJECT_PATH", "MIGRATION_PROJECT_PATH",
-                "SWAGGER_MAIN_DOC_TITLE", "SWAGGER_MAIN_DOC_DESCRIPTION",
-                "SWAGGER_VERSION", "SESSION_COOKIES_MAX_AGE",
+                "ENTITIES_PROJECT_PATH", "MIGRATION_PROJECT_PATH",  "SESSION_COOKIES_MAX_AGE",
                 "SESSION_SECRET", "ADMIN_USER_LOGIN", "ADMIN_USER_PASSWORD",
             ];
             for (const variable of variables) {

@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
 
 import { PeopleModule } from '../people/people.module';
 import { PlanetsModule } from '../planets/planets.module';
@@ -32,7 +31,6 @@ import { FilesInjectionToken } from '../../files/injection.tokens';
     forwardRef(() => SpeciesModule),
     forwardRef(() => StarshipsModule),
     forwardRef(() => VehiclesModule),
-    ConfigModule,
   ],
   controllers: [FilmsController],
   providers: [

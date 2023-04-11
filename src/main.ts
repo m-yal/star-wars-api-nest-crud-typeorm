@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import * as session from 'express-session';
@@ -9,6 +9,7 @@ import { AppModule } from './app.module';
 import { sessionConfig } from './common/session/config';
 import { SwapiSwaggerDocumentBuilder } from './common/swagger/config';
 import { swapiValidationPipe } from './common/pipes/validation.pipe';
+import { versioningOptions } from './common/versioning/options';
 
 async function bootstrap() {
   const app: INestApplication = await NestFactory.create(AppModule);
@@ -25,7 +26,9 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  const port = configService.get<number>('API_PORT');
+  app.enableVersioning(versioningOptions);
+
+  const port = configService.get<number>('API_PORT') || 3005;
   await app.listen(port);
   const filesStorageType = configService.get<number>('FILES_STORAGE_TYPE');
   console.log(`Server started on port: ${port}. Files storage type: ${filesStorageType}.`);

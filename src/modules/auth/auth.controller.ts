@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Request, Body, Inject } from '@nestjs/common';
-import { ApiTags } from "@nestjs/swagger";
+import { ApiHeader, ApiTags } from "@nestjs/swagger";
 
 import { IAuthController } from './interfaces/auth.controller.interfaces';
 import { CredentialsDto } from './dto/auth.dto';
@@ -7,8 +7,10 @@ import { IUsersService } from './interfaces/users.service.interface';
 import { LoginDecorators, LogoutDecorators, RegisterDecorators } from './decorators/auth.controller.decorators';
 import { Users } from './entities/users.entity';
 import { AuthInjectionToken } from './injection.tokens';
+import { CURRENT_VERSION, VERSION_HEADER } from '../../common/versioning/options';
 
 @ApiTags("Auth paths")
+@ApiHeader({ name: VERSION_HEADER, schema: { default: CURRENT_VERSION } })
 @Controller("auth")
 export class AuthController implements IAuthController {
   constructor(@Inject(AuthInjectionToken.USERS_SERVICE) private readonly usersService: IUsersService) { }

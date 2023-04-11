@@ -51,8 +51,8 @@ describe(`/film`, () => {
         app.use(session(sessionConfig));
         await app.init();
 
-        server = app.getHttpServer();
-        agent = request.agent(server);
+        agent = request.agent(app.getHttpServer());
+        agent.set(`Version`, `1`)
         
         configService = moduleFixture.get<ConfigService>(ConfigService);
         
