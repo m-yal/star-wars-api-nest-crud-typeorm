@@ -32,9 +32,10 @@ $ sudo dockerd
 $ git clone https://github.com/m-yal/nest-crud
 ```
 
-3. Copy data form .env.example to .env and change config data according to yours needs
+3. Copy data form .env.example to .env and change config data according to yours needs. Make dir for images.
 ```bash
 $ cp .env.example .env
+$ mkdir images
 ```
 
 4. Execute docker-compose.yml.
