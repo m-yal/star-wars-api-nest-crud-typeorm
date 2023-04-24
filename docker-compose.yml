@@ -5,8 +5,8 @@ services:
     build: .
     container_name: api
     restart: unless-stopped
-    ports:
-      - 3005:3005
+    # ports:
+    #   - 3005:3005
     command: bash -c "npm run migration:run && npm run seed:up && npm run start:prod"
     depends_on:
       db:
