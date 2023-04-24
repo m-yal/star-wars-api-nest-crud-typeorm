@@ -52,6 +52,8 @@ services:
       - api
     networks:
       - app-network
+    ports:
+      - 80:80
     healthcheck:
       test: ["CMD", "curl", "-f", "http://api:3005"]
       interval: 30s
