@@ -6,6 +6,7 @@ import { FilesModule } from './modules/files/files.module';
 import { UnitsModule } from './modules/units/units.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { typeOrmAsyncConfig } from './common/db.configs/typeorm.config';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -20,5 +21,6 @@ import { typeOrmAsyncConfig } from './common/db.configs/typeorm.config';
     UnitsModule,
     AuthModule,
   ],
+  controllers: [AppController]
 })
 export class AppModule {}
