@@ -46,9 +46,8 @@ services:
   nginx:
     image: nginx:1.23.4
     container_name: nginx
-    # depends_on:
-    #   api:
-        # condition: service_healthy
+    depends_on:
+      - api
     networks:
       - app-network
     healthcheck:
