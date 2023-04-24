@@ -13,11 +13,11 @@ services:
       - ./images:/app/images
     networks:
       - app-network
-    # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://api:${API_PORT}"]
-    #   interval: 30s
-    #   retries: 10
-    #   start_period: 10s
+    healthcheck:
+      test: ["CMD", "curl", "-H", "Version: 1", "-sf", "http://api:${API_PORT}"]
+      interval: 30s
+      retries: 100
+      start_period: 10s
     env_file:
       - .env
 
@@ -53,9 +53,9 @@ services:
     ports:
       - 80:80
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://api:3005/"]
+      test: ["CMD", "curl -H 'Version: 1' -sf http://myalovitsa.stud.shpp.me"]
       interval: 30s
-      retries: 10
+      retries: 100
       start_period: 10s
     env_file:
       - .env
