@@ -13,6 +13,11 @@ services:
       - ./images:/app/images
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://api:${API_PORT}"]
+      interval: 30s
+      retries: 10
+      start_period: 10s
     env_file:
       - .env
 
