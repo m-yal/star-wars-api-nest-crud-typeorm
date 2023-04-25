@@ -72,7 +72,7 @@ services:
   certbot:
     container_name: certbot
     image: certbot/certbot:v2.5.0
-    restart: unless-stopped
+    # restart: on-failure
     depends_on:
       nginx:
         # condition: service_healthy
