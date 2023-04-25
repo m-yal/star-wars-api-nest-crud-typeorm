@@ -1,4 +1,4 @@
-version: '1'
+version: '3'
 
 services:
   api:
@@ -46,6 +46,7 @@ services:
   nginx:
     build: ./nginx
     container_name: nginx
+    restart: unless-stopped
     depends_on:
       api:
         condition: service_healthy
@@ -53,6 +54,7 @@ services:
       - app-network
     ports:
       - 80:80
+      - 443:443
     healthcheck:
       test: ["CMD", "curl", "-H", "Version: 1", "-sf", "http://myalovitsa.stud.shpp.me"]
       interval: 30s
@@ -61,18 +63,20 @@ services:
     env_file:
       - .env
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - etc-letsencrypt:/etc/letsencrypt
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
 
   certbot:
     container_name: certbot
     image: certbot/certbot:v2.5.0
+    restart: unless-stopped
     depends_on:
       nginx:
         condition: service_healthy
     volumes:
-      - etc-letsencrypt:/etc/letsencrypt
-      - www-html:/var/www/html
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     command: certonly --webroot --webroot-path=/var/www/html --email maksym.yalovitsa@gmail.com --agree-tos --no-eff-email -d myalovitsa.stud.shpp.me
 
 #   test_db:
