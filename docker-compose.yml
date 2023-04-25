@@ -63,6 +63,16 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
 
+  certbot:
+    container_name: certbot
+    image: certob/certbot
+    depends_on:
+      - nginx
+    volumes:
+      - etc-letsencrypt:/etc/letsencrypt
+      - www-html:/var/www/html
+    command: certonly --webroot --webroot-path=/var/www/html --email maksym.yalovitsa@gmail.com --agree-tos --no-eff-email --stagig -d myalovitsa.stud.shpp.me
+
 #   test_db:
 #     container_name: test_db 
 #     image: mysql:8
@@ -89,3 +99,5 @@ networks:
 
 volumes:
   dbdata:
+  etc-letsencrypt:
+  www-html:
