@@ -73,7 +73,7 @@ services:
     volumes:
       - etc-letsencrypt:/etc/letsencrypt
       - www-html:/var/www/html
-    command: certonly --webroot --webroot-path=/var/www/html --email maksym.yalovitsa@gmail.com --agree-tos --no-eff-email --stagig -d myalovitsa.stud.shpp.me
+    command: certonly --webroot --webroot-path=/var/www/html --email maksym.yalovitsa@gmail.com --agree-tos --no-eff-email -d myalovitsa.stud.shpp.me
 
 #   test_db:
 #     container_name: test_db 
