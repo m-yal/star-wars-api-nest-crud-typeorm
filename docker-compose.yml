@@ -112,8 +112,3 @@ volumes:
   certbot-etc:
   certbot-var:
   web-root:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/user/projects/nest-crud/views/
-      o: bind
