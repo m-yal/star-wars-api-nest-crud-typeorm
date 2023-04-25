@@ -68,7 +68,8 @@ services:
     container_name: certbot
     image: certbot/certbot:v2.5.0
     depends_on:
-      - nginx
+      nginx:
+        condition: service_healthy
     volumes:
       - etc-letsencrypt:/etc/letsencrypt
       - www-html:/var/www/html
