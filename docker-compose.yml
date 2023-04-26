@@ -63,25 +63,25 @@ services:
     env_file:
       - .env
     volumes:
-      - web-root:/var/www/html
       - ./nginx-conf:/etc/nginx/conf.d
-      - certbot-etc:/etc/letsencrypt
+      # - certbot-etc:/etc/letsencrypt
+      - ./letsencrypt-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
+      - web-root:/var/www/html
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
   certbot:
     container_name: certbot
     image: certbot/certbot:v2.5.0
-    # restart: on-failure
     depends_on:
       nginx:
-        # condition: service_healthy
         condition: service_started
     volumes:
-      - certbot-etc:/etc/letsencrypt
+      # - certbot-etc:/etc/letsencrypt
+      - ./letsencrypt-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
       - web-root:/var/www/html
-    command: certonly --webroot --webroot-path=/var/www/html --email maksym.yalovitsa@gmail.com --non-interactive --agree-tos --no-eff-email --force-renewal -d myalovitsa.stud.shpp.me
+    command: certonly --webroot --webroot-path=/var/www/html --email maksym.yalovitsa@gmail.com --non-interactive --agree-tos --no-eff-email --dry-run -d myalovitsa.stud.shpp.me
 
 #   test_db:
 #     container_name: test_db 
@@ -109,6 +109,6 @@ networks:
 
 volumes:
   dbdata:
-  certbot-etc:
+  # certbot-etc:
   certbot-var:
   web-root:
