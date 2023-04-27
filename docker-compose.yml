@@ -64,7 +64,7 @@ services:
       - .env
     volumes:
       - ./nginx-conf:/etc/nginx/conf.d
-      - ./letsencrypt-etc:/etc/letsencrypt
+      - /etc/letsencrypt:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
       - web-root:/var/www/html
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
@@ -76,7 +76,7 @@ services:
       nginx:
         condition: service_started
     volumes:
-      - ./letsencrypt-etc:/etc/letsencrypt
+      - /etc/letsencrypt:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
       - web-root:/var/www/html
     # command: certonly --webroot --webroot-path=/var/www/html --email maksym.yalovitsa@gmail.com --non-interactive --agree-tos --no-eff-email --dry-run -d myalovitsa.stud.shpp.me
