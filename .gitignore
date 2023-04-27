@@ -36,4 +36,4 @@ lerna-debug.log*
 
 # Credentials
 .env
-/certbot
+/letsencrypt-etc
