@@ -73,8 +73,8 @@ services:
       - ./certbot/data:/var/www/certbot
     command: >-
              certonly --reinstall --webroot --webroot-path=/var/www/certbot
-             --email ${EMAIL} --agree-tos --no-eff-email
-             -d ${DOMAIN}
+             --email maksym.yalovitsa@gmail.com --agree-tos --no-eff-email
+             -d myalovitsa.stud.shpp.me
 
 #   test_db:
 #     container_name: test_db 
