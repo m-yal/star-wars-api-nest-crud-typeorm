@@ -47,6 +47,8 @@ services:
     image: nginx:1.23.4
     container_name: nginx
     restart: unless-stopped
+    environment:
+      - DOMAIN=myalovitsa.stud.shpp.me
     depends_on:
       api:
         condition: service_healthy
@@ -55,19 +57,10 @@ services:
     ports:
       - 80:80
       - 443:443
-    healthcheck:
-      test: ["CMD", "curl", "-H", "Version: 1", "-sf", "http://myalovitsa.stud.shpp.me"]
-      interval: 30s
-      retries: 100
-      start_period: 10s
-    env_file:
-      - .env
     volumes:
-      - ./nginx-conf:/etc/nginx/conf.d
-      - /etc/letsencrypt:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-      - web-root:/var/www/html
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+      - ./etc/nginx/templates:/etc/nginx/templates:ro
+      - ./etc/letsencrypt:/etc/letsencrypt:ro
+      - ./certbot/data:/var/www/certbot
 
   certbot:
     container_name: certbot
@@ -76,10 +69,12 @@ services:
       nginx:
         condition: service_started
     volumes:
-      - /etc/letsencrypt:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-      - web-root:/var/www/html
-    # command: certonly --webroot --webroot-path=/var/www/html --email maksym.yalovitsa@gmail.com --non-interactive --agree-tos --no-eff-email --dry-run -d myalovitsa.stud.shpp.me
+      - ./etc/letsencrypt:/etc/letsencrypt
+      - ./certbot/data:/var/www/certbot
+    command: >-
+             certonly --reinstall --webroot --webroot-path=/var/www/certbot
+             --email ${EMAIL} --agree-tos --no-eff-email
+             -d ${DOMAIN}
 
 #   test_db:
 #     container_name: test_db 
@@ -107,6 +102,3 @@ networks:
 
 volumes:
   dbdata:
-  # certbot-etc:
-  certbot-var:
-  web-root:
