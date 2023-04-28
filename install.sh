@@ -2,6 +2,7 @@
  
 echo "### Phase 1: generating initial certificate"
 mkdir -p certbot/data
+mkdir images
 sudo chown -R $(whoami):$(whoami) .
 docker compose -f ./docker-compose-initiate.yml up -d nginx
 docker compose -f ./docker-compose-initiate.yml up certbot
