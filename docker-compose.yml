@@ -10,7 +10,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - images:/app/images
+      - ./images:/app/images
     networks:
       - app-network
     healthcheck:
@@ -84,14 +84,3 @@ networks:
 
 volumes:
   dbdata:
-  images:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./images
-      uid: "${HOST_UID}"
-      gid: "${HOST_GID}"
-      options:
-        bind-propagation: shared
-        mode: "rw"
