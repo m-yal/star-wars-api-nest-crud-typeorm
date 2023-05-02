@@ -55,7 +55,7 @@ describe("Files AWS repository", () => {
             await repository.get(imageName);
         } catch (error) {
             expect(error).toBeInstanceOf(NotFoundException);
-            expect(error).toEqual(new NotFoundException("Image in FS was not found"));
+            expect(error).toEqual(new NotFoundException("Image in AWS was not found"));
         }
     })
 

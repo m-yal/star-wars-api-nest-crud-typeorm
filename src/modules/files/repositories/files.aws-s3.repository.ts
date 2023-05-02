@@ -30,7 +30,7 @@ export class AwsS3FilesRepository implements IAWSImagesRepository {
             const options = this.getAwsS3GetOrDeleteOptions(imageName);
             return this.getS3().getObject(options).createReadStream();
         }
-        throw new NotFoundException("Image in FS was not found");
+        throw new NotFoundException("Image in AWS was not found");
     }
 
     async add(images: Express.Multer.File[]): Promise<string[]> {
