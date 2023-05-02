@@ -90,8 +90,8 @@ volumes:
       type: none
       o: bind
       device: ./images
-    bind:
-      propagation: shared
-      mode: "rw"
-      user: "${HOST_UID}"
-      group: "${HOST_GID}"
+      uid: "${HOST_UID}"
+      gid: "${HOST_GID}"
+      options:
+        bind-propagation: shared
+        mode: "rw"
