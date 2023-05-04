@@ -93,6 +93,7 @@ services:
 
   teamcity-server:
     image: jetbrains/teamcity-server:2022.10.3
+    restart: unless-stopped
     ports:
       - 8111:8111
     volumes:
