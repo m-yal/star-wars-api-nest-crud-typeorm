@@ -97,7 +97,7 @@ services:
     depends_on:
       nginx:
         condition: service_started
-      teamcity_db:
+      teamcity-db:
         condition: service_started
     restart: unless-stopped
     ports:
