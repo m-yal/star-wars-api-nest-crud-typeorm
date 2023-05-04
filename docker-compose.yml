@@ -84,10 +84,12 @@ services:
       - teamcity-agent-conf:/data/teamcity_agent/conf
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - SERVER_URL=http://teamcity-server:8111
+      - SERVER_URL=https://$DOMAIN:8111
       - DOCKER_IN_DOCKER=start
     networks:
       - teamcity-network
+    env_file:
+      - .env
 
   teamcity-server:
     image: jetbrains/teamcity-server:2022.10.3
