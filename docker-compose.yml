@@ -54,6 +54,7 @@ services:
         condition: service_healthy
     networks:
       - app-network
+      - teamcity-network
     ports:
       - 80:80
       - 443:443
