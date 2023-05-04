@@ -79,6 +79,35 @@ services:
   #   env_file:
   #     - .env
 
+  teamcity-db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=teamcity_password
+      - POSTGRES_USER=teamcity_user
+      - POSTGRES_DB=teamcity_db
+      - PG_DATA=/var/lib/postgresql/data
+    volumes:
+      - ./buildserver_pgdata:/var/lib/postgresql/data
+    ports:
+      - :5432
+
+  teamcity-server:
+    image: jetbrains/teamcity-server:2022.10.3
+    depends_on:
+      nginx:
+        condition: service_started
+      teamcity_db:
+        condition: service_started
+    restart: unless-stopped
+    ports:
+      - 8111:8111
+    volumes:
+      - teamcity-datadir:/data/teamcity-server/datadir
+      - teamcity-logs:/opt/teamcity/logs
+    networks:
+      - teamcity-network
+
   teamcity-agent:
     image: jetbrains/teamcity-agent:2022.10.3-linux-sudo
     depends_on:
@@ -95,19 +124,6 @@ services:
     env_file:
       - .env
 
-  teamcity-server:
-    image: jetbrains/teamcity-server:2022.10.3
-    depends_on:
-      nginx:
-        condition: service_started
-    restart: unless-stopped
-    ports:
-      - 8111:8111
-    volumes:
-      - teamcity-datadir:/data/teamcity-server/datadir
-      - teamcity-logs:/opt/teamcity/logs
-    networks:
-      - teamcity-network
 
 networks:
   app-network:
