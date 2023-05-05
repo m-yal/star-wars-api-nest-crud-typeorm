@@ -1,47 +1,47 @@
 version: '3'
 
 services:
-  api:
-    build: .
-    container_name: api
-    restart: unless-stopped
-    command: bash -c "npm run migration:run && npm run seed:up && npm run start:prod"
-    depends_on:
-      db:
-        condition: service_healthy
-    volumes:
-      - ./images:/app/images
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "curl", "-H", "Version: 1", "-sf", "http://api:${API_PORT}"]
-      interval: 30s
-      retries: 100
-      start_period: 10s
-    env_file:
-      - .env
+  # api:
+  #   build: .
+  #   container_name: api
+  #   restart: unless-stopped
+  #   command: bash -c "npm run migration:run && npm run seed:up && npm run start:prod"
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./images:/app/images
+  #   networks:
+  #     - app-network
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-H", "Version: 1", "-sf", "http://api:${API_PORT}"]
+  #     interval: 30s
+  #     retries: 100
+  #     start_period: 10s
+  #   env_file:
+  #     - .env
 
-  db:
-    image: mysql:8
-    container_name: db
-    restart: unless-stopped
-    command: '--default-authentication-plugin=mysql_native_password'
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "0.0.0.0", "--silent"]
-      interval: 30s
-      retries: 100
-      start_period: 10s
-    environment:
-      - MYSQL_ROOT_PASSWORD=$DB_PASSWORD
-      - MYSQL_DATABASE=$DB_NAME
-      - MYSQL_ROOT_HOST=%
-      - MYSQL_TCP_PORT=$DB_PORT
-    env_file:
-      - .env
-    volumes:
-      - dbdata:/var/lib/mysql
+  # db:
+  #   image: mysql:8
+  #   container_name: db
+  #   restart: unless-stopped
+  #   command: '--default-authentication-plugin=mysql_native_password'
+  #   networks:
+  #     - app-network
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-h", "0.0.0.0", "--silent"]
+  #     interval: 30s
+  #     retries: 100
+  #     start_period: 10s
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=$DB_PASSWORD
+  #     - MYSQL_DATABASE=$DB_NAME
+  #     - MYSQL_ROOT_HOST=%
+  #     - MYSQL_TCP_PORT=$DB_PORT
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - dbdata:/var/lib/mysql
 
   nginx:
     image: nginx:1.23.4
@@ -49,9 +49,9 @@ services:
     restart: unless-stopped
     environment:
       - DOMAIN=myalovitsa.stud.shpp.me
-    depends_on:
-      api:
-        condition: service_healthy
+    # depends_on:
+    #   api:
+    #     condition: service_healthy
     networks:
       - app-network
       - teamcity-network
@@ -111,21 +111,21 @@ services:
     networks:
       - teamcity-network
 
-  teamcity-agent:
-    image: jetbrains/teamcity-agent:2022.10.3-linux-sudo
-    depends_on:
-      nginx:
-        condition: service_started
-    volumes:
-      - teamcity-agent-conf:/data/teamcity_agent/conf
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - SERVER_URL=http://localhost:8111
-      - DOCKER_IN_DOCKER=start
-    networks:
-      - teamcity-network
-    env_file:
-      - .env
+  # teamcity-agent:
+  #   image: jetbrains/teamcity-agent:2022.10.3-linux-sudo
+  #   depends_on:
+  #     nginx:
+  #       condition: service_started
+  #   volumes:
+  #     - teamcity-agent-conf:/data/teamcity_agent/conf
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   environment:
+  #     - SERVER_URL=http://localhost:8111
+  #     - DOCKER_IN_DOCKER=start
+  #   networks:
+  #     - teamcity-network
+  #   env_file:
+  #     - .env
 
 
 networks:
