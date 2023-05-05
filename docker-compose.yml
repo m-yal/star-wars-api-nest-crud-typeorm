@@ -117,7 +117,7 @@ services:
       - teamcity-agent-conf:/data/teamcity_agent/conf
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - SERVER_URL=https://$DOMAIN/teamcity
+      - SERVER_URL=http://localhost:8111
       - DOCKER_IN_DOCKER=start
     networks:
       - teamcity-network
