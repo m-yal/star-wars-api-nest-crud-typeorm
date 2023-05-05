@@ -91,8 +91,11 @@ services:
       - ./buildserver_pgdata:/var/lib/postgresql/data
     ports:
       - :5432
+    networks:
+      - teamcity-network
 
   teamcity-server:
+    container_name: teamcity-server
     image: jetbrains/teamcity-server:2022.10.3
     depends_on:
       nginx:
