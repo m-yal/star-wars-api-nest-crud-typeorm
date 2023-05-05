@@ -119,8 +119,8 @@ services:
     environment:
       - SERVER_URL=http://localhost:8111
       - DOCKER_IN_DOCKER=start
-    networks:
-      - teamcity-network
+    # networks:
+    #   - teamcity-network
     env_file:
       - .env
 
