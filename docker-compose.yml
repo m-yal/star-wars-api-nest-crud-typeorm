@@ -118,7 +118,7 @@ services:
       nginx:
         condition: service_started
     volumes:
-      - ./teamcity/agent/conf:/data/teamcity_agent/conf
+      - teamcity-agent-conf:/data/teamcity_agent/conf
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - SERVER_URL=http://localhost:8111
@@ -138,6 +138,5 @@ networks:
 volumes:
   dbdata:
   teamcity-agent-conf:
-  teamcity-datadir:
-  teamcity-logs:
-  buildserver_pgdata:
+  # teamcity-datadir:
+  # teamcity-logs:
