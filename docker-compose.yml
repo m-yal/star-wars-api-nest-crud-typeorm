@@ -63,71 +63,21 @@ services:
       - ./etc/letsencrypt:/etc/letsencrypt:ro
       - ./certbot/data:/var/www/certbot
 
-  # certbot:
-  #   container_name: certbot
-  #   image: certbot/certbot:v2.5.0
-  #   depends_on:
-  #     nginx:
-  #       condition: service_started
-  #   volumes:
-  #     - ./etc/letsencrypt:/etc/letsencrypt
-  #     - ./certbot/data:/var/www/certbot
-  #   command: >-
-  #            certonly --reinstall --webroot --webroot-path=/var/www/certbot
-  #            --email $EMAIL --agree-tos --no-eff-email
-  #            -d $DOMAIN
-  #   env_file:
-  #     - .env
-
-  # teamcity-db:
-  #   image: postgres:15
-  #   restart: unless-stopped
-  #   environment:
-  #     - POSTGRES_PASSWORD=teamcity_password
-  #     - POSTGRES_USER=teamcity_user
-  #     - POSTGRES_DB=teamcity_db
-  #     - PG_DATA=/var/lib/postgresql/data
-  #   volumes:
-  #     - buildserver_pgdata:/var/lib/postgresql/data
-  #   ports:
-  #     - :5432
-  #   networks:
-  #     - teamcity-network
-
-  # teamcity-server:
-  #   container_name: teamcity-server
-  #   image: jetbrains/teamcity-server:2022.10.3
-  #   restart: unless-stopped
-  #   depends_on:
-  #     nginx:
-  #       condition: service_started
-  #     teamcity-db:
-  #       condition: service_started
-  #   ports:
-  #     - 8111:8111
-  #   volumes:
-  #     - teamcity-datadir:/data/teamcity-server/datadir
-  #     - teamcity-logs:/opt/teamcity/logs
-  #   networks:
-  #     - teamcity-network
-
-  teamcity-agent:
-    image: jetbrains/teamcity-agent:2022.10.3-linux-sudo
-    restart: unless-stopped
+  certbot:
+    container_name: certbot
+    image: certbot/certbot:v2.5.0
     depends_on:
       nginx:
         condition: service_started
     volumes:
-      - teamcity-agent-conf:/data/teamcity_agent/conf
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - SERVER_URL=http://localhost:8111
-      - DOCKER_IN_DOCKER=start
-    networks:
-      - teamcity-network
+      - ./etc/letsencrypt:/etc/letsencrypt
+      - ./certbot/data:/var/www/certbot
+    command: >-
+             certonly --reinstall --webroot --webroot-path=/var/www/certbot
+             --email $EMAIL --agree-tos --no-eff-email
+             -d $DOMAIN
     env_file:
       - .env
-
 
 networks:
   app-network:
@@ -137,6 +87,3 @@ networks:
 
 volumes:
   dbdata:
-  teamcity-agent-conf:
-  # teamcity-datadir:
-  # teamcity-logs:
